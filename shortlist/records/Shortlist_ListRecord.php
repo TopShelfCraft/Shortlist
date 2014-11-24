@@ -5,7 +5,7 @@ class Shortlist_ListRecord extends BaseRecord
 {
     public function getTableName()
     {
-        return 'shortlist_record';
+        return 'shortlist_list';
     }
 
     protected function defineAttributes()
@@ -18,9 +18,8 @@ class Shortlist_ListRecord extends BaseRecord
         	'shareSlug'			=> array(AttributeType::String, 'label' => 'List Share Slug (ie. {{rand(10)}})', 'required' => true),
             'public'        	=> array(AttributeType::Bool, 'label' => 'Public List', 'default' => true, 'required' => true),
             'type'             	=> array(AttributeType::String, 'label' => 'List Type','default' => 'manual'),
-            'addedOn'           => array(AttributeType::DateTime, 'label' => 'Added On'),
-            'updatedOn'         => array(AttributeType::DateTime, 'label' => 'Updated On'),
-            'addedByUserId'     => array(AttributeType::Number, 'label' => 'Added By', 'required' => true)
+            'ownerId'           => array(AttributeType::String, 'label' => 'Owner Id', 'required' => true),
+            'ownerType'         => array(AttributeType::Enum, 'values' => array(Shortlist_OwnerType::Member, Shortlist_OwnerType::Guest), 'default' => Shortlist_OwnerType::Guest, 'label' => 'Owner Type')
         );
     }
 

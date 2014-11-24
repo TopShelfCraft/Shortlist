@@ -17,9 +17,9 @@ class Shortlist_ListModel extends BaseElementModel
             'shareSlug'			=> array(AttributeType::String),
             'public'			=> array(AttributeType::Bool, 'default' => true),
             'type'				=> array(AttributeType::String, 'default' => 'user'),
-            'addedOn'           => array(AttributeType::DateTime, 'label' => 'Added On', 'required' => true),
-            'updatedOn'         => array(AttributeType::DateTime, 'label' => 'Updated On'),
-            'addedByUserId'     => array(AttributeType::Number, 'required' => true)
+            'ownerId'           => array(AttributeType::String, 'label' => 'Owner Id', 'required' => true),
+            'ownerType'         => array(AttributeType::Enum, 'values' => array(Shortlist_OwnerType::Member, Shortlist_OwnerType::Guest), 'default' => Shortlist_OwnerType::Guest, 'label' => 'Owner Type')
+
         ));
     }
 
