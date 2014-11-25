@@ -10,13 +10,11 @@ class Shortlist_ItemModel extends BaseElementModel
     {
         return array_merge(parent::defineAttributes(), array(
             'id'                => AttributeType::Number,
+            'elementId'         => array(AttributeType::Number, 'required' => true),
             'listId'			=> array(AttributeType::Number, 'required' => true),
             'public'			=> array(AttributeType::Bool, 'default' => true),
             'type'				=> array(AttributeType::String, 'label' => 'Item Type'),
-            'order'				=> array(AttributeType::Number),
-            'addedOn'           => array(AttributeType::DateTime, 'label' => 'Added On', 'required' => true),
-            'updatedOn'         => array(AttributeType::DateTime, 'label' => 'Updated On'),
-            'addedByUserId'     => array(AttributeType::Number, 'required' => true)
+            'order'				=> array(AttributeType::Number)
         ));
     }
 
