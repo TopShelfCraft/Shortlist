@@ -10,7 +10,8 @@ class Shortlist_ListModel extends BaseElementModel
     {
         return array_merge(parent::defineAttributes(), array(
             'id'                => AttributeType::Number,
-            'name'				=> array(AttributeType::String, 'required' => true),
+            'name'              => array(AttributeType::String, 'required' => true),
+            'default'           => array(AttributeType::Bool, 'default' => false, 'required' => true),
             'title'				=> array(AttributeType::String, 'required' => true),
             'slug'				=> array(AttributeType::String, 'required' => true),
             'userSlug'			=> array(AttributeType::String, 'required' => true),

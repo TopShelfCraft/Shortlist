@@ -49,8 +49,87 @@ class Shortlist_ListElementType extends BaseElementType
 	 */
 	public function populateElementModel($row)
 	{
-		$model = Shortlist_ListModel::populateModel($row);
-
-		return $model;
+		return Shortlist_ListModel::populateModel($row);
 	}
+
+	/**
+	 * Modifies an element query targeting elements of this type.
+	 *
+	 * @param DbCommand $query
+	 * @param ElementCriteriaModel $criteria
+	 * @return mixed
+	 */
+	public function modifyElementsQuery(DbCommand $query, ElementCriteriaModel $criteria)
+	{
+		$query
+			->addSelect('shortlist_list.name, sortlist_list.title, shortlist_list.default, sortlist_list.slug, sortlist_list.userSlug, sortlist_list.shareSlug, shortlist_list.public, shortlist_list.type, shortlist_list.ownerId, shortlist_list.ownerType')
+			->join('shortlist_list shortlist_list', 'shortlist_list.id = elements.id');
+
+
+		if($criteria->name)
+		{
+			$query->andWhere(DbHelper::parseParam('shortlist_list.name', $criteria->name, $query->params));
+		}
+
+		if($criteria->title)
+		{
+			$query->andWhere(DbHelper::parseParam('shortlist_list.title', $criteria->title, $query->params));
+		}
+
+		if($criteria->default)
+		{
+			$query->andWhere(DbHelper::parseParam('shortlist_list.default', $criteria->default, $query->params));
+		}
+		if($criteria->slug)
+		{
+			$query->andWhere(DbHelper::parseParam('shortlist_list.slug', $criteria->slug, $query->params));
+		}
+		if($criteria->userSlug)
+		{
+			$query->andWhere(DbHelper::parseParam('shortlist_list.userSlug', $criteria->userSlug, $query->params));
+		}
+		if($criteria->shareSlug)
+		{
+			$query->andWhere(DbHelper::parseParam('shortlist_list.shareSlug', $criteria->shareSlug, $query->params));
+		}
+		if($criteria->public)
+		{
+			$query->andWhere(DbHelper::parseParam('shortlist_list.public', $criteria->public, $query->params));
+		}
+		if($criteria->type)
+		{
+			$query->andWhere(DbHelper::parseParam('shortlist_list.type', $criteria->type, $query->params));
+		}
+		if($criteria->ownerId)
+		{
+			$query->andWhere(DbHelper::parseParam('shortlist_list.ownerId', $criteria->ownerId, $query->params));
+		}
+		if($criteria->ownerType)
+		{
+			$query->andWhere(DbHelper::parseParam('shortlist_list.ownerType', $criteria->ownerType, $query->params));
+		}
+	}
+
+	/**
+	 * Defines any custom element criteria attributes for this element type.
+	 *
+	 * @return array
+	 */
+	public function defineCriteriaAttributes()
+	{
+		return array(
+			'name'    	=> AttributeType::Mixed,
+			'title'		=> AttributeType::Mixed,
+			'slug' 		=> AttributeType::Mixed,
+			'ownerId'	=> AttributeType::String,
+			'ownerType' => AttributeType::String,
+			'public'	=> AttributeType::Bool,
+			'default'   => AttributeType::Bool,
+			'slug'		=> AttributeType::String,
+			'userSlug' 	=> AttributeType::String,
+			'shareSlug' => AttributeType::String,
+			'key'		=> AttributeType::String
+		);
+	}
+
 }

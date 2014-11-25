@@ -13,6 +13,7 @@ class Shortlist_ListRecord extends BaseRecord
         return array(
         	'name'				=> array(AttributeType::String, 'label' => 'List Name', 'required' => true),
         	'title'				=> array(AttributeType::String, 'label' => 'List Title', 'required' => true),
+            'default'           => array(AttributeType::Bool, 'label' => 'Default List', 'default' => true),
         	'slug'				=> array(AttributeType::String, 'label' => 'List Slug (ie. {{username-listName}})', 'required' => true),
         	'userSlug'			=> array(AttributeType::String, 'label' => 'List User Slug (ie. {{listName}})', 'required' => true),
         	'shareSlug'			=> array(AttributeType::String, 'label' => 'List Share Slug (ie. {{rand(10)}})', 'required' => true),

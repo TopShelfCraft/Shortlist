@@ -5,6 +5,12 @@ class Shortlist_ItemController extends BaseController
 {
 	protected $allowAnonymous = true;
 
+	public function init()
+	{
+		// This will grab our current user be they member or guest
+		craft()->shortlist->getUser();
+	}
+
 
 	/**
 	* Add, Remove, Toggle
@@ -51,9 +57,17 @@ class Shortlist_ItemController extends BaseController
 			die('failed to add'); // @todo
 		}
 
-		// Success.
+
+
 		// Return as appropriate
-		die('done');
+		if (craft()->request->isAjaxRequest())
+		{
+			$this->returnJson($response);
+		}
+		else
+		{
+			craft()->shortlist->redirect($response['object']);
+		}
 
 	}
 

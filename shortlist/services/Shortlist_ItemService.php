@@ -42,6 +42,7 @@ class Shortlist_ItemService extends BaseApplicationComponent
 
         // @todo handle restore, demote, move, clear actions
 
+        $response['success'] = false;
 
         switch($actionType) {
         	case 'add':
@@ -91,13 +92,9 @@ class Shortlist_ItemService extends BaseApplicationComponent
 
         // Validate our response
         // Handle any return messages if we got any back
-        var_dump($response);
-        die('done');
+        $response['success'] = true;
 
-        // Now perform the appropriate action for the elementId on this list
-        die('<pre>'.print_R($list,1));
-        die($actionType);
-        die('hi');
+        return $response;
     }
 
 
@@ -117,6 +114,8 @@ class Shortlist_ItemService extends BaseApplicationComponent
 	            $record->insert();
 
 	        } else {
+
+
 	        	//$item->addError('general', 'There was a problem creating the list');
 
 	        	die('failed');
