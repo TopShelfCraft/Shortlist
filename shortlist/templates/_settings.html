@@ -1,0 +1,29 @@
+{% import "_includes/forms" as forms %}
+
+<h1>List Settings</h1>
+{{ forms.textField({
+label: "Default List Title"|t,
+id: 'defaultListTitle',
+name: 'defaultListTitle',
+instructions: "The default <em>title</em> for user lists. This will be visible by the user."|t,
+value: settings.defaultListTitle,
+errors: settings.getErrors('defaultListTitle')
+}) }}
+
+{{ forms.textField({
+label: "Default List Name"|t,
+id: 'defaultListName',
+name: 'defaultListName',
+instructions: "The default <em>name</em> for user lists. This is how you can refer to the list in your template code."|t,
+value: settings.defaultListName,
+errors: settings.getErrors('defaultListName')
+}) }}
+
+{{ forms.textField({
+label: "Default List Slug"|t,
+id: 'defaultListSlug',
+name: 'defaultListSlug',
+instructions: "The default <em>slug</em> for user lists. This is what will appear in the uri if you expose it."|t,
+value: settings.defaultListSlug,
+errors: settings.getErrors('defaultListSlug')
+}) }}

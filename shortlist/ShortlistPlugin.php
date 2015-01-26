@@ -25,10 +25,10 @@ class ShortlistPlugin extends BasePlugin
 
 	public function hasCpSection()
     {
-        return false;
+        return true;
     }
 
-    public function registerCpRoutes()
+	public function registerCpRoutes()
     {
         return array(
             'charge/detail/(?P<chargeId>\d+)' 	=> array('action' => 'charge/view'),
@@ -38,32 +38,20 @@ class ShortlistPlugin extends BasePlugin
         );
 
     }
-/*
+
 	protected function defineSettings()
 	{
 		return array(
-			'stripeAccountMode'			=> array(AttributeType::String, 'required' => true),
-			'stripeTestCredentialsSK' 	=> array(AttributeType::String, 'required' => true),
-			'stripeTestCredentialsPK' 	=> array(AttributeType::String, 'required' => true),
-			'stripeLiveCredentialsSK' 	=> array(AttributeType::String, 'required' => true),
-			'stripeLiveCredentialsPK' 	=> array(AttributeType::String, 'required' => true),
-			'stripeDefaultCurrency' 	=> array(AttributeType::String, 'required' => true),
+			'defaultListTitle'			=> array(AttributeType::String, 'required' => true),
+			'defaultListName'			=> array(AttributeType::String, 'required' => true),
+			'defaultListSlug'			=> array(AttributeType::String, 'required' => true),
 		);
 	}
 
 	public function getSettingsHtml()
 	{
-		$currencies = array();
-
-		foreach($this->getCurrencies('all') as $key => $currency) {
-			$currencies[strtoupper($key)] = strtoupper($key) . ' - '. $currency['name'];
-		}
-
-
-		return craft()->templates->render('charge/_settings', array(
+		return craft()->templates->render('shortlist/_settings', array(
 			'settings' => $this->getSettings(),
-			'currencies' => $currencies,
-			'accountModes'	=> array('test' => 'Test Mode', 'live' => 'Live Mode')
 		));
-	}*/
+	}
 }
