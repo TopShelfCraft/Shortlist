@@ -50,7 +50,7 @@ class Shortlist_ListController extends BaseController
      */
     public function handleAction($actionType)
     {
-
+        $listId = craft()->shortlist->getIdForRequest('listId,id');
         // Pass to the service to do the leg work
         $response = craft()->shortlist_list->action($actionType);
         if ($response == false) {
@@ -67,6 +67,7 @@ class Shortlist_ListController extends BaseController
         }
 
     }
+
 
 
 }

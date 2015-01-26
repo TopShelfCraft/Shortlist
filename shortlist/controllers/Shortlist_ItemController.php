@@ -42,21 +42,25 @@ class Shortlist_ItemController extends BaseController
     {
         // Collect the info
         // at the very least we need an item id
-        $itemId = $this->getIdForRequest();
+        $itemId = craft()->shortlist->getIdForRequest('itemId,id');
         if ($itemId == false) {
             // Return an error message
             die('no id'); // @todo
         }
 
         // Validate this id is a real element id
-        // @todo
+        $element = craft()->elements->getElementById($itemId);
+        if (is_null($element)) {
+            die('not a real element');
+            // @todo
+        }
 
         // Get the list for the request
         // We might have a list_id on the request.
-        // dont worry too much if we haven't got it though -
+        // don't worry too much if we haven't got it though -
         // we'll use the default list if it doesn't exist, or worst
         // case we'll create a new list on the action if we need to
-        $listId = $this->getIdForRequest('listId', 1);
+        $listId = craft()->shortlist->getIdForRequest('listId', 1);
 
         // Get any extra values
         $extra = array(); // @todo

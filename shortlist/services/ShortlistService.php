@@ -39,4 +39,40 @@ class ShortlistService extends BaseApplicationComponent
     }
 
 
+    public function getIdForRequest($name = 'id', $offset = 0)
+    {
+        $id = false;
+        // Explode our name if required
+        $names = explode(',', $name);
+
+        foreach ($names as $n) {
+            if ($id === false || $id == '' || is_null($id)) {
+                if (craft()->request->getPost($n)) {
+                    $id = craft()->request->getPost($n);
+                } elseif (craft()->request->getQuery($n)) {
+                    $id = craft()->request->getQuery($n);
+                }
+            }
+        }
+
+        if ($id === false || $id == '' || is_null($id)) {
+            // Try to extract it from the request segments
+            $count = 0;
+            foreach (craft()->request->getSegments() as $pos => $segment) {
+                if (is_numeric($segment) && !is_numeric($id)) {
+                    $count++;
+                    if ($count > $offset) {
+                        $id = $segment;
+                    }
+                }
+            }
+        }
+
+        if (is_numeric($id)) return $id;
+
+        return false;
+    }
+
+
+
 }
