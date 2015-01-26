@@ -12,8 +12,7 @@ class Shortlist_UserModel extends BaseModel
         	$this->type = Shortlist_OwnerType::Member;
         } else {
         	// Find if we have a guest session
-        	// @todo - make real guest retention
-        	$this->id = StringHelper::UUID();
+        	$this->id = craft()->httpSession->getSessionID();
         	$this->type = Shortlist_OwnerType::Guest;
         }
     }

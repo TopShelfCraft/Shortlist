@@ -5,7 +5,39 @@ namespace Craft;
 class Shortlist_ListService extends BaseApplicationComponent
 {
 
-    public function getListOrCreate($listId)
+	public function action($actionType,$listId = false)
+	{
+		$response['success'] = false;
+
+		switch($actionType) {
+			case 'new' :
+				$list = $this->createList();
+
+				$response['object'] = $list;
+				$response['objectType'] = 'list';
+				$response['verb'] = 'created';
+				$response['revert'] = array('verb' => 'remove', 'params' => array('listId' => $list->id));
+				$response['success'] = true;
+
+				break;
+			case 'remove' :
+
+				break;
+			default :
+
+				die('Unknown - '.$actionType);
+				// @todo
+				break;
+
+		}
+
+
+		return $response;
+	}
+
+
+
+	public function getListOrCreate($listId)
     {
     	if($listId === false) {
     		// Try to get the user's default list
