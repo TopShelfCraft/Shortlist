@@ -74,5 +74,23 @@ class ShortlistService extends BaseApplicationComponent
     }
 
 
+    public function getExtraForRequest($baseFields = array())
+    {
+        $data = array();
+        // field[] data
+        // @todo
+
+        foreach ($baseFields as $n) {
+            $val = craft()->request->getParam($n);
+
+            if(!is_null($val)) {
+                $data[$n] = $val;
+            }
+        }
+
+        return $data;
+    }
+
+
 
 }

@@ -5,13 +5,14 @@ namespace Craft;
 class Shortlist_ListService extends BaseApplicationComponent
 {
 
-    public function action($actionType, $listId = false)
+    public function action($actionType, $listId = false, $extraData = array())
     {
         $response['success'] = false;
 
         switch ($actionType) {
             case 'new' :
-                $list = $this->createList();
+
+                $list = $this->createList(null ,$extraData);
 
                 $response['object'] = $list;
                 $response['objectType'] = 'list';
@@ -98,8 +99,10 @@ class Shortlist_ListService extends BaseApplicationComponent
         return;
     }
 
-    public function createList($makeDefault = true)
+    public function createList($makeDefault = true, $extraData = array())
     {
+        if(!is_bool($makeDefault)) $makeDefault = true;
+
         $settings = craft()->plugins->getPlugin('shortlist')->getSettings();
 
         $listModel = new Shortlist_ListModel();
@@ -112,6 +115,15 @@ class Shortlist_ListService extends BaseApplicationComponent
         $listModel->default = $makeDefault;
         $listModel->ownerId = craft()->shortlist->user->id;
         $listModel->ownerType = craft()->shortlist->user->type;
+
+
+        // Assign the extra data if possible
+        $assignable = array('listTitle' => 'title', 'listSlug' => 'slug', 'listName' => 'name');
+        foreach($assignable as $key => $val) {
+            if(isset($extraData[$key]) && $extraData[$key] != '' ) {
+                $listModel->$val = $extraData[$key];
+            }
+        }
 
         if ($listModel->validate()) {
             // Create the element
