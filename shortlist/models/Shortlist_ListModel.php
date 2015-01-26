@@ -9,17 +9,17 @@ class Shortlist_ListModel extends BaseElementModel
     protected function defineAttributes()
     {
         return array_merge(parent::defineAttributes(), array(
-            'id'                => AttributeType::Number,
-            'name'              => array(AttributeType::String, 'required' => true),
-            'default'           => array(AttributeType::Bool, 'default' => false, 'required' => true),
-            'title'				=> array(AttributeType::String, 'required' => true),
-            'slug'				=> array(AttributeType::String, 'required' => true),
-            'userSlug'			=> array(AttributeType::String, 'required' => true),
-            'shareSlug'			=> array(AttributeType::String),
-            'public'			=> array(AttributeType::Bool, 'default' => true),
-            'type'				=> array(AttributeType::String, 'default' => 'user'),
-            'ownerId'           => array(AttributeType::String, 'label' => 'Owner Id', 'required' => true),
-            'ownerType'         => array(AttributeType::Enum, 'values' => array(Shortlist_OwnerType::Member, Shortlist_OwnerType::Guest), 'default' => Shortlist_OwnerType::Guest, 'label' => 'Owner Type')
+            'id'        => AttributeType::Number,
+            'name'      => array(AttributeType::String, 'required' => true),
+            'default'   => array(AttributeType::Bool, 'default' => false, 'required' => true),
+            'title'     => array(AttributeType::String, 'required' => true),
+            'slug'      => array(AttributeType::String, 'required' => true),
+            'userSlug'  => array(AttributeType::String, 'required' => true),
+            'shareSlug' => array(AttributeType::String),
+            'public'    => array(AttributeType::Bool, 'default' => true),
+            'type'      => array(AttributeType::String, 'default' => 'user'),
+            'ownerId'   => array(AttributeType::String, 'label' => 'Owner Id', 'required' => true),
+            'ownerType' => array(AttributeType::Enum, 'values' => array(Shortlist_OwnerType::Member, Shortlist_OwnerType::Guest), 'default' => Shortlist_OwnerType::Guest, 'label' => 'Owner Type')
 
         ));
     }
@@ -43,7 +43,7 @@ class Shortlist_ListModel extends BaseElementModel
      */
     public function getCpEditUrl()
     {
-        return UrlHelper::getCpUrl('shortlist/list/'.$this->id);
+        return UrlHelper::getCpUrl('shortlist/list/' . $this->id);
     }
 
     /**

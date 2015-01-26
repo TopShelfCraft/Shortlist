@@ -11,10 +11,10 @@ class ShortlistVariable
      * @param array|null $criteria
      * @return ElementCriteriaModel
      */
-/*    public function charges($criteria = null)
-    {
-    	return craft()->elements->getCriteria('Charge', $criteria);
-    }*/
+    /*    public function charges($criteria = null)
+        {
+            return craft()->elements->getCriteria('Charge', $criteria);
+        }*/
 
 
     public function item($elementId = null)

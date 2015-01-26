@@ -4,43 +4,39 @@ namespace Craft;
 
 class ShortlistService extends BaseApplicationComponent
 {
-	public $user = null;
-	private $_cache;
-	private $_cacheElementIds;
+    public $user = null;
+    private $_cache;
+    private $_cacheElementIds;
 
 
-	public function getUser()
-	{
-		$this->user = new Shortlist_UserModel();
-	}
+    public function getUser()
+    {
+        $this->user = new Shortlist_UserModel();
+    }
 
 
-	public function redirect($object = null)
-	{
-		$url = craft()->request->getPost('redirect');
+    public function redirect($object = null)
+    {
+        $url = craft()->request->getPost('redirect');
 
-		if ($url === null)
-		{
-			$url = craft()->request->getParam('return');
+        if ($url === null) {
+            $url = craft()->request->getParam('return');
 
-			if($url === null)
-			{
-				$url = craft()->request->getUrlReferrer();
+            if ($url === null) {
+                $url = craft()->request->getUrlReferrer();
 
-				if($url === null)
-				{
-					$url = '/';
-				}
-			}
-		}
+                if ($url === null) {
+                    $url = '/';
+                }
+            }
+        }
 
-		if ($object)
-		{
-			$url = craft()->templates->renderObjectTemplate($url, $object);
-		}
+        if ($object) {
+            $url = craft()->templates->renderObjectTemplate($url, $object);
+        }
 
-		craft()->request->redirect($url);
-	}
+        craft()->request->redirect($url);
+    }
 
 
 }

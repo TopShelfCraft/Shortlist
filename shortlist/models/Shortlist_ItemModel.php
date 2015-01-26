@@ -9,14 +9,14 @@ class Shortlist_ItemModel extends BaseElementModel
     protected function defineAttributes()
     {
         return array_merge(parent::defineAttributes(), array(
-            'id'                => array(AttributeType::Number),
-            'elementId'         => array(AttributeType::Number, 'required' => true),
-            'elementType'       => array(AttributeType::String, 'required' => true),
-            'listId'			=> array(AttributeType::Number, 'required' => true),
-            'public'			=> array(AttributeType::Bool, 'default' => true),
-            'type'				=> array(AttributeType::String, 'label' => 'Item Type'),
-            'order'				=> array(AttributeType::Number),
-            'deleted'           => array(AttributeType::Bool, 'label' => 'Item Deleted', 'required' => true, 'default' => false)
+            'id'          => array(AttributeType::Number),
+            'elementId'   => array(AttributeType::Number, 'required' => true),
+            'elementType' => array(AttributeType::String, 'required' => true),
+            'listId'      => array(AttributeType::Number, 'required' => true),
+            'public'      => array(AttributeType::Bool, 'default' => true),
+            'type'        => array(AttributeType::String, 'label' => 'Item Type'),
+            'order'       => array(AttributeType::Number),
+            'deleted'     => array(AttributeType::Bool, 'label' => 'Item Deleted', 'required' => true, 'default' => false)
         ));
     }
 
@@ -39,7 +39,7 @@ class Shortlist_ItemModel extends BaseElementModel
      */
     public function getCpEditUrl()
     {
-        return UrlHelper::getCpUrl('shortlist/item/'.$this->id);
+        return UrlHelper::getCpUrl('shortlist/item/' . $this->id);
     }
 
     /*

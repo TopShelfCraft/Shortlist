@@ -17,11 +17,30 @@ class Shortlist_ListController extends BaseController
      *
      * All are just stub functions passing to handleAction where all the core logic is shared
      */
-    public function actionAdd(){ $this->handleAction('new'); }
-    public function actionNew(){ $this->handleAction('new'); }
-    public function actionRemove(){ $this->handleAction('remove'); }
-    public function actionDelete(){ $this->handleAction('remove'); }
-    public function actionMakeDefault(){ $this->handleAction('makeDefault'); }
+    public function actionAdd()
+    {
+        $this->handleAction('new');
+    }
+
+    public function actionNew()
+    {
+        $this->handleAction('new');
+    }
+
+    public function actionRemove()
+    {
+        $this->handleAction('remove');
+    }
+
+    public function actionDelete()
+    {
+        $this->handleAction('remove');
+    }
+
+    public function actionMakeDefault()
+    {
+        $this->handleAction('makeDefault');
+    }
 
 
     /**
@@ -34,26 +53,20 @@ class Shortlist_ListController extends BaseController
 
         // Pass to the service to do the leg work
         $response = craft()->shortlist_list->action($actionType);
-        if($response == false) {
+        if ($response == false) {
             // Deal with an error state
             die('failed to add'); // @todo
         }
 
 
-
         // Return as appropriate
-        if (craft()->request->isAjaxRequest())
-        {
+        if (craft()->request->isAjaxRequest()) {
             $this->returnJson($response);
-        }
-        else
-        {
+        } else {
             craft()->shortlist->redirect($response['object']);
         }
 
     }
-
-
 
 
 }
