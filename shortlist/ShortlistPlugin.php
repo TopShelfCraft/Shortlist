@@ -3,16 +3,6 @@ namespace Craft;
 
 class ShortlistPlugin extends BasePlugin
 {
-	function init()
-	{
-		Craft::import('plugins.shortlist.enums.Shortlist_OwnerType');
-	}
-
-	function onBeforeInstall()
-	{
-		Craft::import('plugins.shortlist.enums.Shortlist_OwnerType');
-	}
-
 	function getName()
 	{
 		return Craft::t('Shortlist');
@@ -20,7 +10,7 @@ class ShortlistPlugin extends BasePlugin
 
 	function getVersion()
 	{
-		return '0.1';
+		return '0.3';
 	}
 
 	function getDeveloper()

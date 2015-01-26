@@ -73,15 +73,23 @@ class Shortlist_ItemController extends BaseController
 
 
 
-	private function getIdForRequest($name = 'id', $offset = 0)
+	private function getIdForRequest($name = 'itemId,id', $offset = 0)
 	{
 		$id = false;
+		// Explode our name if required
+		$names = explode(',', $name);
 
-		if(craft()->request->getPost($name)) {
-			$id = craft()->request->getPost($name);
-		} elseif(craft()->request->getQuery($name)) {
-			$id = craft()->request->getQuery($name);
-		} else {
+		foreach($names as $n) {
+			if($id === false || $id == '' || is_null($id)) {
+				if(craft()->request->getPost($n)) {
+					$id = craft()->request->getPost($n);
+				} elseif(craft()->request->getQuery($n)) {
+					$id = craft()->request->getQuery($n);
+				}
+			}
+		}
+
+		if($id === false || $id == '' || is_null($id)) {
 			// Try to extract it from the request segments
 			$count = 0;
 			foreach(craft()->request->getSegments() as $pos => $segment) {
@@ -93,7 +101,6 @@ class Shortlist_ItemController extends BaseController
 				}
 			}
 		}
-
 
 		if(is_numeric($id)) return $id;
 

@@ -5,27 +5,14 @@ namespace Craft;
 class ShortlistService extends BaseApplicationComponent
 {
 	public $user = null;
-	private static $_cache;
-	private static $_cacheElementIds;
+	private $_cache;
+	private $_cacheElementIds;
 
 
 	public function getUser()
 	{
 		$this->user = new Shortlist_UserModel();
 	}
-
-	public function getItemInfo($elementId = null)
-	{
-		if($this->user == null) $this->user = new Shortlist_UserModel();
-
-		if($_cache == null) {
-			// No cache - populate it
-			$this->populateInfoCache();
-		}
-
-		die('find in cache - if not there, not in lists. ');
-	}
-
 
 
 	public function redirect($object = null)
@@ -54,5 +41,6 @@ class ShortlistService extends BaseApplicationComponent
 
 		craft()->request->redirect($url);
 	}
+
 
 }

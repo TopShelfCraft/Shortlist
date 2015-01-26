@@ -45,4 +45,16 @@ class Shortlist_ListModel extends BaseElementModel
     {
         return UrlHelper::getCpUrl('shortlist/list/'.$this->id);
     }
+
+    /**
+     * Returns an list's items
+     *
+     * @return array()
+     */
+    public function items()
+    {
+        $items = craft()->shortlist_item->findByList($this->id);
+
+        return $items;
+    }
 }

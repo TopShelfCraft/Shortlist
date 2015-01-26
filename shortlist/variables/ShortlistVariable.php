@@ -19,13 +19,13 @@ class ShortlistVariable
 
     public function item($elementId = null)
     {
-        return craft()->shortlist->getItemInfo($elementId);
+        return craft()->shortlist_item->getItemInfo($elementId);
     }
 
 
-    public function setProtected($values)
+    public function lists($criteria = null)
     {
-        return implode('-',array_keys($values));
+        return craft()->elements->getCriteria('Shortlist_list', $criteria);
     }
 
 }

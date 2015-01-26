@@ -62,7 +62,7 @@ class Shortlist_ListElementType extends BaseElementType
 	public function modifyElementsQuery(DbCommand $query, ElementCriteriaModel $criteria)
 	{
 		$query
-			->addSelect('shortlist_list.name, sortlist_list.title, shortlist_list.default, sortlist_list.slug, sortlist_list.userSlug, sortlist_list.shareSlug, shortlist_list.public, shortlist_list.type, shortlist_list.ownerId, shortlist_list.ownerType')
+			->addSelect('shortlist_list.name, shortlist_list.title, shortlist_list.default, shortlist_list.slug, shortlist_list.userSlug, shortlist_list.shareSlug, shortlist_list.public, shortlist_list.type, shortlist_list.ownerId, shortlist_list.ownerType')
 			->join('shortlist_list shortlist_list', 'shortlist_list.id = elements.id');
 
 
@@ -95,10 +95,6 @@ class Shortlist_ListElementType extends BaseElementType
 		if($criteria->public)
 		{
 			$query->andWhere(DbHelper::parseParam('shortlist_list.public', $criteria->public, $query->params));
-		}
-		if($criteria->type)
-		{
-			$query->andWhere(DbHelper::parseParam('shortlist_list.type', $criteria->type, $query->params));
 		}
 		if($criteria->ownerId)
 		{
