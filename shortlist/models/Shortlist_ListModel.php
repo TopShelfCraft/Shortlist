@@ -57,4 +57,22 @@ class Shortlist_ListModel extends BaseElementModel
 
         return $items;
     }
+
+    /*
+     * Returns a list's owner
+     *
+     * @return UserModel
+     */
+    public function owner()
+    {
+
+        if($this->ownerType == 'member') {
+            $user = craft()->users->getUserById($this->ownerId);
+        } else {
+            $user = new UserModel();
+            $user->username = 'Guest';
+        }
+
+        return $user;
+    }
 }
