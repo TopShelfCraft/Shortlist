@@ -10,7 +10,7 @@ class ShortlistPlugin extends BasePlugin
 
     function getVersion()
     {
-        return '0.3';
+        return '0.4';
     }
 
     function getDeveloper()
@@ -25,16 +25,29 @@ class ShortlistPlugin extends BasePlugin
 
     public function hasCpSection()
     {
-        return false;
+        return true;
     }
 
+
+    public function registerCpRoutes()
+    {
+        return array(
+            'shortlist/list/(?P<listId>\d+)'   => array('action' => 'shortlist/list/view'),
+
+            'shortlist/items'                  => array('action' => 'shortlist/items'),
+            'shortlist/items/(?P<itemId>\d+)'  => array('action' => 'shortlist/item/view'),
+            'shortlist/users'                  => array('action' => 'shortlist/users'),
+            'shortlist/users/(?P<itemId>\d+)'  => array('action' => 'shortlist/users/view'),
+        );
+
+    }
 
     protected function defineSettings()
     {
         return array(
-            'defaultListTitle' => array(AttributeType::String, 'required' => true),
-            'defaultListName'  => array(AttributeType::String, 'required' => true),
-            'defaultListSlug'  => array(AttributeType::String, 'required' => true),
+            'defaultListTitle' => array(AttributeType::String, 'required' => true, 'default' => 'Wishlist'),
+            'defaultListName'  => array(AttributeType::String, 'required' => true, 'default' => 'wishlist'),
+            'defaultListSlug'  => array(AttributeType::String, 'required' => true, 'default' => 'wishlist'),
         );
     }
 

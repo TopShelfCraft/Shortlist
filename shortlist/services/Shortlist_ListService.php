@@ -8,11 +8,15 @@ class Shortlist_ListService extends BaseApplicationComponent
     public function action($actionType, $listId = false, $extraData = array())
     {
         $response['success'] = false;
+        $response['object'] = '';
+        $response['objectType'] = '';
+        $response['verb'] = 'failed';
+        $response['revert'] = array('verb' => '', 'params' => '');
 
         switch ($actionType) {
             case 'new' :
 
-                $list = $this->createList(null ,$extraData);
+                $list = $this->createList(null, $extraData);
 
                 $response['object'] = $list;
                 $response['objectType'] = 'list';
@@ -22,6 +26,10 @@ class Shortlist_ListService extends BaseApplicationComponent
 
                 break;
             case 'remove' :
+
+                $list = $this->removeList($listId, $extraData);
+
+                die($list);
 
                 break;
             default :
@@ -36,6 +44,59 @@ class Shortlist_ListService extends BaseApplicationComponent
         return $response;
     }
 
+    /*
+     * Remove List
+     *
+     * Removes a list if the user is the owner
+     * In reality, simply sets the list state to deleted to allow reverts
+     * actual deletion happens later
+     *
+     * @returns bool
+     */
+    private function removeList($listId, $extraData = array())
+    {
+        $shortlistUser = new Shortlist_UserModel();
+        // Check this is a valid list to remove
+        // both that it exists, and the current user is the owner of said list
+        $criteria = craft()->elements->getCriteria('shortlist_list');
+        $criteria->id = $listId;
+        $criteria->ownerId = $shortlistUser->id;
+        $criteria->ownerType = $shortlistUser->type;
+        $criteria->deleted = false; // Can't delete a deleted thing silly.
+
+        $list = $criteria->first();
+
+        if (is_null($list)) {
+            // @todo, add a message
+            return false; // not a valid list or not list owner
+        }
+
+
+
+        $list->status = 'disabled';
+        $success = craft()->elements->saveElement($list);
+
+        /*
+        $listRecord = Shortlist_ListRecord::model()->findByAttributes(array('id' => $list->id));
+        $listRecord->status = 'deleted';
+        $listRecord->update();
+*/
+        // does this work?
+
+        var_dump($list);
+        var_dump($listRecord);
+        die();
+
+
+    }
+
+
+    public function getListById($listId)
+    {
+        $criteria = craft()->elements->getCriteria('shortlist_list');
+        $criteria->id = $listId;
+        return $criteria->first();
+    }
 
     public function getListOrCreate($listId)
     {
@@ -101,12 +162,11 @@ class Shortlist_ListService extends BaseApplicationComponent
 
     public function createList($makeDefault = true, $extraData = array())
     {
-        if(!is_bool($makeDefault)) $makeDefault = true;
+        if (!is_bool($makeDefault)) $makeDefault = true;
 
         $settings = craft()->plugins->getPlugin('shortlist')->getSettings();
 
         $listModel = new Shortlist_ListModel();
-        // Get the defaults // @todo
         $listModel->name = $settings->defaultListName;
         $listModel->title = $settings->defaultListTitle;
         $listModel->shareSlug = strtolower(StringHelper::randomString(18));
@@ -115,12 +175,13 @@ class Shortlist_ListService extends BaseApplicationComponent
         $listModel->default = $makeDefault;
         $listModel->ownerId = craft()->shortlist->user->id;
         $listModel->ownerType = craft()->shortlist->user->type;
+        $listModel->deleted = false;
 
 
         // Assign the extra data if possible
         $assignable = array('listTitle' => 'title', 'listSlug' => 'slug', 'listName' => 'name');
-        foreach($assignable as $key => $val) {
-            if(isset($extraData[$key]) && $extraData[$key] != '' ) {
+        foreach ($assignable as $key => $val) {
+            if (isset($extraData[$key]) && $extraData[$key] != '') {
                 $listModel->$val = $extraData[$key];
             }
         }
@@ -141,13 +202,9 @@ class Shortlist_ListService extends BaseApplicationComponent
             return $listModel;
 
         } else {
-            if (!empty(craft()->shortlist_list->errors)) {
-                foreach (craft()->shortlist_list->errors as $error) {
-                    $listModel->addError('general', $error);
-                }
-            } else {
-                $listModel->addError('general', 'There was a problem with creating the list');
-            }
+            $listModel->addError('general', 'There was a problem with creating the list');
+
+            echo('problem creating');
             die('<pre>' . print_R($listModel, 1));
             die('invalid');
         }

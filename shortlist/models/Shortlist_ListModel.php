@@ -19,7 +19,8 @@ class Shortlist_ListModel extends BaseElementModel
             'public'    => array(AttributeType::Bool, 'default' => true),
             'type'      => array(AttributeType::String, 'default' => 'user'),
             'ownerId'   => array(AttributeType::String, 'label' => 'Owner Id', 'required' => true),
-            'ownerType' => array(AttributeType::Enum, 'values' => array(Shortlist_OwnerType::Member, Shortlist_OwnerType::Guest), 'default' => Shortlist_OwnerType::Guest, 'label' => 'Owner Type')
+            'ownerType' => array(AttributeType::Enum, 'values' => array(Shortlist_OwnerType::Member, Shortlist_OwnerType::Guest), 'default' => Shortlist_OwnerType::Guest, 'label' => 'Owner Type'),
+            'deleted'   => array(AttributeType::Bool, 'label' => 'List Deleted', 'required' => true, 'default' => false)
 
         ));
     }
@@ -66,7 +67,7 @@ class Shortlist_ListModel extends BaseElementModel
     public function owner()
     {
 
-        if($this->ownerType == 'member') {
+        if ($this->ownerType == 'member') {
             $user = craft()->users->getUserById($this->ownerId);
         } else {
             $user = new UserModel();

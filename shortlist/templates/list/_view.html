@@ -1,0 +1,115 @@
+{% extends "_layouts/cp" %}
+{% set elementType = 'Shortlist_List' %}
+
+{% import "_includes/forms" as forms %}
+
+{% set title %}{{ list.title }}{% endset %}
+
+{% set crumbs = [
+{ label: "Lists"|t, url: url('shortlist') },
+{ label: "Detail"|t, url: url('shortlist/detail') }
+] %}
+
+
+{% block main %}
+
+<div class="grid">
+    <div class="item" data-position="left">
+        <form id="userform" class="pane" method="post" accept-charset="UTF-8" data-saveshortcut>
+            <input type="hidden" name="action" value="users/saveUser">
+
+
+            {% include "_includes/tabs" %}
+
+            <div id="list">
+
+                {{ forms.textField({
+                first: true,
+                label: "List Name"|t,
+                id: 'name',
+                name: 'name',
+                value: (list is defined ? list.name : null),
+                autofocus: true,
+                required: true,
+                disabled: false,
+                errors: (list is defined ? list.getErrors('name') : null)
+                }) }}
+
+                {{ forms.textField({
+                first: true,
+                label: "List Slug"|t,
+                id: 'slug',
+                name: 'slug',
+                value: (list is defined ? list.slug : null),
+                autofocus: true,
+                required: true,
+                disabled: false,
+                errors: (list is defined ? list.getErrors('slug') : null)
+                }) }}
+
+                // @todo - add field support
+                // @todo - add update support in CP
+            </div>
+
+            <div id="items" class="hidden">
+                SOME ITEMS
+            </div>
+
+            <div id="related" class="hidden">
+                RELATED THINGS
+
+                -- OTHER LISTS --
+
+
+            </div>
+
+
+    </div>
+    </form>
+
+
+    <div class="item" data-position="right" data-colspan="1">
+        <form class="pane" method="post" accept-charset="UTF-8">
+
+            <h5 class="first">Owner</h5>
+
+            {% if list.ownerType == 'guest' %}
+            <p>Guest</p>
+            {% else %}
+            {% set user = craft.users.getUserById(list.ownerId).first() %}
+            {% if user is null %}
+            <p>User Deleted</p>
+            {% else %}
+            <p><a href="{{ url('shortlist/users/'~user.id ) }}">{{ user }}</a> (<a href="{{ url('users/'~user.id ) }}">View
+                Profile</a>)</p>
+            {% endif %}
+            {% endif %}
+
+            <h5>Status</h5>
+
+            <p><span class="status live"></span> active</p>
+
+            <h5>{{ "Created Date"|t }}</h5>
+
+            <p>{{ list.dateCreated.localeDate() }} {{ list.dateCreated.localeTime() }}</p>
+
+            <h5>{{ "Updated Date"|t }}</h5>
+
+            <p>{{ list.dateUpdated.localeDate() }} {{ list.dateUpdated.localeTime() }}</p>
+
+            <h5>{{ "Type"|t }}</h5>
+
+            <p>{{ list.type | ucwords }}
+                {% if list.type == 'manual' %}
+                <br/><span class="light">(Created by direct user interaction)</span>
+                {% elseif list.type == 'auto' %}<br/><span class="light">(Created automtically by settings)</span>
+                {% endif %}</p>
+
+            <p>//@todo - add action support (delete/hide)</p>
+            <p>//@todo - add support to change owner</p>
+        </form>
+    </div>
+
+</div><!--/item-->
+{% endblock %}
+

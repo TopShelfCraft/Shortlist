@@ -1,0 +1,11 @@
+{% extends "_layouts/elementindex" %}
+{% set title = "Shortlist"|t %}
+{% set elementType = "Shortlist_List" %}
+
+
+
+{% set tabs = {
+lists: { label: "Lists"|t, url: url('shortlist') },
+items: { label: "List Items"|t, url: url('shortlist/items') },
+users: { label: "Users"|t, url: url('shortlist/users') }
+} %}

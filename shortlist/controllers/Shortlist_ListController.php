@@ -75,5 +75,33 @@ class Shortlist_ListController extends BaseController
     }
 
 
+    public function actionView(array $variables = array())
+    {
+        $this->requireAdmin();
+
+        $listId = $variables['listId'];
+        $list = craft()->shortlist_list->getListById($listId);
+
+        if ($list == null) $this->redirect('shortlist');
+
+        $variables['list'] = $list;
+
+        $variables['tabs']['List'] = array(
+            'label' => Craft::t('List'),
+            'url'   => '#list',
+        );
+        $variables['tabs']['Items'] = array(
+            'label' => Craft::t('Items'),
+            'url'   => '#items',
+        );
+        $variables['tabs']['Related'] = array(
+            'label' => Craft::t('Related'),
+            'url'   => '#related',
+        );
+
+
+        $this->renderTemplate('shortlist/list/_view', $variables);
+    }
+
 
 }
