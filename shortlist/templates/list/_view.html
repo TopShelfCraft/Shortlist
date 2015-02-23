@@ -1,5 +1,4 @@
 {% extends "_layouts/cp" %}
-{% set elementType = 'Shortlist_List' %}
 
 {% import "_includes/forms" as forms %}
 
@@ -9,6 +8,14 @@
 { label: "Lists"|t, url: url('shortlist') },
 { label: "Detail"|t, url: url('shortlist/detail') }
 ] %}
+
+
+{% set itemElementType = craft.elements.getElementType('Shortlist_Item') %}
+{% set itemElementAttr = { elementType : itemElementType,
+    disabledElementIds : null,
+    attributes : { id : 'ID', elementType: 'Element Type', title: 'Title', dateCreated : 'Date Added'},
+    elements : listItems,
+    showCheckboxes : false} %}
 
 
 {% block main %}
@@ -47,12 +54,17 @@
                 errors: (list is defined ? list.getErrors('slug') : null)
                 }) }}
 
-                // @todo - add field support
-                // @todo - add update support in CP
+                <p>// @todo - add field support</p>
+                <p>// @todo - add update support in CP</p>
             </div>
 
             <div id="items" class="hidden">
-                SOME ITEMS
+
+
+                <div class="elementindex">
+                    {% include "_elements/tableview/container" with itemElementAttr %}
+                </div>
+
             </div>
 
             <div id="related" class="hidden">
@@ -106,10 +118,12 @@
                 {% endif %}</p>
 
             <p>//@todo - add action support (delete/hide)</p>
+
             <p>//@todo - add support to change owner</p>
         </form>
     </div>
 
 </div><!--/item-->
 {% endblock %}
+
 

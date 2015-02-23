@@ -99,6 +99,10 @@ class Shortlist_ListController extends BaseController
             'url'   => '#related',
         );
 
+        // Grab the item elements
+        $criteria = craft()->elements->getCriteria('shortlist_item');
+        $criteria->listId = $listId;
+        $variables['listItems'] = $criteria->find();
 
         $this->renderTemplate('shortlist/list/_view', $variables);
     }

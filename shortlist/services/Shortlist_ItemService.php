@@ -271,6 +271,7 @@ class Shortlist_ItemService extends BaseApplicationComponent
             }
 
             $this->_getElements($elementIds);
+
             $this->_itemsByListId[$listId] = $items;
         }
 
