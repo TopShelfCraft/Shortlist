@@ -116,12 +116,7 @@ class Shortlist_ListService extends ShortlistService
     {
         // Check this is a valid list to remove
         // both that it exists, and the current user is the owner of said list
-        $criteria = craft()->elements->getCriteria('shortlist_list');
-        $criteria->id = $listId;
-        $criteria->ownerId = craft()->shortlist->user->id;
-        $criteria->enabled = true; // Can't delete a deleted thing silly.
-
-        $list = $criteria->first();
+        $list = $this->getListById($listId);
 
         if (is_null($list)) {
             // @todo, add a message
@@ -145,15 +140,73 @@ class Shortlist_ListService extends ShortlistService
 
         // Make a new default list
         // @todo - make a new list the default if this was the default
+        $this->verifyDefaults();
 
         return true;
     }
 
 
-    public function getListById($listId)
+    /*
+     * Verify Defaults
+     *
+     * Loops over a user's full set of (open) lists, and
+     * makes sure we have a single default list that is enabled
+     *
+     * @return null
+     */
+    private function verifyDefaults()
+    {
+        $lists = $this->getLists();
+
+        die('<pre>'.print_R($lists,1));
+
+    }
+
+
+
+    /**
+     * Get Lists for User
+     *
+     * Gets all the lists for a user.
+     * Unless specified and the request is from the CP
+     * will limit to the current user only
+     *
+     * @param null $userId
+     * @return array
+     */
+    public function getLists($userId = null)
     {
         $criteria = craft()->elements->getCriteria('shortlist_list');
+        $criteria->ownerId = craft()->shortlist->user->id;
+
+        // Useful for later impersonation in the CP
+        if(!(craft()->request->isCpRequest() && $userId !== null)) {
+            $criteria->ownerId = craft()->shortlist->user->id;
+        }
+
+        return $criteria->find();
+    }
+
+    /*
+     * Get List By ID
+     *
+     * Get's a specific list by id. If this is a CP request
+     * This will return any valid list. If it's a normal request
+     * this is limited to both the user and state
+     *
+     * @returns List
+    */
+    public function getListById($listId, $limitToUser = true)
+    {
+        if(craft()->request->isCpRequest()) $limitToUser = false;
+
+        $criteria = craft()->elements->getCriteria('shortlist_list');
         $criteria->id = $listId;
+
+        if($limitToUser) {
+            $criteria->ownerId = craft()->shortlist->user->id;
+            $criteria->enabled = true;
+        }
 
         return $criteria->first();
     }
@@ -224,6 +277,7 @@ class Shortlist_ListService extends ShortlistService
     {
         if (!is_bool($makeDefault)) $makeDefault = true;
 
+
         $settings = craft()->plugins->getPlugin('shortlist')->getSettings();
 
         $listModel = new Shortlist_ListModel();
@@ -259,6 +313,12 @@ class Shortlist_ListService extends ShortlistService
 
             craft()->search->indexElementAttributes($listModel);
 
+
+            if ($makeDefault) {
+                // We need to unset all other lists for this to be valid
+                $this->makeDefault($listModel->id);
+            }
+
             return $listModel;
 
         } else {
@@ -267,12 +327,6 @@ class Shortlist_ListService extends ShortlistService
             echo('problem creating');
             die('<pre>' . print_R($listModel, 1));
             die('invalid');
-        }
-
-
-        if ($makeDefault) {
-            // We need to unset all other lists for this to be valid
-            $this->makeDefault($listModel->id);
         }
 
         return null;

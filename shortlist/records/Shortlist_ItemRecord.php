@@ -16,7 +16,7 @@ class Shortlist_ItemRecord extends BaseRecord
             'listId'      => array(AttributeType::String, 'label' => 'List Id', 'required' => true),
             'public'      => array(AttributeType::Bool, 'label' => 'Public Item', 'default' => true, 'required' => true),
             'type'        => array(AttributeType::String, 'label' => 'Item Type', 'default' => 'manual'),
-            'order'       => array(AttributeType::Number, 'label' => 'Item Order', 'default' => 0),
+            'sortOrder'   => array(AttributeType::Number, 'label' => 'Item Order', 'default' => 0),
             'deleted'     => array(AttributeType::Bool, 'label' => 'Item Deleted', 'default' => false)
         );
     }

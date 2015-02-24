@@ -130,7 +130,7 @@ class Shortlist_ItemService extends ShortlistService
                 // The user already has this item in this list and they're adding it again
                 // To help them we'll move the item to the very top of the list, add a message
                 // and if defined (and possible) we'll increase any qty custom attributes by one
-                $action = 'promote';
+                $actionType = 'promote';
             }
         }
 
@@ -181,7 +181,7 @@ class Shortlist_ItemService extends ShortlistService
                 $response['object'] = $updatedItem;
                 $response['objectType'] = 'item';
                 $response['verb'] = 'promoted';
-                $response['revert'] = array('verb' => 'demote', 'params' => array('itemId' => $updatedItem->id, 'order' => $item->order));
+                $response['revert'] = array('verb' => 'demote', 'params' => array('itemId' => $updatedItem->id, 'order' => $item->sortOrder));
 
                 break;
             default:
@@ -215,6 +215,53 @@ class Shortlist_ItemService extends ShortlistService
         $itemModel = Shortlist_ItemRecord::model()->findByAttributes(array('id' => $itemRecord->id, 'deleted' => true));
 
         return $itemModel;
+    }
+
+    /*
+     * Promote In List
+     *
+     * Promotes an item in a list.
+     * This is triggered when an item is attempted to be added to a list
+     * that it's already in
+     *
+     */
+    private function promoteInList($elementId, $listId)
+    {
+        $item = $this->findExisting($elementId, $listId);
+        $items = $this->findByList($listId);
+
+        $ordered = array();
+        $ordered[] = $item->id;
+        foreach($items as $i) {
+            if($i->id != $item->id) {
+                $ordered[] = $i->id;
+            }
+        }
+
+        $this->reorderItems($ordered);
+        $item->sortOrder = '1';
+
+        return $item;
+    }
+
+
+    /*
+     * Reorder Items
+     *
+     * Takes an ordered array of item ids and updates the list order
+     *
+     */
+    private function reorderItems($ordered)
+    {
+        foreach($ordered as $itemOrder => $val)
+        {
+            $itemRecord = $this->_getItemRecordById($val);
+            $itemRecord->sortOrder = $itemOrder+1;
+            $itemRecord->save();
+
+        }
+
+        return true;
     }
 
     private function createAddToList($elementId, $listId)
@@ -258,7 +305,7 @@ class Shortlist_ItemService extends ShortlistService
      */
     private function findExisting($elementId, $listId)
     {
-        return Shortlist_ItemRecord::model()->findByAttributes(array('id' => $elementId, 'listId' => $listId));
+        return Shortlist_ItemRecord::model()->findByAttributes(array('elementId' => $elementId, 'listId' => $listId, 'deleted' => false));
     }
 
 
@@ -273,7 +320,7 @@ class Shortlist_ItemService extends ShortlistService
     {
         if (!isset($this->_itemsByListId[$listId])) {
 
-            $records = Shortlist_ItemRecord::model()->findAllByAttributes(array('listId' => $listId));
+            $records = Shortlist_ItemRecord::model()->findAllByAttributes(array('listId' => $listId), array('order' => 'sortOrder ASC, dateCreated ASC'));
             $items = Shortlist_ItemModel::populateModels($records);
 
             // While we have them, we'll get all the elements for this list
@@ -336,5 +383,33 @@ class Shortlist_ItemService extends ShortlistService
         }
 
         return $this->_elementsForItems[$elementId];
+    }
+
+
+    /**
+     * Gets an items's record.
+     *
+     * @param int $itemId
+     *
+     * @throws Exception
+     * @return Shortlist_ItemRecord
+     */
+    private function _getItemRecordById($itemId = null)
+    {
+        if ($itemId)
+        {
+            $itemRecord = Shortlist_ItemRecord::model()->findById($itemId);
+
+            if (!$itemRecord)
+            {
+                throw new Exception(Craft::t('No item exists with the ID “{id}”', array('id' => $itemId)));
+            }
+        }
+        else
+        {
+            $itemRecord = new Shortlist_ItemRecord();
+        }
+
+        return $itemRecord;
     }
 }

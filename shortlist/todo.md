@@ -5,7 +5,11 @@ Lists
 - add make default function
 - delete list breaks
 - delete list doesn't remove items?
-
+- prevent multi add
+- return actual errors instead of blind true
+- Add support for custom orders
+- Add support for promote action
+- add support for reordering
 
 General
 - Add support for item fields
