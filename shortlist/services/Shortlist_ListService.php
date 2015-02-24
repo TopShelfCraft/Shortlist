@@ -2,7 +2,7 @@
 
 namespace Craft;
 
-class Shortlist_ListService extends BaseApplicationComponent
+class Shortlist_ListService extends ShortlistService
 {
 
     public function action($actionType, $listId = false, $extraData = array())
@@ -29,9 +29,25 @@ class Shortlist_ListService extends BaseApplicationComponent
 
                 $list = $this->removeList($listId, $extraData);
 
-                die($list);
+                $response['object'] = $list;
+                $response['objectType'] = 'list';
+                $response['verb'] = 'deleted';
+                $response['revert'] = false; //array('verb' => 'remove', 'params' => array('listId' => $list->id));
+                $response['success'] = true;
 
                 break;
+            case 'makeDefault' :
+
+                $list = $this->makeDefault($listId, $extraData);
+
+                $response['object'] = $list;
+                $response['objectType'] = 'list';
+                $response['verb'] = 'defaulted';
+                $response['revert'] = false; //array('verb' => 'remove', 'params' => array('listId' => $list->id));
+                $response['success'] = true;
+
+                break;
+
             default :
 
                 die('Unknown - ' . $actionType);
@@ -40,8 +56,51 @@ class Shortlist_ListService extends BaseApplicationComponent
 
         }
 
-
         return $response;
+    }
+
+    /*
+     * Make Default
+     *
+     * Makes a list the default for a specific user
+     * In the same action undefaults the previously default list
+     *
+     * @returns bool
+     */
+    private function makeDefault($listId, $extraData = array())
+    {
+        // Check this is a valid list to remove
+        // both that it exists, and the current user is the owner of said list
+        $criteria = craft()->elements->getCriteria('shortlist_list');
+        $criteria->ownerId = craft()->shortlist->user->id;
+
+        // Get all the user's lists
+        $allLists = $criteria->find();
+
+        // Now just this list
+        $criteria->id = $listId;
+        $criteria->enabled = false; // Can't make a deleted list the default
+        $list = $criteria->first();
+
+
+        if (is_null($list)) {
+            // @todo, add a message
+            return false; // not a valid list or not list owner
+        }
+
+        // Make all the lists undefault before making the current list the default
+        $listIds = array();
+        foreach ($allLists as $l) {
+            $listIds[] = $l->id;
+        }
+        $this->makeUndefault($listIds);
+
+        // Now make our new default list
+        $listRecord = Shortlist_ListRecord::model()->findByAttributes(array('id' => $list->id));
+        $listRecord->default = true;
+        $listRecord->update();
+
+        return true;
     }
 
     /*
@@ -55,14 +114,12 @@ class Shortlist_ListService extends BaseApplicationComponent
      */
     private function removeList($listId, $extraData = array())
     {
-        $shortlistUser = new Shortlist_UserModel();
         // Check this is a valid list to remove
         // both that it exists, and the current user is the owner of said list
         $criteria = craft()->elements->getCriteria('shortlist_list');
         $criteria->id = $listId;
-        $criteria->ownerId = $shortlistUser->id;
-        $criteria->ownerType = $shortlistUser->type;
-        $criteria->deleted = false; // Can't delete a deleted thing silly.
+        $criteria->ownerId = craft()->shortlist->user->id;
+        $criteria->enabled = true; // Can't delete a deleted thing silly.
 
         $list = $criteria->first();
 
@@ -71,23 +128,25 @@ class Shortlist_ListService extends BaseApplicationComponent
             return false; // not a valid list or not list owner
         }
 
+        // Also delete all the sub-items
+        foreach ($list->items() as $item) {
+            craft()->shortlist_item->action('remove', $item->id);
+        }
 
-
-        $list->status = 'disabled';
-        $success = craft()->elements->saveElement($list);
-
-        /*
         $listRecord = Shortlist_ListRecord::model()->findByAttributes(array('id' => $list->id));
-        $listRecord->status = 'deleted';
+        $listRecord->deleted = true;
         $listRecord->update();
-*/
-        // does this work?
 
-        var_dump($list);
-        var_dump($listRecord);
-        die();
+        // Return the updated model
+        $listModel = Shortlist_ListRecord::model()->findByAttributes(array('id' => $listRecord->id, 'deleted' => true));
 
+        $list->enabled = false;
+        craft()->elements->saveElement($list);
 
+        // Make a new default list
+        // @todo - make a new list the default if this was the default
+
+        return true;
     }
 
 
@@ -95,6 +154,7 @@ class Shortlist_ListService extends BaseApplicationComponent
     {
         $criteria = craft()->elements->getCriteria('shortlist_list');
         $criteria->id = $listId;
+
         return $criteria->first();
     }
 
@@ -118,7 +178,7 @@ class Shortlist_ListService extends BaseApplicationComponent
     {
         // @todo we could check the global settings and setup default defined lists here maybe?
         $lists = Shortlist_ListRecord::model()
-            ->findAllByAttributes(array('ownerId' => craft()->shortlist->user->id), array('order' => 'dateUpdated DESC'));
+            ->findAllByAttributes(array('ownerId' => craft()->shortlist->user->id, 'deleted' => false), array('order' => 'dateUpdated DESC'));
 
         if (empty($lists)) return null; // No default list defined
 
@@ -172,7 +232,7 @@ class Shortlist_ListService extends BaseApplicationComponent
         $listModel->shareSlug = strtolower(StringHelper::randomString(18));
         $listModel->slug = $settings->defaultListSlug;
         $listModel->userSlug = 'someuser-slug';
-        $listModel->default = $makeDefault;
+        $listModel->default = false; // We'll set this at the end when we know if it's succeeded
         $listModel->ownerId = craft()->shortlist->user->id;
         $listModel->ownerType = craft()->shortlist->user->type;
         $listModel->deleted = false;
@@ -207,6 +267,12 @@ class Shortlist_ListService extends BaseApplicationComponent
             echo('problem creating');
             die('<pre>' . print_R($listModel, 1));
             die('invalid');
+        }
+
+
+        if ($makeDefault) {
+            // We need to unset all other lists for this to be valid
+            $this->makeDefault($listModel->id);
         }
 
         return null;

@@ -9,6 +9,11 @@ class ShortlistService extends BaseApplicationComponent
     private $_cacheElementIds;
 
 
+    public function __construct()
+    {
+        $this->getUser();
+    }
+
     public function getUser()
     {
         $this->user = new Shortlist_UserModel();

@@ -17,10 +17,8 @@ class ShortlistVariable
             $criteria = craft()->elements->getCriteria('shortlist_list');
         }
 
-        $criteria->status = 'disabled';
-
-        //var_dump($criteria);
-
+        // Limit to this user
+        $criteria->ownerId = craft()->shortlist->user->id;
         return $criteria->find();
     }
 

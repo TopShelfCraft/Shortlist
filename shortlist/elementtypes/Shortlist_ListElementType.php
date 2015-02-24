@@ -6,6 +6,8 @@ namespace Craft;
  */
 class Shortlist_ListElementType extends BaseElementType
 {
+
+    private $listInlineViewLimit = 10;
     /**
      * Returns the element type name.
      *
@@ -167,10 +169,33 @@ class Shortlist_ListElementType extends BaseElementType
                 }
             }
             case 'itemCount' : {
-                return '12';
+                return count($element->items());
             }
             case 'itemList' : {
-                return 'one, two, three, .. (+4 more)';
+                $items = $element->items();
+
+
+                $str = array();
+                $i = 0;
+                foreach($items as $item) {
+                    if($i < $this->listInlineViewLimit) {
+                        $parent = craft()->entries->getEntryById($item->elementId);
+                        $url = 'shortlist/item/' . $item->elementId;
+                        $str[] = '<a href="' . $url . '">' . $parent->title . '</a>';
+                    }
+                    $i++;
+                }
+                $ret = implode(', ', $str);
+
+                if(count($items) > $this->listInlineViewLimit) {
+                    $hidden = count($items) - $this->listInlineViewLimit;
+                    $moreUrl = 'shortlist/list/'.$element->id.'#items';
+                    $ret .= " .. <a href='".$moreUrl."'>+".$hidden." more</a>";
+                }
+                return $ret;
+            }
+            case 'title' : {
+                return $element->name;
             }
             default : {
                 return $element->$attribute;

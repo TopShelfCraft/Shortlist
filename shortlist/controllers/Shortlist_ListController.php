@@ -64,7 +64,6 @@ class Shortlist_ListController extends BaseController
             die('failed to act'); // @todo
         }
 
-
         // Return as appropriate
         if (craft()->request->isAjaxRequest()) {
             $this->returnJson($response);

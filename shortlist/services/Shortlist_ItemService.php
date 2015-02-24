@@ -2,23 +2,23 @@
 
 namespace Craft;
 
-class Shortlist_ItemService extends BaseApplicationComponent
+class Shortlist_ItemService extends ShortlistService
 {
     private $_itemsByListId = array();
     private $_elementsForItems = array();
-    private $_user = null;
     private $_cache;
     private $_cacheElementIds;
 
 
     public function getItemInfo($elementId = null)
     {
-        if ($this->_user == null) $this->_user = new Shortlist_UserModel();
-
         if ($this->_cache == null) {
             // No cache - populate it
             $this->populateInfoCache();
         }
+
+        // What list are we looking at?
+        $listId = 'default'; // @todo - allow this to be overriden
 
         $ret = array();
         $ret['inList'] = false;
@@ -26,14 +26,11 @@ class Shortlist_ItemService extends BaseApplicationComponent
         $ret['remove'] = '#';
         $ret['toggle'] = $ret['add'];
 
-        if (isset($this->_cacheElementIds[$elementId])) {
+        if (isset($this->_cache['itemsByList'][$listId][$elementId])) {
             $ret['inList'] = true;
             $ret['add'] = '#';
             $ret['remove'] = ShortlistHelper::removeAction(current($this->_cacheElementIds[$elementId])); // @todo - remove this abguity, we shouldn't rely on this multi state, but instead get the default action if not specified
             $ret['toggle'] = $ret['remove'];
-
-            // @todo - add more dynamic data here
-
         }
 
         return $ret;
@@ -48,13 +45,13 @@ class Shortlist_ItemService extends BaseApplicationComponent
      */
     private function populateInfoCache()
     {
-        if (is_null($this->_user)) {
+        if (is_null(craft()->shortlist->user)) {
             // No user for some reason.
             // Populate the caches as blank
             $this->setCacheEmpty();
         }
 
-        $lists = Shortlist_ListRecord::model()->findAllByAttributes(array('ownerId' => $this->_user->id));
+        $lists = Shortlist_ListRecord::model()->findAllByAttributes(array('ownerId' => craft()->shortlist->user->id, 'deleted' => false));
         if (empty($lists)) {
             // No lists. Any orphaned items can be ignored
             $this->setCacheEmpty();
@@ -66,15 +63,31 @@ class Shortlist_ItemService extends BaseApplicationComponent
             $listIds[] = $list->id;
         }
 
+        $temp = array();
+        $defaultList = '';
+        foreach ($this->_cache['lists'] as $list) {
+            if ($list->default) {
+                $defaultList = $list->id;
+                $temp['default'] = array();
+            }
+            $temp[$list->id] = array();
+        }
+
+
         $items = Shortlist_ItemRecord::model()->findAllByAttributes(array('listId' => $listIds));
         $this->_cache['items'] = ShortlistHelper::associateResults($items, 'id');
 
-        // Populate a list of the elements that are in items for easier retrival later
-
+        // Populate a list of the elements that are in items for easier retrieval later
         foreach ($items as $item) {
             if (!isset($this->_cacheElementIds[$item->elementId])) $this->_cacheElementIds[$item->elementId] = array();
             $this->_cacheElementIds[$item->elementId][$item->listId] = $item->id;
+
+            $temp[$item->listId][$item->id] = $item->id;
+            if ($item->listId == $defaultList) {
+                $temp['default'][$item->elementId] = $item->id;
+            }
         }
+        $this->_cache['itemsByList'] = $temp;
 
 
         // @todo we should really return the element models not the normal models so all the extra tags will work later
