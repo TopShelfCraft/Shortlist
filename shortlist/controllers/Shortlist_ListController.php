@@ -87,7 +87,7 @@ class Shortlist_ListController extends BaseController
         $variables['list'] = $list;
 
         $variables['tabs']['List'] = array(
-            'label' => Craft::t('List'),
+            'label' => Craft::t('List Details'),
             'url'   => '#list',
         );
         $variables['tabs']['Items'] = array(

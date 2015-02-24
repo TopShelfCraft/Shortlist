@@ -2,11 +2,12 @@
 
 {% import "_includes/forms" as forms %}
 
-{% set title %}{{ list.title }}{% endset %}
+{% set title = list.name %}
 
 {% set crumbs = [
-{ label: "Lists"|t, url: url('shortlist') },
-{ label: "Detail"|t, url: url('shortlist/detail') }
+{ label: "Shortlist"|t, url: url('shortlist') },
+{ label: "Lists"|t, url: url('shortlist/lists') },
+{ label: "Detail"|t, url: url('shortlist/list/detail') }
 ] %}
 
 
