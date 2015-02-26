@@ -129,7 +129,7 @@ class Shortlist_ItemService extends ShortlistService
         }
 
         $temp = array();
-        $defaultList = null;
+        $defaultList = new Shortlist_ListModel();
         foreach ($this->_cache['lists'] as $list) {
             if ($list->default) {
                 $defaultList = $list;
@@ -222,7 +222,7 @@ class Shortlist_ItemService extends ShortlistService
 
         switch ($actionType) {
             case 'add':
-                $item = $this->createAddToList($elementId, $list->id);
+                $item = $this->add($elementId, $list->id);
                 if ($item == false) {
                     // failed to create or add
                     die('failed to create or add'); // @todo
@@ -239,7 +239,7 @@ class Shortlist_ItemService extends ShortlistService
                 if (is_null($item)) {
                     die('cant remove a null item - ' . $elementId);
                 }
-                $updatedItem = $this->removeFromList($item, $list->id);
+                $updatedItem = $this->remove($item, $list->id);
                 if ($updatedItem == false) {
                     // FAiled to remove from list
                     die('failed to remove'); // @todo
@@ -252,7 +252,7 @@ class Shortlist_ItemService extends ShortlistService
 
                 break;
             case 'promote':
-                $updatedItem = $this->promoteInList($elementId, $list->id);
+                $updatedItem = $this->promote($elementId, $list->id);
                 if ($updatedItem == false) {
                     // Failed to promote in list
                     die('failed to promote');
@@ -286,7 +286,7 @@ class Shortlist_ItemService extends ShortlistService
     * and we use a clear operation to clean out the items marked
     * as deleted async from user requests
     */
-    private function removeFromList(Shortlist_ItemModel $itemModel, $listId)
+    private function remove(Shortlist_ItemModel $itemModel, $listId)
     {
         $itemModel->enabled = false;
         craft()->elements->saveElement($itemModel);
@@ -302,7 +302,7 @@ class Shortlist_ItemService extends ShortlistService
      * that it's already in
      *
      */
-    private function promoteInList($elementId, $listId)
+    private function promote($elementId, $listId)
     {
         $item = $this->findExisting($elementId, $listId);
         $items = $this->findByList($listId);
@@ -340,7 +340,17 @@ class Shortlist_ItemService extends ShortlistService
         return true;
     }
 
-    private function createAddToList($elementId, $listId)
+
+    /*
+     * Add
+     *
+     * Adds an item to a list
+     *
+     * @param $elementId int the Element id
+     * @param $listId int the list id to add to
+     * @returns Shortlist_ItemModel
+     */
+    public function add($elementId, $listId)
     {
         $itemModel = new Shortlist_ItemModel();
         $itemModel->elementId = $elementId;
@@ -407,50 +417,15 @@ class Shortlist_ItemService extends ShortlistService
     {
         if (!isset($this->_itemsByListId[$listId])) {
 
-            $records = Shortlist_ItemRecord::model()->findAllByAttributes(array('listId' => $listId), array('order' => 'sortOrder ASC, dateCreated ASC'));
-            $items = Shortlist_ItemModel::populateModels($records);
-
-            // While we have them, we'll get all the elements for this list
-            // Saving multiple queries down the road
-            $elementIds = array();
-            foreach ($items as $item) {
-                $elementIds[$item->elementType][] = $item->elementId;
-            }
-
-            $this->_getElements($elementIds);
+            $criteria = craft()->elements->getCriteria('shortlist_item');
+            $criteria->listId = $listId;
+            $criteria->order = 'sortOrder asc, dateCreated asc';
+            $items = $criteria->find();
 
             $this->_itemsByListId[$listId] = $items;
         }
 
         return $this->_itemsByListId[$listId];
-    }
-
-    /*
-     * Get Elements
-     *
-     * Gets the elements from a set of elementIds
-     * Note - these elements might be across different types
-     * and we don't discriminate, so we first have to group them
-     * by type to be able to play nice with the internal criteria
-     * restrictions. We'll throw these into the cache so we've
-     * got them around for future requests
-     */
-    private function _getElements($elementIds = array())
-    {
-        if (empty($elementIds)) return;
-
-        foreach ($elementIds as $elementType => $ids) {
-            $criteria = craft()->elements->getCriteria($elementType);
-            $criteria->ids = $ids;
-
-            $ele = $criteria->find();
-
-            foreach ($ele as $e) {
-                $this->_elementsForItems[$e->id] = $e;
-            }
-        }
-
-        return;
     }
 
     /*

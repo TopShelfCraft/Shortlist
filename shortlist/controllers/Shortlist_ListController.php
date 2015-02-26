@@ -53,6 +53,7 @@ class Shortlist_ListController extends BaseController
     {
         $listId = craft()->shortlist->getIdForRequest('listId,id');
 
+
         // collect any extra info we might have.
         // This could be a combo of get and post data
         $extraData = craft()->shortlist->getExtraForRequest($this->baseFields);
@@ -62,6 +63,17 @@ class Shortlist_ListController extends BaseController
         if ($response == false) {
             // Deal with an error state
             die('failed to act'); // @todo
+        }
+
+        // We let users create a list and immediately add an item
+        if($actionType == 'new') {
+            $elementId = craft()->shortlist->getIdForRequest('elementId');
+            if($elementId != '') {
+                // Try to add the item to the new list
+                $item = craft()->shortlist_item->add($elementId, $response['object']->id);
+
+                // @todo - add a message and check actual return
+            }
         }
 
         // Return as appropriate
