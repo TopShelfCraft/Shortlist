@@ -4,20 +4,22 @@ namespace Craft;
 class ShortlistHelper
 {
 
-    public static function addAction($elementId)
+    public static function addAction($elementId, $listId = null)
     {
         $params = array();
         $params['id'] = $elementId;
         $params['return'] = craft()->request->getUrl();
+        if($listId !== null) $params['listId'] = $listId;
 
         return UrlHelper::getActionUrl('shortlist/item/add', $params);
     }
 
-    public static function removeAction($itemId)
+    public static function removeAction($itemId, $listId = null)
     {
         $params = array();
         $params['itemId'] = $itemId;
         $params['return'] = craft()->request->getUrl();
+        if($listId !== null) $params['listId'] = $listId;
 
         return UrlHelper::getActionUrl('shortlist/item/remove', $params);
     }

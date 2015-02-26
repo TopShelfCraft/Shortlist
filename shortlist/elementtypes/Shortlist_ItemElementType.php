@@ -63,7 +63,7 @@ class Shortlist_ItemElementType extends BaseElementType
     {
         return array(
             'elementId'   => AttributeType::Mixed,
-            'elementType'   => AttributeType::String,
+            'elementType' => AttributeType::String,
             'title'       => AttributeType::String
         );
     }
@@ -78,13 +78,25 @@ class Shortlist_ItemElementType extends BaseElementType
     public function modifyElementsQuery(DbCommand $query, ElementCriteriaModel $criteria)
     {
         $query
-            ->addSelect('shortlist_item.elementId, shortlist_item.elementType')
-            ->join('shortlist_item shortlist_item', 'shortlist_item.id = elements.id');
+            ->addSelect('shortlist_item.elementId, shortlist_item.elementType, shortlist_item.listId, shortlist_list.ownerId')
+            ->join('shortlist_item shortlist_item', 'shortlist_item.id = elements.id')
+            ->join('shortlist_list shortlist_list', 'shortlist_item.listId = shortlist_list.id');
 
         /*
-                if ($criteria->name) {
-                    $query->andWhere(DbHelper::parseParam('shortlist_list.name', $criteria->name, $query->params));
-                }
+                if ($criteria->ownerId) {
+                    $query->andWhere(DbHelper::parseParam('shortlist_list.ownerId', $criteria->ownerId, $query->params));
+                }*/
+
+        if ($criteria->listId) {
+            $query->andWhere(DbHelper::parseParam('shortlist_item.listId', $criteria->listId, $query->params));
+        }
+
+
+        if ($criteria->elementId) {
+            $query->andWhere(DbHelper::parseParam('shortlist_item.elementId', $criteria->elementId, $query->params));
+        }
+
+        /*
 
                 if ($criteria->isDeleted) {
                     $query->andWhere(DbHelper::parseParam('shortlist_list.deleted', $criteria->isDeleted, $query->params));
@@ -129,8 +141,7 @@ class Shortlist_ItemElementType extends BaseElementType
     {
 
         switch ($attribute) {
-            case 'title' :
-            {
+            case 'title' : {
                 $type = $element->elementType;
                 $parent = craft()->entries->getEntryById($element->elementId);
 

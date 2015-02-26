@@ -10,6 +10,67 @@ class Shortlist_ItemService extends ShortlistService
     private $_cacheElementIds;
 
 
+    public function getItem($elementId)
+    {
+        if ($this->_cache == null) {
+            // No cache - populate it
+            $this->populateInfoCache();
+        }
+        // Get a bare item
+        $bareItem = new Shortlist_ItemModel();
+        $bareItem->elementId = $elementId;
+
+        $items = array();
+
+        // Get the item for the default list
+        $defaultItem = $this->getItemForList($elementId);
+
+        // Now get all the lists for the user. We'll supply a bare item for each list
+        $lists = craft()->shortlist_list->getLists();
+        foreach ($lists as $list) {
+            if (!$list->default) {
+                $items[] = $this->getItemForList($elementId, $list);
+            }
+        }
+
+        $defaultItem->otherLists = $items;
+
+        return $defaultItem;
+    }
+
+    private function getItemForList($elementId, Shortlist_ListModel $list = null)
+    {
+        if ($list == null) {
+            // Get for the default list
+            $list = $this->_cache['defaultList'];
+        }
+
+        $item = null;
+        $itemId = $this->checkItemInList($elementId, $list->id);
+
+        if ($itemId === false || !isset($this->_cache['items'][$itemId])) {
+            $bare = new Shortlist_ItemModel();
+            $bare->elementId = $elementId;
+            $bare->listId = $list->id;
+            $bare->listName = $list->name;
+
+            return $bare;
+        }
+
+        return $this->_cache['items'][$itemId];
+    }
+
+    private function checkItemInList($elementId, $listId)
+    {
+        $ret = false;
+        if (isset($this->_cache['itemsByList'][$listId][$elementId])) {
+            $ret = $this->_cache['itemsByList'][$listId][$elementId];
+        }
+
+        return $ret;
+    }
+
+
     public function getItemInfo($elementId = null)
     {
         if ($this->_cache == null) {
@@ -29,7 +90,7 @@ class Shortlist_ItemService extends ShortlistService
         if (isset($this->_cache['itemsByList'][$listId][$elementId])) {
             $ret['inList'] = true;
             $ret['add'] = '#';
-            $ret['remove'] = ShortlistHelper::removeAction(current($this->_cacheElementIds[$elementId])); // @todo - remove this abguity, we shouldn't rely on this multi state, but instead get the default action if not specified
+            $ret['remove'] = ShortlistHelper::removeAction($this->_cache['itemsByList'][$listId][$elementId]);
             $ret['toggle'] = $ret['remove'];
         }
 
@@ -49,9 +110,14 @@ class Shortlist_ItemService extends ShortlistService
             // No user for some reason.
             // Populate the caches as blank
             $this->setCacheEmpty();
+
+            return;
         }
 
-        $lists = Shortlist_ListRecord::model()->findAllByAttributes(array('ownerId' => craft()->shortlist->user->id, 'deleted' => false));
+        $criteria = craft()->elements->getCriteria('shortlist_list');
+        $criteria->ownerId = craft()->shortlist->user->id;
+        $criteria->deleted = false;
+        $lists = $criteria->find();
         if (empty($lists)) {
             // No lists. Any orphaned items can be ignored
             $this->setCacheEmpty();
@@ -64,25 +130,35 @@ class Shortlist_ItemService extends ShortlistService
         }
 
         $temp = array();
-        $defaultList = '';
+        $defaultList = null;
         foreach ($this->_cache['lists'] as $list) {
             if ($list->default) {
-                $defaultList = $list->id;
+                $defaultList = $list;
                 $temp['default'] = array();
             }
             $temp[$list->id] = array();
         }
 
+        $this->_cache['defaultListId'] = $defaultList->id;
+        $this->_cache['defaultList'] = $defaultList;
 
-        $items = Shortlist_ItemRecord::model()->findAllByAttributes(array('listId' => $listIds));
+
+        // Get all the items across all this user's lists
+        $criteria = craft()->elements->getCriteria('shortlist_item');
+        $criteria->listId = $listIds;
+        $items = $criteria->find();
+
         $this->_cache['items'] = ShortlistHelper::associateResults($items, 'id');
 
         // Populate a list of the elements that are in items for easier retrieval later
         foreach ($items as $item) {
+
+            $item->inList = true;
+
             if (!isset($this->_cacheElementIds[$item->elementId])) $this->_cacheElementIds[$item->elementId] = array();
             $this->_cacheElementIds[$item->elementId][$item->listId] = $item->id;
 
-            $temp[$item->listId][$item->id] = $item->id;
+            $temp[$item->listId][$item->elementId] = $item->id;
             if ($item->listId == $defaultList) {
                 $temp['default'][$item->elementId] = $item->id;
             }
@@ -90,7 +166,6 @@ class Shortlist_ItemService extends ShortlistService
         $this->_cache['itemsByList'] = $temp;
 
 
-        // @todo we should really return the element models not the normal models so all the extra tags will work later
         return;
     }
 
@@ -105,10 +180,14 @@ class Shortlist_ItemService extends ShortlistService
     public function action($actionType, $elementId, $listId = false, $extraData = array())
     {
         // Get the list in question
-        $list = craft()->shortlist_list->getListOrCreate($listId);
-        if ($list === false || is_null($list)) {
-            // There was a problem getting or creating the list
-            die('handle error creating list'); // @todo
+        $list = new Shortlist_ListModel();
+
+        if (!($listId == false && $actionType == 'remove')) {
+            $list = craft()->shortlist_list->getListOrCreate($listId);
+            if ($list === false || is_null($list)) {
+                // There was a problem getting or creating the list
+                die('handle error action on item - ' . $actionType . ' - ' . $elementId . ' - ' . $listId); // @todo
+            }
         }
 
         // Find if we have this item already
@@ -134,6 +213,7 @@ class Shortlist_ItemService extends ShortlistService
             }
         }
 
+
         // Branch now
         // Possible 'remove', 'add', 'promote'.
 
@@ -157,7 +237,7 @@ class Shortlist_ItemService extends ShortlistService
                 break;
             case 'remove':
                 if (is_null($item)) {
-                    die('cant remove a null item');
+                    die('cant remove a null item - ' . $elementId);
                 }
                 $updatedItem = $this->removeFromList($item, $list->id);
                 if ($updatedItem == false) {
@@ -232,8 +312,8 @@ class Shortlist_ItemService extends ShortlistService
 
         $ordered = array();
         $ordered[] = $item->id;
-        foreach($items as $i) {
-            if($i->id != $item->id) {
+        foreach ($items as $i) {
+            if ($i->id != $item->id) {
                 $ordered[] = $i->id;
             }
         }
@@ -253,10 +333,9 @@ class Shortlist_ItemService extends ShortlistService
      */
     private function reorderItems($ordered)
     {
-        foreach($ordered as $itemOrder => $val)
-        {
+        foreach ($ordered as $itemOrder => $val) {
             $itemRecord = $this->_getItemRecordById($val);
-            $itemRecord->sortOrder = $itemOrder+1;
+            $itemRecord->sortOrder = $itemOrder + 1;
             $itemRecord->save();
 
         }
@@ -290,7 +369,6 @@ class Shortlist_ItemService extends ShortlistService
             return $itemModel;
 
         } else {
-            die('<pre>' . print_R($itemModel, 1));
             die('failed to validate');
         }
 
@@ -305,7 +383,14 @@ class Shortlist_ItemService extends ShortlistService
      */
     private function findExisting($elementId, $listId)
     {
-        return Shortlist_ItemRecord::model()->findByAttributes(array('elementId' => $elementId, 'listId' => $listId, 'deleted' => false));
+        // The inbound elementId, might actually be the id of the shortlist_item element, so allow that too
+        $record = Shortlist_ItemRecord::model()->findByAttributes(array('id' => $elementId, 'deleted' => false));
+        if ($record != null) return $record;
+
+        $record = Shortlist_ItemRecord::model()->findByAttributes(array('elementId' => $elementId, 'listId' => $listId, 'deleted' => false));
+
+        return $record;
+
     }
 
 
@@ -396,17 +481,13 @@ class Shortlist_ItemService extends ShortlistService
      */
     private function _getItemRecordById($itemId = null)
     {
-        if ($itemId)
-        {
+        if ($itemId) {
             $itemRecord = Shortlist_ItemRecord::model()->findById($itemId);
 
-            if (!$itemRecord)
-            {
+            if (!$itemRecord) {
                 throw new Exception(Craft::t('No item exists with the ID “{id}”', array('id' => $itemId)));
             }
-        }
-        else
-        {
+        } else {
             $itemRecord = new Shortlist_ItemRecord();
         }
 

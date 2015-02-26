@@ -3,8 +3,17 @@ namespace Craft;
 
 class Shortlist_ItemModel extends BaseElementModel
 {
-
     protected $elementType = 'Shortlist_Item';
+
+    public function __construct($attributes = null)
+    {
+        $settings = craft()->plugins->getPlugin('shortlist')->getSettings();
+
+        $this->listName = $settings->defaultListName;
+
+
+        parent::__construct($attributes);
+    }
 
     protected function defineAttributes()
     {
@@ -12,11 +21,14 @@ class Shortlist_ItemModel extends BaseElementModel
             'id'          => array(AttributeType::Number),
             'elementId'   => array(AttributeType::Number, 'required' => true),
             'elementType' => array(AttributeType::String, 'required' => true),
-            'listId'      => array(AttributeType::Number, 'required' => true),
+            'listId'      => array(AttributeType::Number),
+            'listName'    => array('AttrributeType::String', 'required' => true),
             'public'      => array(AttributeType::Bool, 'default' => true),
             'type'        => array(AttributeType::String, 'label' => 'Item Type'),
             'sortOrder'   => array(AttributeType::Number),
-            'deleted'     => array(AttributeType::Bool, 'label' => 'Item Deleted', 'required' => true, 'default' => false)
+            'deleted'     => array(AttributeType::Bool, 'label' => 'Item Deleted', 'required' => true, 'default' => false),
+            'inList'      => array(AttributeType::Bool, 'required' => true, 'default' => false),
+            'otherLists'  => array(AttributeType::Mixed),
         ));
     }
 
@@ -51,5 +63,33 @@ class Shortlist_ItemModel extends BaseElementModel
     {
         return craft()->shortlist_item->findParentElement($this->elementId);
     }
+
+
+    /**
+     * Returns an item's lists
+     *
+     * @return array()
+     */
+    public function lists()
+    {
+        $lists = craft()->shortlist_list->getLists();
+        return $lists;
+    }
+
+    public function add()
+    {
+        return ShortlistHelper::addAction($this->elementId, $this->listId);
+    }
+
+    public function remove()
+    {
+        return ShortlistHelper::removeAction($this->elementId, $this->listId);
+    }
+
+    public function parentList()
+    {
+        return craft()->shortlist_list->getListByIdOrBare($this->listId);
+    }
+
 
 }

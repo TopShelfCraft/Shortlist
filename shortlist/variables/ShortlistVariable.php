@@ -7,7 +7,11 @@ class ShortlistVariable
 
     public function item($elementId = null)
     {
-        return craft()->shortlist_item->getItemInfo($elementId);
+        //$actions = craft()->shortlist_item->getItemInfo($elementId);
+       //return $actions;
+
+        $itemElement = craft()->shortlist_item->getItem($elementId);
+        return $itemElement;
     }
 
 

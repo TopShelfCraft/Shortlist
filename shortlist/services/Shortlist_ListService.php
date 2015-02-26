@@ -139,7 +139,6 @@ class Shortlist_ListService extends ShortlistService
         craft()->elements->saveElement($list);
 
         // Make a new default list
-        // @todo - make a new list the default if this was the default
         $this->verifyDefaults();
 
         return true;
@@ -157,11 +156,48 @@ class Shortlist_ListService extends ShortlistService
     private function verifyDefaults()
     {
         $lists = $this->getLists();
+        $defaultList = null;
+        $needsClean = false;
+        $firstList = null;
 
-        die('<pre>'.print_R($lists,1));
+        foreach ($lists as $list) {
+            // Pull out the most recently updated list just in case
+            if ($firstList == null) {
+                $firstList = $list;
+            } else {
+                if ($firstList->dateUpdated < $list->dateUpdated) {
+                    $firstList = $list;
+                }
+            }
 
+            if ($list->default) {
+                if ($defaultList != null) {
+                    $needsClean = true;
+
+                    // Default to the most recently updated list as the default
+                    if ($defaultList->dateUpdated < $list->dateUpdated) {
+                        $defaultList = $list;
+                    }
+                }
+            }
+        }
+
+        if ($defaultList == null) {
+            // We don't have a default. Pick the most recently updated one
+            if ($firstList == null) {
+                // Welp. can't do nada
+                return;
+            }
+            $needsClean = true;
+            $defaultList = $firstList;
+        }
+
+        if ($needsClean) {
+            $this->makeDefault($defaultList->id);
+        }
+
+        return;
     }
-
 
 
     /**
@@ -180,7 +216,7 @@ class Shortlist_ListService extends ShortlistService
         $criteria->ownerId = craft()->shortlist->user->id;
 
         // Useful for later impersonation in the CP
-        if(!(craft()->request->isCpRequest() && $userId !== null)) {
+        if (!(craft()->request->isCpRequest() && $userId !== null)) {
             $criteria->ownerId = craft()->shortlist->user->id;
         }
 
@@ -198,17 +234,37 @@ class Shortlist_ListService extends ShortlistService
     */
     public function getListById($listId, $limitToUser = true)
     {
-        if(craft()->request->isCpRequest()) $limitToUser = false;
+        if (craft()->request->isCpRequest()) $limitToUser = false;
 
         $criteria = craft()->elements->getCriteria('shortlist_list');
         $criteria->id = $listId;
 
-        if($limitToUser) {
+        if ($limitToUser) {
             $criteria->ownerId = craft()->shortlist->user->id;
             $criteria->enabled = true;
         }
 
         return $criteria->first();
+    }
+
+    /*
+     * Get List By ID
+     *
+     * Get's a specific list by id. If this is a CP request
+     * This will return any valid list. If it's a normal request
+     * this is limited to both the user and state
+     *
+     * @returns List
+    */
+    public function getListByIdOrBare($listId)
+    {
+        $list = $this->getListById($listId);
+
+        if ($list == null) {
+            $list = new Shortlist_ListModel();
+        }
+
+        return $list;
     }
 
     public function getListOrCreate($listId)
@@ -221,11 +277,11 @@ class Shortlist_ListService extends ShortlistService
                 return $this->createList();
             }
 
-            return $defaultList;
         }
 
-        die('get specific list by id');
+        return $this->getListById($listId);
     }
+
 
     public function getDefaultList()
     {
@@ -281,16 +337,8 @@ class Shortlist_ListService extends ShortlistService
         $settings = craft()->plugins->getPlugin('shortlist')->getSettings();
 
         $listModel = new Shortlist_ListModel();
-        $listModel->name = $settings->defaultListName;
-        $listModel->title = $settings->defaultListTitle;
         $listModel->shareSlug = strtolower(StringHelper::randomString(18));
-        $listModel->slug = $settings->defaultListSlug;
         $listModel->userSlug = 'someuser-slug';
-        $listModel->default = false; // We'll set this at the end when we know if it's succeeded
-        $listModel->ownerId = craft()->shortlist->user->id;
-        $listModel->ownerType = craft()->shortlist->user->type;
-        $listModel->deleted = false;
-
 
         // Assign the extra data if possible
         $assignable = array('listTitle' => 'title', 'listSlug' => 'slug', 'listName' => 'name');
@@ -325,7 +373,6 @@ class Shortlist_ListService extends ShortlistService
             $listModel->addError('general', 'There was a problem with creating the list');
 
             echo('problem creating');
-            die('<pre>' . print_R($listModel, 1));
             die('invalid');
         }
 
