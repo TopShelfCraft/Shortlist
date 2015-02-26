@@ -116,7 +116,6 @@ class Shortlist_ItemService extends ShortlistService
 
         $criteria = craft()->elements->getCriteria('shortlist_list');
         $criteria->ownerId = craft()->shortlist->user->id;
-        $criteria->deleted = false;
         $lists = $criteria->find();
         if (empty($lists)) {
             // No lists. Any orphaned items can be ignored
@@ -289,12 +288,8 @@ class Shortlist_ItemService extends ShortlistService
     */
     private function removeFromList(Shortlist_ItemModel $itemModel, $listId)
     {
-        $itemRecord = Shortlist_ItemRecord::model()->findById($itemModel->id);
-        $itemRecord->deleted = true;
-        $itemRecord->update();
-
-        // Return the updated model
-        $itemModel = Shortlist_ItemRecord::model()->findByAttributes(array('id' => $itemRecord->id, 'deleted' => true));
+        $itemModel->enabled = false;
+        craft()->elements->saveElement($itemModel);
 
         return $itemModel;
     }
@@ -387,7 +382,6 @@ class Shortlist_ItemService extends ShortlistService
     {
         $criteria = craft()->elements->getCriteria('shortlist_item');
         $criteria->id = $elementId;
-        $criteria->deleted = false;
         $item = $criteria->first();
         if($item != null) return $item;
 
@@ -396,7 +390,6 @@ class Shortlist_ItemService extends ShortlistService
         $criteria = craft()->elements->getCriteria('shortlist_item');
         $criteria->elementId = $elementId;
         $criteria->listId = $listId;
-        $criteria->deleted = false;
         $item = $criteria->first();
 
         return $item;

@@ -63,16 +63,12 @@ class Shortlist_ListElementType extends BaseElementType
     public function modifyElementsQuery(DbCommand $query, ElementCriteriaModel $criteria)
     {
         $query
-            ->addSelect('shortlist_list.name, shortlist_list.title, shortlist_list.default, shortlist_list.slug, shortlist_list.userSlug, shortlist_list.shareSlug, shortlist_list.public, shortlist_list.type, shortlist_list.ownerId, shortlist_list.ownerType, shortlist_list.deleted')
+            ->addSelect('shortlist_list.name, shortlist_list.title, shortlist_list.default, shortlist_list.slug, shortlist_list.userSlug, shortlist_list.shareSlug, shortlist_list.public, shortlist_list.type, shortlist_list.ownerId, shortlist_list.ownerType')
             ->join('shortlist_list shortlist_list', 'shortlist_list.id = elements.id');
 
 
         if ($criteria->name) {
             $query->andWhere(DbHelper::parseParam('shortlist_list.name', $criteria->name, $query->params));
-        }
-
-        if ($criteria->isDeleted) {
-            $query->andWhere(DbHelper::parseParam('shortlist_list.deleted', $criteria->isDeleted, $query->params));
         }
 
         if ($criteria->title) {
@@ -120,7 +116,6 @@ class Shortlist_ListElementType extends BaseElementType
             'userSlug'  => AttributeType::String,
             'shareSlug' => AttributeType::String,
             'key'       => AttributeType::String,
-            'isDeleted' => AttributeType::Bool
         );
     }
 

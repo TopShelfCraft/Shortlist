@@ -128,13 +128,6 @@ class Shortlist_ListService extends ShortlistService
             craft()->shortlist_item->action('remove', $item->id);
         }
 
-        $listRecord = Shortlist_ListRecord::model()->findByAttributes(array('id' => $list->id));
-        $listRecord->deleted = true;
-        $listRecord->update();
-
-        // Return the updated model
-        $listModel = Shortlist_ListRecord::model()->findByAttributes(array('id' => $listRecord->id, 'deleted' => true));
-
         $list->enabled = false;
         craft()->elements->saveElement($list);
 
@@ -285,30 +278,10 @@ class Shortlist_ListService extends ShortlistService
 
     public function getDefaultList()
     {
-        // @todo we could check the global settings and setup default defined lists here maybe?
-        $lists = Shortlist_ListRecord::model()
-            ->findAllByAttributes(array('ownerId' => craft()->shortlist->user->id, 'deleted' => false), array('order' => 'dateUpdated DESC'));
-
-        if (empty($lists)) return null; // No default list defined
-
-        // More than one default
-        // Fix this now. Just make the most recently updated the default
-        $list = null;
-        if (count($lists) > 1) {
-            // the first is the most recent, skip it
-            $list = array_shift($lists);
-
-            // Now reset all the other lists to be non-default
-            $listIds = array();
-            foreach ($lists as $unsetList) {
-                $listIds[] = $unsetList->id;
-            }
-
-            $this->makeUndefault($listIds);
-        } else {
-            $list = current($lists);
-        }
-
+        $criteria = craft()->elements->getCriteria('shortlist_list');
+        $criteria->ownerId = craft()->shortlist->user->id;
+        $criteria->default = true;
+        $list = $criteria->first();
 
         return $list;
     }

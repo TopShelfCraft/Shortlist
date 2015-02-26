@@ -99,10 +99,6 @@ class Shortlist_ItemElementType extends BaseElementType
 
         /*
 
-                if ($criteria->isDeleted) {
-                    $query->andWhere(DbHelper::parseParam('shortlist_list.deleted', $criteria->isDeleted, $query->params));
-                }
-
                 if ($criteria->title) {
                     $query->andWhere(DbHelper::parseParam('shortlist_list.title', $criteria->title, $query->params));
                 }

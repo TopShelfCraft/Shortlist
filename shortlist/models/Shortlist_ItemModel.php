@@ -26,7 +26,6 @@ class Shortlist_ItemModel extends BaseElementModel
             'public'      => array(AttributeType::Bool, 'default' => true),
             'type'        => array(AttributeType::String, 'label' => 'Item Type'),
             'sortOrder'   => array(AttributeType::Number),
-            'deleted'     => array(AttributeType::Bool, 'label' => 'Item Deleted', 'required' => true, 'default' => false),
             'inList'      => array(AttributeType::Bool, 'required' => true, 'default' => false),
             'otherLists'  => array(AttributeType::Mixed),
         ));

@@ -34,7 +34,6 @@ class Shortlist_ListModel extends BaseElementModel
             'type'      => array(AttributeType::String, 'default' => 'user'),
             'ownerId'   => array(AttributeType::String, 'label' => 'Owner Id', 'required' => true),
             'ownerType' => array(AttributeType::Enum, 'values' => array(Shortlist_OwnerType::Member, Shortlist_OwnerType::Guest), 'default' => Shortlist_OwnerType::Guest, 'label' => 'Owner Type'),
-            'deleted'   => array(AttributeType::Bool, 'label' => 'List Deleted', 'required' => true, 'default' => false)
 
         ));
     }
