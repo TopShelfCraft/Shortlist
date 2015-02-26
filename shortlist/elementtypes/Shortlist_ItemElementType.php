@@ -64,7 +64,8 @@ class Shortlist_ItemElementType extends BaseElementType
         return array(
             'elementId'   => AttributeType::Mixed,
             'elementType' => AttributeType::String,
-            'title'       => AttributeType::String
+            'title'       => AttributeType::String,
+            'listId'      => AttributeType::Mixed
         );
     }
 

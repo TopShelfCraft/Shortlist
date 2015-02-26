@@ -195,6 +195,7 @@ class Shortlist_ItemService extends ShortlistService
         // based on the existing list content
         $item = $this->findExisting($elementId, $list->id);
 
+
         $action = $actionType;
         if ($actionType == 'toggle') {
             if (is_null($item)) {
@@ -286,8 +287,9 @@ class Shortlist_ItemService extends ShortlistService
     * and we use a clear operation to clean out the items marked
     * as deleted async from user requests
     */
-    private function removeFromList(Shortlist_ItemRecord $itemRecord, $listId)
+    private function removeFromList(Shortlist_ItemModel $itemModel, $listId)
     {
+        $itemRecord = Shortlist_ItemRecord::model()->findById($itemModel->id);
         $itemRecord->deleted = true;
         $itemRecord->update();
 
@@ -383,14 +385,21 @@ class Shortlist_ItemService extends ShortlistService
      */
     private function findExisting($elementId, $listId)
     {
+        $criteria = craft()->elements->getCriteria('shortlist_item');
+        $criteria->id = $elementId;
+        $criteria->deleted = false;
+        $item = $criteria->first();
+        if($item != null) return $item;
+
+
         // The inbound elementId, might actually be the id of the shortlist_item element, so allow that too
-        $record = Shortlist_ItemRecord::model()->findByAttributes(array('id' => $elementId, 'deleted' => false));
-        if ($record != null) return $record;
+        $criteria = craft()->elements->getCriteria('shortlist_item');
+        $criteria->elementId = $elementId;
+        $criteria->listId = $listId;
+        $criteria->deleted = false;
+        $item = $criteria->first();
 
-        $record = Shortlist_ItemRecord::model()->findByAttributes(array('elementId' => $elementId, 'listId' => $listId, 'deleted' => false));
-
-        return $record;
-
+        return $item;
     }
 
 
