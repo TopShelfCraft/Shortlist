@@ -14,9 +14,8 @@ class Shortlist_ListService extends ShortlistService
         $response['revert'] = array('verb' => '', 'params' => '');
 
         switch ($actionType) {
-            case 'new' :
-
-                $list = $this->createList(null, $extraData);
+            case 'new' : {
+                $list = $this->create(null, $extraData);
 
                 $response['object'] = $list;
                 $response['objectType'] = 'list';
@@ -25,9 +24,9 @@ class Shortlist_ListService extends ShortlistService
                 $response['success'] = true;
 
                 break;
-            case 'remove' :
-
-                $list = $this->removeList($listId, $extraData);
+            }
+            case 'remove' : {
+                $list = $this->remove($listId, $extraData);
 
                 $response['object'] = $list;
                 $response['objectType'] = 'list';
@@ -36,8 +35,8 @@ class Shortlist_ListService extends ShortlistService
                 $response['success'] = true;
 
                 break;
-            case 'makeDefault' :
-
+            }
+            case 'makeDefault' : {
                 $list = $this->makeDefault($listId, $extraData);
 
                 $response['object'] = $list;
@@ -47,16 +46,112 @@ class Shortlist_ListService extends ShortlistService
                 $response['success'] = true;
 
                 break;
+            }
+            case 'clear' : {
+                $state = $this->clear($listId);
 
-            default :
+                $response['object'] = $list;
+                $response['objectType'] = 'list';
+                $response['verb'] = 'cleared';
+                $response['revert'] = false; //array('verb' => 'remove', 'params' => array('listId' => $list->id));
+                $response['success'] = true;
 
+                break;
+            }
+            case 'deleteAll' : {
+                $state = $this->removeAll();
+
+                $response['object'] = null;
+                $response['objectType'] = '';
+                $response['verb'] = 'removed';
+                $response['revert'] = false; //array('verb' => 'remove', 'params' => array('listId' => $list->id));
+                $response['success'] = true;
+
+                break;
+            }
+            case 'clearAll' : {
+                $state = $this->clearAll();
+
+                $response['object'] = null;
+                $response['objectType'] = '';
+                $response['verb'] = 'cleared';
+                $response['revert'] = false; //array('verb' => 'remove', 'params' => array('listId' => $list->id));
+                $response['success'] = true;
+
+                break;
+            }
+            default : {
                 die('Unknown - ' . $actionType);
                 // @todo
                 break;
+            }
 
         }
 
         return $response;
+    }
+
+    /*
+     * Remove All
+     *
+     * Deletes all of a user's lists
+     */
+    public function removeAll()
+    {
+        $criteria = craft()->elements->getCriteria('shortlist_list');
+        $criteria->ownerId = craft()->shortlist->user->id;
+        $lists = $criteria->find();
+
+        foreach ($lists as $list) {
+            craft()->shortlist_item->removeByList($list->id);
+            $list->enabled = false;
+            craft()->elements->saveElement($list);
+        }
+
+        return true;
+    }
+
+    /*
+     * Clear All
+     *
+     * Clears all of a user's lists
+     */
+    public function clearAll()
+    {
+        $criteria = craft()->elements->getCriteria('shortlist_list');
+        $criteria->ownerId = craft()->shortlist->user->id;
+        $lists = $criteria->find();
+
+        foreach ($lists as $list) {
+            $ret = craft()->shortlist_item->clearByList($list->id);
+        }
+
+        return true;
+
+    }
+
+    /*
+     * Clear
+     *
+     * Clears out a list, removing all the items within
+     */
+    public function clear($listId)
+    {
+        $criteria = craft()->elements->getCriteria('shortlist_list');
+        $criteria->ownerId = craft()->shortlist->user->id;
+        $criteria->listId = $listId;
+        $list = $criteria->first();
+
+        if (empty($list)) {
+            // Not a valid list, or not the owner
+            // @todo log error message
+            return false;
+        }
+
+        // Get all the items in this list and remove each
+        $ret = craft()->shortlist_item->clearByList($listId);
+
+        return $ret;
     }
 
     /*
@@ -112,7 +207,7 @@ class Shortlist_ListService extends ShortlistService
      *
      * @returns bool
      */
-    private function removeList($listId, $extraData = array())
+    public function remove($listId, $extraData = array())
     {
         // Check this is a valid list to remove
         // both that it exists, and the current user is the owner of said list
@@ -267,7 +362,7 @@ class Shortlist_ListService extends ShortlistService
             $defaultList = $this->getDefaultList();
             if (is_null($defaultList)) {
                 // create a new list
-                return $this->createList();
+                return $this->create();
             }
 
         }
@@ -302,7 +397,7 @@ class Shortlist_ListService extends ShortlistService
         return;
     }
 
-    public function createList($makeDefault = true, $extraData = array())
+    public function create($makeDefault = true, $extraData = array())
     {
         if (!is_bool($makeDefault)) $makeDefault = true;
 

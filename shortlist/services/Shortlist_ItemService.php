@@ -239,7 +239,7 @@ class Shortlist_ItemService extends ShortlistService
                 if (is_null($item)) {
                     die('cant remove a null item - ' . $elementId);
                 }
-                $updatedItem = $this->remove($item, $list->id);
+                $updatedItem = $this->remove($item);
                 if ($updatedItem == false) {
                     // FAiled to remove from list
                     die('failed to remove'); // @todo
@@ -276,7 +276,25 @@ class Shortlist_ItemService extends ShortlistService
         return $response;
     }
 
+    /*
+    * Remove by List
+     *
+     * This 'deletes' all the items from an entire list
+     *
+    */
+    public function removeByList($listId)
+    {
+        $criteria = craft()->elements->getCriteria('shortlist_item');
+        $criteria->listId = $listId;
+        $items = $criteria->find();
 
+        foreach($items as $item)
+        {
+            $this->remove($item);
+        }
+
+        return true;
+    }
     /*
     * Remove From List
     *
@@ -286,7 +304,7 @@ class Shortlist_ItemService extends ShortlistService
     * and we use a clear operation to clean out the items marked
     * as deleted async from user requests
     */
-    private function remove(Shortlist_ItemModel $itemModel, $listId)
+    public function remove(Shortlist_ItemModel $itemModel)
     {
         $itemModel->enabled = false;
         craft()->elements->saveElement($itemModel);
@@ -405,6 +423,22 @@ class Shortlist_ItemService extends ShortlistService
         return $item;
     }
 
+
+    /*
+     * Clear By List
+     *
+     * Clears all the items in a list
+     */
+    public function clearByList($listId)
+    {
+        $items = $this->findByList($listId);
+
+        foreach($items as $item) {
+            $this->remove($item);
+        }
+
+        return true;
+    }
 
     /*
      * Find By List

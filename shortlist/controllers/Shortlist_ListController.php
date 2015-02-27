@@ -20,28 +20,48 @@ class Shortlist_ListController extends BaseController
      */
     public function actionAdd()
     {
-        $this->handleAction('new');
+        return $this->handleAction('new');
     }
 
     public function actionNew()
     {
-        $this->handleAction('new');
+        return $this->handleAction('new');
     }
 
     public function actionRemove()
     {
-        $this->handleAction('remove');
+        return $this->handleAction('remove');
     }
 
     public function actionDelete()
     {
-        $this->handleAction('remove');
+        return $this->handleAction('remove');
     }
 
     public function actionMakeDefault()
     {
-        $this->handleAction('makeDefault');
+        return $this->handleAction('makeDefault');
     }
+
+    public function actionClear()
+    {
+        return $this->handleAction('clear');
+    }
+
+    public function actionDeleteAll()
+    {
+        $this->requirePostRequest();
+
+        return $this->handleAction('deleteAll');
+    }
+
+    public function actionClearAll()
+    {
+        $this->requirePostRequest();
+
+        return $this->handleAction('clearAll');
+    }
+
 
 
     /**
