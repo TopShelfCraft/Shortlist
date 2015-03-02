@@ -9,3 +9,13 @@ lists: { label: "Lists"|t, url: url('shortlist') },
 items: { label: "List Items"|t, url: url('shortlist/items') },
 users: { label: "Users"|t, url: url('shortlist/users') }
 } %}
+
+{% block sidebar %}
+
+{{ parent() }}
+
+
+<div class="buttons">
+      <a href="{{ url('shortlist/list/editFields') }}" class="btn icon settings">Edit List Fields</a>
+</div>
+{% endblock %}

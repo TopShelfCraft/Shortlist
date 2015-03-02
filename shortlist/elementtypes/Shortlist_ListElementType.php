@@ -63,23 +63,11 @@ class Shortlist_ListElementType extends BaseElementType
     public function modifyElementsQuery(DbCommand $query, ElementCriteriaModel $criteria)
     {
         $query
-            ->addSelect('shortlist_list.name, shortlist_list.title, shortlist_list.default, shortlist_list.slug, shortlist_list.userSlug, shortlist_list.shareSlug, shortlist_list.public, shortlist_list.type, shortlist_list.ownerId, shortlist_list.ownerType')
+            ->addSelect('shortlist_list.default, shortlist_list.userSlug, shortlist_list.shareSlug, shortlist_list.public, shortlist_list.type, shortlist_list.ownerId, shortlist_list.ownerType')
             ->join('shortlist_list shortlist_list', 'shortlist_list.id = elements.id');
-
-
-        if ($criteria->name) {
-            $query->andWhere(DbHelper::parseParam('shortlist_list.name', $criteria->name, $query->params));
-        }
-
-        if ($criteria->title) {
-            $query->andWhere(DbHelper::parseParam('shortlist_list.title', $criteria->title, $query->params));
-        }
 
         if ($criteria->default) {
             $query->andWhere(DbHelper::parseParam('shortlist_list.default', $criteria->default, $query->params));
-        }
-        if ($criteria->slug) {
-            $query->andWhere(DbHelper::parseParam('shortlist_list.slug', $criteria->slug, $query->params));
         }
         if ($criteria->userSlug) {
             $query->andWhere(DbHelper::parseParam('shortlist_list.userSlug', $criteria->userSlug, $query->params));
@@ -106,9 +94,6 @@ class Shortlist_ListElementType extends BaseElementType
     public function defineCriteriaAttributes()
     {
         return array(
-            'name'      => AttributeType::Mixed,
-            'title'     => AttributeType::Mixed,
-            'slug'      => AttributeType::Mixed,
             'ownerId'   => AttributeType::String,
             'ownerType' => AttributeType::String,
             'public'    => AttributeType::Bool,
@@ -188,9 +173,6 @@ class Shortlist_ListElementType extends BaseElementType
                     $ret .= " .. <a href='".$moreUrl."'>+".$hidden." more</a>";
                 }
                 return $ret;
-            }
-            case 'title' : {
-                return $element->name;
             }
             default : {
                 return $element->$attribute;

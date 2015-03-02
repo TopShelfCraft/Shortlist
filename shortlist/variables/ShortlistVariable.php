@@ -5,11 +5,13 @@ namespace Craft;
 class ShortlistVariable
 {
 
+    public function newList($options = array())
+    {
+        return ShortlistHelper::newListAction($options);
+    }
+
     public function item($elementId = null)
     {
-        //$actions = craft()->shortlist_item->getItemInfo($elementId);
-       //return $actions;
-
         $itemElement = craft()->shortlist_item->getItem($elementId);
         return $itemElement;
     }
@@ -21,7 +23,6 @@ class ShortlistVariable
             $criteria = craft()->elements->getCriteria('shortlist_list');
         }
 
-        // Limit to this user
         $criteria->ownerId = craft()->shortlist->user->id;
         return $criteria->find();
     }

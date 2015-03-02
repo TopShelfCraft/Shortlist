@@ -8,11 +8,8 @@ class Shortlist_ListModel extends BaseElementModel
 
     public function __construct($attributes = null)
     {
-        $settings = craft()->plugins->getPlugin('shortlist')->getSettings();
+        //$settings = craft()->plugins->getPlugin('shortlist')->getSettings();
 
-        $this->name = $settings->defaultListName;
-        $this->title = $settings->defaultListTitle;
-        $this->slug = $settings->defaultListSlug;
         $this->ownerId = craft()->shortlist->user->id;
         $this->ownerType = craft()->shortlist->user->type;
         $this->default = false;
@@ -24,10 +21,7 @@ class Shortlist_ListModel extends BaseElementModel
     {
         return array_merge(parent::defineAttributes(), array(
             'id'        => AttributeType::Number,
-            'name'      => array(AttributeType::String, 'required' => true),
             'default'   => array(AttributeType::Bool, 'default' => false, 'required' => true),
-            'title'     => array(AttributeType::String, 'required' => true),
-            'slug'      => array(AttributeType::String, 'required' => true),
             'userSlug'  => array(AttributeType::String, 'required' => true),
             'shareSlug' => array(AttributeType::String),
             'public'    => array(AttributeType::Bool, 'default' => true),
@@ -51,6 +45,27 @@ class Shortlist_ListModel extends BaseElementModel
 
 
     /**
+     * @inheritDoc IElementType::hasTitles()
+     *
+     * @return bool
+     */
+    public function hasTitles()
+    {
+        return true;
+    }
+
+
+    /**
+     * @inheritDoc IElementType::isLocalized()
+     *
+     * @return bool
+     */
+    public function isLocalized()
+    {
+        return false;
+    }
+
+    /**
      * Returns the element's CP edit URL.
      *
      * @return string|false
@@ -68,7 +83,6 @@ class Shortlist_ListModel extends BaseElementModel
     public function items()
     {
         $items = craft()->shortlist_item->findByList($this->id);
-
         return $items;
     }
 

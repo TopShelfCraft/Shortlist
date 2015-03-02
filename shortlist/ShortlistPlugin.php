@@ -34,10 +34,12 @@ class ShortlistPlugin extends BasePlugin
         return array(
             'shortlist/list/(?P<listId>\d+)'   => array('action' => 'shortlist/list/view'),
 
+            'shortlist/list/editFields'        => array('action' => 'shortlist/list/editFields'),
+            /*
             'shortlist/items'                  => array('action' => 'shortlist/items'),
             'shortlist/items/(?P<itemId>\d+)'  => array('action' => 'shortlist/item/view'),
             'shortlist/users'                  => array('action' => 'shortlist/users'),
-            'shortlist/users/(?P<itemId>\d+)'  => array('action' => 'shortlist/users/view'),
+            'shortlist/users/(?P<itemId>\d+)'  => array('action' => 'shortlist/users/view'),*/
         );
 
     }

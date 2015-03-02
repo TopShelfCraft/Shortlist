@@ -52,7 +52,6 @@ class Shortlist_ItemService extends ShortlistService
             $bare = new Shortlist_ItemModel();
             $bare->elementId = $elementId;
             $bare->listId = $list->id;
-            $bare->listName = $list->name;
 
             return $bare;
         }

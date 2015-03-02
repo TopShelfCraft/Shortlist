@@ -63,6 +63,54 @@ class Shortlist_ListController extends BaseController
     }
 
 
+    /**
+     * Template layout edit
+     */
+    public function actionEditFields()
+    {
+        $variables['title'] = 'Edit List Fields';
+
+        $variables['crumbs'] = array(
+            array('label' => Craft::t('Shortlist'), 'url' => UrlHelper::getUrl('shortlist')),
+            array('label' => Craft::t('Lists'), 'url' => UrlHelper::getUrl('shortlist/list')),
+            array('label' => Craft::t('List Fields'), 'url' => UrlHelper::getUrl('shortlist/list/editFields')),
+        );
+
+        $variables['list'] = new Shortlist_ListModel();
+
+        $this->renderTemplate('shortlist/list/_fields', $variables);
+    }
+
+
+    /**
+     * Template layout edit
+     */
+    public function actionSaveLayout()
+    {
+        $template = new Shortlist_ListModel();
+
+        // Set the field layout
+        $fieldLayout = craft()->fields->assembleLayoutFromPost();
+        $fieldLayout->type = 'Shortlist_List';
+        craft()->fields->deleteLayoutsByType('Shortlist_List');
+
+        if (craft()->fields->saveLayout($fieldLayout))
+        {
+            craft()->userSession->setNotice(Craft::t('List fields saved.'));
+            $this->redirectToPostedUrl();
+        }
+        else
+        {
+            craft()->userSession->setError(Craft::t('Couldn’t save list fields.'));
+        }
+
+
+        // Send the feature type back to the template
+        craft()->urlManager->setRouteVariables(array(
+            'template' => $template
+        ));
+    }
+
 
     /**
      * Handle Action

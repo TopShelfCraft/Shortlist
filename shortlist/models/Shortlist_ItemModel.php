@@ -63,6 +63,17 @@ class Shortlist_ItemModel extends BaseElementModel
         return craft()->shortlist_item->findParentElement($this->elementId);
     }
 
+    /*
+     * Title
+     *
+     * Shortcut to get the title of the parent element
+     *
+     */
+    public function title()
+    {
+        $parent = craft()->shortlist_item->findParentElement($this->elementId);
+        return $parent->title;
+    }
 
     /**
      * Returns an item's lists
@@ -75,14 +86,19 @@ class Shortlist_ItemModel extends BaseElementModel
         return $lists;
     }
 
-    public function add()
+    public function add($options = array())
     {
-        return ShortlistHelper::addAction($this->elementId, $this->listId);
+        return ShortlistHelper::addAction($this->elementId, $this->listId, $options);
     }
 
-    public function remove()
+    public function remove($options = array())
     {
-        return ShortlistHelper::removeAction($this->elementId, $this->listId);
+        return ShortlistHelper::removeAction($this->elementId, $this->listId, $options);
+    }
+
+    public function toggke($options = array())
+    {
+        return ShortlistHelper::toggleAction($this->elementId, $this->listId, $options);
     }
 
     public function parentList()

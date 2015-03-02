@@ -50,7 +50,7 @@ class Shortlist_ListService extends ShortlistService
             case 'clear' : {
                 $state = $this->clear($listId);
 
-                $response['object'] = $list;
+                $response['object'] = null;
                 $response['objectType'] = 'list';
                 $response['verb'] = 'cleared';
                 $response['revert'] = false; //array('verb' => 'remove', 'params' => array('listId' => $list->id));
@@ -405,16 +405,24 @@ class Shortlist_ListService extends ShortlistService
         $settings = craft()->plugins->getPlugin('shortlist')->getSettings();
 
         $listModel = new Shortlist_ListModel();
+
         $listModel->shareSlug = strtolower(StringHelper::randomString(18));
         $listModel->userSlug = 'someuser-slug';
 
         // Assign the extra data if possible
-        $assignable = array('listTitle' => 'title', 'listSlug' => 'slug', 'listName' => 'name');
+        $assignable = array('listTitle' => 'title', 'listSlug' => 'slug');
+        $extra = array();
         foreach ($assignable as $key => $val) {
             if (isset($extraData[$key]) && $extraData[$key] != '') {
-                $listModel->$val = $extraData[$key];
+                $extra->$val = $extraData[$key];
             }
         }
+
+        $extra['title'] = $settings->defaultListTitle;
+        $listModel->setContent($extra);
+
+        //die('<pre>'.print_R($listModel,1));
+
 
         if ($listModel->validate()) {
             // Create the element
@@ -447,7 +455,6 @@ class Shortlist_ListService extends ShortlistService
         return null;
 
     }
-
 
 }
 
