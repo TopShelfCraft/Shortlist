@@ -96,7 +96,7 @@ class Shortlist_ItemModel extends BaseElementModel
         return ShortlistHelper::removeAction($this->elementId, $this->listId, $options);
     }
 
-    public function toggke($options = array())
+    public function toggle($options = array())
     {
         return ShortlistHelper::toggleAction($this->elementId, $this->listId, $options);
     }

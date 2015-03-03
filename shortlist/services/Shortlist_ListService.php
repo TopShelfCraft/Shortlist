@@ -412,16 +412,13 @@ class Shortlist_ListService extends ShortlistService
         // Assign the extra data if possible
         $assignable = array('listTitle' => 'title', 'listSlug' => 'slug');
         $extra = array();
+        $extra['title'] = $settings->defaultListTitle;
         foreach ($assignable as $key => $val) {
             if (isset($extraData[$key]) && $extraData[$key] != '') {
-                $extra->$val = $extraData[$key];
+                $extra[$val] = $extraData[$key];
             }
         }
-
-        $extra['title'] = $settings->defaultListTitle;
         $listModel->setContent($extra);
-
-        //die('<pre>'.print_R($listModel,1));
 
 
         if ($listModel->validate()) {

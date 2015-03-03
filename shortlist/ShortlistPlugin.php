@@ -10,7 +10,7 @@ class ShortlistPlugin extends BasePlugin
 
     function getVersion()
     {
-        return '0.4';
+        return '0.5';
     }
 
     function getDeveloper()
@@ -25,16 +25,16 @@ class ShortlistPlugin extends BasePlugin
 
     public function hasCpSection()
     {
-        return true;
+        return false;
     }
 
 
     public function registerCpRoutes()
     {
         return array(
-            'shortlist/list/(?P<listId>\d+)'   => array('action' => 'shortlist/list/view'),
+      /*      'shortlist/list/(?P<listId>\d+)'   => array('action' => 'shortlist/list/view'),
 
-            'shortlist/list/editFields'        => array('action' => 'shortlist/list/editFields'),
+            'shortlist/list/editFields'        => array('action' => 'shortlist/list/editFields'),*/
             /*
             'shortlist/items'                  => array('action' => 'shortlist/items'),
             'shortlist/items/(?P<itemId>\d+)'  => array('action' => 'shortlist/item/view'),

@@ -103,4 +103,23 @@ class Shortlist_ListModel extends BaseElementModel
 
         return $user;
     }
+
+
+
+    public function delete($options = array())
+    {
+        return ShortlistHelper::removeListAction($this->id, $options);
+    }
+
+    public function clear($options = array())
+    {
+        return ShortlistHelper::clearListAction($this->id, $options);
+    }
+
+    public function makeDefault($options = array())
+    {
+        return ShortlistHelper::makeListDefaultAction($this->id, $options);
+    }
+
+
 }

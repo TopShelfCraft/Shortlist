@@ -4,6 +4,38 @@ namespace Craft;
 class ShortlistHelper
 {
 
+
+
+    public function removeListAction($listId, $options = array())
+    {
+        $params['listId'] = $listId;
+        $params['return'] = craft()->request->getUrl();
+        if(isset($options['return'])) $params['return'] = $options['return'];
+
+        return UrlHelper::getActionUrl('shortlist/list/delete', $params);
+    }
+
+
+    public function clearListAction($listId, $options = array())
+    {
+        $params['listId'] = $listId;
+        $params['return'] = craft()->request->getUrl();
+        if(isset($options['return'])) $params['return'] = $options['return'];
+
+        return UrlHelper::getActionUrl('shortlist/list/clear', $params);
+    }
+
+    public function makeListDefaultAction($listId, $options = array())
+    {
+        $params['listId'] = $listId;
+        $params['return'] = craft()->request->getUrl();
+        if(isset($options['return'])) $params['return'] = $options['return'];
+
+        return UrlHelper::getActionUrl('shortlist/list/makeDefault', $params);
+    }
+
+
+
     public static function newListAction($options = array())
     {
         $params['return'] = craft()->request->getUrl();
