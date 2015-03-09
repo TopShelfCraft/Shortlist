@@ -8,15 +8,15 @@ class Shortlist_ListModel extends BaseElementModel
 
     public function __construct($attributes = null)
     {
+        parent::__construct($attributes);
+
         $settings = craft()->plugins->getPlugin('shortlist')->getSettings();
 
         $this->ownerId = craft()->shortlist->user->id;
         $this->ownerType = craft()->shortlist->user->type;
         $this->default = false;
-
         $this->setContent(array('title' => $settings->defaultListTitle));
 
-        parent::__construct($attributes);
     }
 
     protected function defineAttributes()

@@ -8,7 +8,7 @@ class Shortlist_ItemService extends ShortlistService
     private $_elementsForItems = array();
     private $_cache;
     private $_cacheElementIds;
-
+    public $response = array();
 
     public function getItem($elementId)
     {
@@ -184,7 +184,12 @@ class Shortlist_ItemService extends ShortlistService
             $list = craft()->shortlist_list->getListOrCreate($listId);
             if ($list === false || is_null($list)) {
                 // There was a problem getting or creating the list
-                die('handle error action on item - ' . $actionType . ' - ' . $elementId . ' - ' . $listId); // @todo
+
+                //die('handle error action on item - ' . $actionType . ' - ' . $elementId . ' - ' . $listId); // @todo
+
+                craft()->shortlist->addError('Couldnt get list for item action');
+                return false;
+
             }
         }
 
@@ -272,7 +277,8 @@ class Shortlist_ItemService extends ShortlistService
         // Handle any return messages if we got any back
         $response['success'] = true;
 
-        return $response;
+        $this->response = $response;
+        return true;
     }
 
     /*

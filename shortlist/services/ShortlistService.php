@@ -7,6 +7,7 @@ class ShortlistService extends BaseApplicationComponent
     public $user = null;
     private $_cache;
     private $_cacheElementIds;
+    public $errors = array();
 
 
     public function __construct()
@@ -19,6 +20,11 @@ class ShortlistService extends BaseApplicationComponent
         $this->user = new Shortlist_UserModel();
     }
 
+
+    public function addError($msg)
+    {
+        $this->errors[] = Craft::t($msg);
+    }
 
     public function redirect($object = null)
     {

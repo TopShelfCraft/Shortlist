@@ -67,18 +67,30 @@ class Shortlist_ItemController extends BaseController
 
         // Pass to the service to do the leg work
         $response = craft()->shortlist_item->action($actionType, $itemId, $listId, $extra);
-        if ($response == false) {
-            // Deal with an error state
-            die('failed to add'); // @todo
-        }
 
 
-        // Return as appropriate
-        if (craft()->request->isAjaxRequest()) {
-            $this->returnJson($response);
-        } else {
-            craft()->shortlist->redirect($response['object']);
+        if($response === true) {
+            // Return as appropriate
+            if (craft()->request->isAjaxRequest()) {
+                $this->returnJson($response);
+            } else {
+                craft()->shortlist->redirect($response['object']);
+            }
+
         }
+
+        $errorMsg = '<ul>';
+        foreach(craft()->shortlist->errors as $error) {
+            $errorMsg .= '<li>'.$error.'</li>';
+        }
+        $errorMsg .= '</ul>';
+
+        craft()->userSession->setError('There was a problem with that action - '.$errorMsg);
+
+
+        $url = craft()->request->getUrlReferrer();
+        craft()->request->redirect($url);
+
 
     }
 
