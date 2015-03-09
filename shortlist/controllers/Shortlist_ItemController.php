@@ -117,4 +117,48 @@ class Shortlist_ItemController extends BaseController
         return false;
     }
 
+
+    public function actionIndex()
+    {
+        $this->requireAdmin();
+        $this->renderTemplate('shortlist/item/index');
+    }
+
+    public function actionView(array $variables = array())
+    {
+        $this->renderTemplate('shortlist/item/index');
+
+        /*
+        $this->requireAdmin();
+
+        $listId = $variables['itemId'];
+        $list = craft()->shortlist_list->getListById($listId);
+
+        if ($list == null) $this->redirect('shortlist');
+
+        $variables['list'] = $list;
+
+        $variables['tabs']['List'] = array(
+            'label' => Craft::t('List Details'),
+            'url'   => '#list',
+        );
+        $variables['tabs']['Items'] = array(
+            'label' => Craft::t('Items'),
+            'url'   => '#items',
+        );
+        $variables['tabs']['Related'] = array(
+            'label' => Craft::t('Related'),
+            'url'   => '#related',
+        );
+
+        // Grab the item elements
+        $criteria = craft()->elements->getCriteria('Shortlist_item');
+        $criteria->listId = $listId;
+        $variables['listItems'] = $criteria->find();
+
+        $this->renderTemplate('shortlist/item/_view', $variables);*/
+    }
+
+
+
 }

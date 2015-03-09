@@ -113,7 +113,7 @@ class Shortlist_ItemService extends ShortlistService
             return;
         }
 
-        $criteria = craft()->elements->getCriteria('shortlist_list');
+        $criteria = craft()->elements->getCriteria('Shortlist_list');
         $criteria->ownerId = craft()->shortlist->user->id;
         $lists = $criteria->find();
         if (empty($lists)) {
@@ -142,7 +142,7 @@ class Shortlist_ItemService extends ShortlistService
 
 
         // Get all the items across all this user's lists
-        $criteria = craft()->elements->getCriteria('shortlist_item');
+        $criteria = craft()->elements->getCriteria('Shortlist_item');
         $criteria->listId = $listIds;
         $items = $criteria->find();
 
@@ -283,7 +283,7 @@ class Shortlist_ItemService extends ShortlistService
     */
     public function removeByList($listId)
     {
-        $criteria = craft()->elements->getCriteria('shortlist_item');
+        $criteria = craft()->elements->getCriteria('Shortlist_item');
         $criteria->listId = $listId;
         $items = $criteria->find();
 
@@ -369,10 +369,16 @@ class Shortlist_ItemService extends ShortlistService
      */
     public function add($elementId, $listId)
     {
+        $element = craft()->elements->getElementById($elementId);
+        if($element === null) return false;
+
         $itemModel = new Shortlist_ItemModel();
         $itemModel->elementId = $elementId;
         $itemModel->elementType = craft()->elements->getElementTypeById($elementId);
         $itemModel->listId = $listId;
+
+        $extra = array('title' => $element->title);
+        $itemModel->setContent($extra);
 
         if ($itemModel->validate()) {
             // Create the element
@@ -407,14 +413,14 @@ class Shortlist_ItemService extends ShortlistService
      */
     private function findExisting($elementId, $listId)
     {
-        $criteria = craft()->elements->getCriteria('shortlist_item');
+        $criteria = craft()->elements->getCriteria('Shortlist_item');
         $criteria->id = $elementId;
         $item = $criteria->first();
         if($item != null) return $item;
 
 
         // The inbound elementId, might actually be the id of the shortlist_item element, so allow that too
-        $criteria = craft()->elements->getCriteria('shortlist_item');
+        $criteria = craft()->elements->getCriteria('Shortlist_item');
         $criteria->elementId = $elementId;
         $criteria->listId = $listId;
         $item = $criteria->first();
@@ -450,7 +456,7 @@ class Shortlist_ItemService extends ShortlistService
     {
         if (!isset($this->_itemsByListId[$listId])) {
 
-            $criteria = craft()->elements->getCriteria('shortlist_item');
+            $criteria = craft()->elements->getCriteria('Shortlist_item');
             $criteria->listId = $listId;
             $criteria->order = 'sortOrder asc, dateCreated asc';
             $items = $criteria->find();

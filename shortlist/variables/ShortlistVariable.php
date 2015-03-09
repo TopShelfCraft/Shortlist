@@ -20,7 +20,7 @@ class ShortlistVariable
     public function lists($criteria = null)
     {
         if(is_null($criteria)) {
-            $criteria = craft()->elements->getCriteria('shortlist_list');
+            $criteria = craft()->elements->getCriteria('Shortlist_list');
         }
 
         $criteria->ownerId = craft()->shortlist->user->id;

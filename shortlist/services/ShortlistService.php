@@ -82,8 +82,8 @@ class ShortlistService extends BaseApplicationComponent
     public function getExtraForRequest($baseFields = array())
     {
         $data = array();
-        // field[] data
-        // @todo
+
+        // Get all the submitted field data
 
         foreach ($baseFields as $n) {
             $val = craft()->request->getParam($n);

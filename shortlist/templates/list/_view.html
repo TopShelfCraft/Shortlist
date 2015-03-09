@@ -2,19 +2,19 @@
 
 {% import "_includes/forms" as forms %}
 
-{% set title = list.name %}
+{% set title = list.title %}
 
 {% set crumbs = [
 { label: "Shortlist"|t, url: url('shortlist') },
-{ label: "Lists"|t, url: url('shortlist/lists') },
-{ label: "Detail"|t, url: url('shortlist/list/detail') }
+{ label: "Lists"|t, url: url('shortlist/list') },
+{ label: "Detail"|t, url: url('shortlist/list/'~ list.id ) }
 ] %}
 
 
 {% set itemElementType = craft.elements.getElementType('Shortlist_Item') %}
 {% set itemElementAttr = { elementType : itemElementType,
     disabledElementIds : null,
-    attributes : { id : 'ID', elementType: 'Element Type', title: 'Title', dateCreated : 'Date Added'},
+    attributes : { id : 'Item', elementType: 'Element Type', dateCreated : 'Date Added'},
     elements : listItems,
     showCheckboxes : false} %}
 
@@ -27,20 +27,19 @@
             <input type="hidden" name="action" value="users/saveUser">
 
 
-            {% include "_includes/tabs" %}
 
             <div id="list">
 
                 {{ forms.textField({
                 first: true,
-                label: "List Name"|t,
-                id: 'name',
-                name: 'name',
-                value: (list is defined ? list.name : null),
+                label: "List title"|t,
+                id: 'title',
+                name: 'title',
+                value: (list is defined ? list.title : null),
                 autofocus: true,
-                required: true,
                 disabled: false,
-                errors: (list is defined ? list.getErrors('name') : null)
+                errors: (list is defined ? list.getErrors('title') : null),
+                readonly: true
                 }) }}
 
                 {{ forms.textField({
@@ -50,32 +49,25 @@
                 name: 'slug',
                 value: (list is defined ? list.slug : null),
                 autofocus: true,
-                required: true,
                 disabled: false,
-                errors: (list is defined ? list.getErrors('slug') : null)
+                errors: (list is defined ? list.getErrors('slug') : null),
+                readonly: true
                 }) }}
 
-                <p>// @todo - add field support</p>
-                <p>// @todo - add update support in CP</p>
             </div>
+            <hr/>
+            <div id="items" class="">
 
-            <div id="items" class="hidden">
-
-
+                <h2>List Items</h2>
+                {% if listItems is empty %}
+                <p><em>This list is empty</em></p>
+                {% else %}
                 <div class="elementindex">
                     {% include "_elements/tableview/container" with itemElementAttr %}
                 </div>
+                {% endif %}
 
             </div>
-
-            <div id="related" class="hidden">
-                RELATED THINGS
-
-                -- OTHER LISTS --
-
-
-            </div>
-
 
     </div>
     </form>
@@ -93,8 +85,7 @@
             {% if user is null %}
             <p>User Deleted</p>
             {% else %}
-            <p><a href="{{ url('shortlist/users/'~user.id ) }}">{{ user }}</a> (<a href="{{ url('users/'~user.id ) }}">View
-                Profile</a>)</p>
+            <p><a href="{{ url('users/'~user.id ) }}">{{ user }}</a></p>
             {% endif %}
             {% endif %}
 
@@ -110,6 +101,7 @@
 
             <p>{{ list.dateUpdated.localeDate() }} {{ list.dateUpdated.localeTime() }}</p>
 
+            {#--
             <h5>{{ "Type"|t }}</h5>
 
             <p>{{ list.type | ucwords }}
@@ -117,10 +109,7 @@
                 <br/><span class="light">(Created by direct user interaction)</span>
                 {% elseif list.type == 'auto' %}<br/><span class="light">(Created automtically by settings)</span>
                 {% endif %}</p>
-
-            <p>//@todo - add action support (delete/hide)</p>
-
-            <p>//@todo - add support to change owner</p>
+            --#}
         </form>
     </div>
 

@@ -22,7 +22,6 @@ class Shortlist_ListModel extends BaseElementModel
         return array_merge(parent::defineAttributes(), array(
             'id'        => AttributeType::Number,
             'default'   => array(AttributeType::Bool, 'default' => false, 'required' => true),
-            'userSlug'  => array(AttributeType::String, 'required' => true),
             'shareSlug' => array(AttributeType::String),
             'public'    => array(AttributeType::Bool, 'default' => true),
             'type'      => array(AttributeType::String, 'default' => 'user'),

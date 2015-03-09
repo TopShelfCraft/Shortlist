@@ -25,21 +25,24 @@ class ShortlistPlugin extends BasePlugin
 
     public function hasCpSection()
     {
-        return false;
+        return true;
     }
 
 
     public function registerCpRoutes()
     {
         return array(
-      /*      'shortlist/list/(?P<listId>\d+)'   => array('action' => 'shortlist/list/view'),
+            'shortlist/list'                 => array('action' => 'shortlist/list/index'),
+            'shortlist/list/(?P<listId>\d+)' => array('action' => 'shortlist/list/view'),
+            'shortlist/list/editFields'      => array('action' => 'shortlist/list/editFields'),
 
-            'shortlist/list/editFields'        => array('action' => 'shortlist/list/editFields'),*/
+
+            'shortlist/item'                 => array('action' => 'shortlist/item/index'),
+            'shortlist/item/(?P<itemId>\d+)' => array('action' => 'shortlist/item/view')
+
             /*
-            'shortlist/items'                  => array('action' => 'shortlist/items'),
-            'shortlist/items/(?P<itemId>\d+)'  => array('action' => 'shortlist/item/view'),
-            'shortlist/users'                  => array('action' => 'shortlist/users'),
-            'shortlist/users/(?P<itemId>\d+)'  => array('action' => 'shortlist/users/view'),*/
+                'shortlist/users'                  => array('action' => 'shortlist/users'),
+                'shortlist/users/(?P<itemId>\d+)'  => array('action' => 'shortlist/users/view'),*/
         );
 
     }

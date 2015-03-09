@@ -18,6 +18,11 @@ class Shortlist_ListController extends BaseController
      *
      * All are just stub functions passing to handleAction where all the core logic is shared
      */
+    public function actionUpdate()
+    {
+        return $this->handleAction('update');
+    }
+
     public function actionAdd()
     {
         return $this->handleAction('new');
@@ -154,6 +159,11 @@ class Shortlist_ListController extends BaseController
     }
 
 
+    public function actionIndex()
+    {
+        $this->renderTemplate('shortlist/index');
+    }
+
     public function actionView(array $variables = array())
     {
         $this->requireAdmin();
@@ -179,7 +189,7 @@ class Shortlist_ListController extends BaseController
         );
 
         // Grab the item elements
-        $criteria = craft()->elements->getCriteria('shortlist_item');
+        $criteria = craft()->elements->getCriteria('Shortlist_item');
         $criteria->listId = $listId;
         $variables['listItems'] = $criteria->find();
 

@@ -80,6 +80,16 @@ class Shortlist_ListService extends ShortlistService
 
                 break;
             }
+            case 'update' : {
+                $state = $this->update($listId, $extraData);
+
+                $response['object'] = null;
+                $response['objectType'] = '';
+                $response['verb'] = 'updated';
+                $response['revert'] = false; //array('verb' => 'remove', 'params' => array('listId' => $list->id));
+                $response['success'] = true;
+
+            }
             default : {
                 die('Unknown - ' . $actionType);
                 // @todo
@@ -91,6 +101,11 @@ class Shortlist_ListService extends ShortlistService
         return $response;
     }
 
+
+    public function update($listId, $data)
+    {
+        die('<prE>'.print_R($data,1));
+    }
     /*
      * Remove All
      *
@@ -98,7 +113,7 @@ class Shortlist_ListService extends ShortlistService
      */
     public function removeAll()
     {
-        $criteria = craft()->elements->getCriteria('shortlist_list');
+        $criteria = craft()->elements->getCriteria('Shortlist_list');
         $criteria->ownerId = craft()->shortlist->user->id;
         $lists = $criteria->find();
 
@@ -118,7 +133,7 @@ class Shortlist_ListService extends ShortlistService
      */
     public function clearAll()
     {
-        $criteria = craft()->elements->getCriteria('shortlist_list');
+        $criteria = craft()->elements->getCriteria('Shortlist_list');
         $criteria->ownerId = craft()->shortlist->user->id;
         $lists = $criteria->find();
 
@@ -137,7 +152,7 @@ class Shortlist_ListService extends ShortlistService
      */
     public function clear($listId)
     {
-        $criteria = craft()->elements->getCriteria('shortlist_list');
+        $criteria = craft()->elements->getCriteria('Shortlist_list');
         $criteria->ownerId = craft()->shortlist->user->id;
         $criteria->listId = $listId;
         $list = $criteria->first();
@@ -166,7 +181,7 @@ class Shortlist_ListService extends ShortlistService
     {
         // Check this is a valid list to remove
         // both that it exists, and the current user is the owner of said list
-        $criteria = craft()->elements->getCriteria('shortlist_list');
+        $criteria = craft()->elements->getCriteria('Shortlist_list');
         $criteria->ownerId = craft()->shortlist->user->id;
 
         // Get all the user's lists
@@ -300,7 +315,7 @@ class Shortlist_ListService extends ShortlistService
      */
     public function getLists($userId = null)
     {
-        $criteria = craft()->elements->getCriteria('shortlist_list');
+        $criteria = craft()->elements->getCriteria('Shortlist_list');
         $criteria->ownerId = craft()->shortlist->user->id;
 
         // Useful for later impersonation in the CP
@@ -324,7 +339,7 @@ class Shortlist_ListService extends ShortlistService
     {
         if (craft()->request->isCpRequest()) $limitToUser = false;
 
-        $criteria = craft()->elements->getCriteria('shortlist_list');
+        $criteria = craft()->elements->getCriteria('Shortlist_list');
         $criteria->id = $listId;
 
         if ($limitToUser) {
@@ -373,7 +388,7 @@ class Shortlist_ListService extends ShortlistService
 
     public function getDefaultList()
     {
-        $criteria = craft()->elements->getCriteria('shortlist_list');
+        $criteria = craft()->elements->getCriteria('Shortlist_list');
         $criteria->ownerId = craft()->shortlist->user->id;
         $criteria->default = true;
         $list = $criteria->first();
@@ -401,13 +416,13 @@ class Shortlist_ListService extends ShortlistService
     {
         if (!is_bool($makeDefault)) $makeDefault = true;
 
-
         $settings = craft()->plugins->getPlugin('shortlist')->getSettings();
 
         $listModel = new Shortlist_ListModel();
-
         $listModel->shareSlug = strtolower(StringHelper::randomString(18));
-        $listModel->userSlug = 'someuser-slug';
+        $listModel->ownerId = $this->user->id;
+        $listModel->ownerType = $this->user->type;
+
 
         // Assign the extra data if possible
         $assignable = array('listTitle' => 'title', 'listSlug' => 'slug');
@@ -445,6 +460,7 @@ class Shortlist_ListService extends ShortlistService
         } else {
             $listModel->addError('general', 'There was a problem with creating the list');
 
+            die('<prE>'.print_R($listModel->errors,1));
             echo('problem creating');
             die('invalid');
         }
