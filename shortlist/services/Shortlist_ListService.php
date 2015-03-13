@@ -113,7 +113,7 @@ class Shortlist_ListService extends ShortlistService
      */
     public function removeAll()
     {
-        $criteria = craft()->elements->getCriteria('Shortlist_list');
+        $criteria = craft()->elements->getCriteria('Shortlist_List');
         $criteria->ownerId = craft()->shortlist->user->id;
         $lists = $criteria->find();
 
@@ -133,7 +133,7 @@ class Shortlist_ListService extends ShortlistService
      */
     public function clearAll()
     {
-        $criteria = craft()->elements->getCriteria('Shortlist_list');
+        $criteria = craft()->elements->getCriteria('Shortlist_List');
         $criteria->ownerId = craft()->shortlist->user->id;
         $lists = $criteria->find();
 
@@ -152,7 +152,7 @@ class Shortlist_ListService extends ShortlistService
      */
     public function clear($listId)
     {
-        $criteria = craft()->elements->getCriteria('Shortlist_list');
+        $criteria = craft()->elements->getCriteria('Shortlist_List');
         $criteria->ownerId = craft()->shortlist->user->id;
         $criteria->listId = $listId;
         $list = $criteria->first();
@@ -181,7 +181,7 @@ class Shortlist_ListService extends ShortlistService
     {
         // Check this is a valid list to remove
         // both that it exists, and the current user is the owner of said list
-        $criteria = craft()->elements->getCriteria('Shortlist_list');
+        $criteria = craft()->elements->getCriteria('Shortlist_List');
         $criteria->ownerId = craft()->shortlist->user->id;
 
         // Get all the user's lists
@@ -315,7 +315,7 @@ class Shortlist_ListService extends ShortlistService
      */
     public function getLists($userId = null)
     {
-        $criteria = craft()->elements->getCriteria('Shortlist_list');
+        $criteria = craft()->elements->getCriteria('Shortlist_List');
         $criteria->ownerId = craft()->shortlist->user->id;
 
         // Useful for later impersonation in the CP
@@ -339,7 +339,7 @@ class Shortlist_ListService extends ShortlistService
     {
         if (craft()->request->isCpRequest()) $limitToUser = false;
 
-        $criteria = craft()->elements->getCriteria('Shortlist_list');
+        $criteria = craft()->elements->getCriteria('Shortlist_List');
         $criteria->id = $listId;
 
         if ($limitToUser) {
@@ -388,7 +388,7 @@ class Shortlist_ListService extends ShortlistService
 
     public function getDefaultList()
     {
-        $criteria = craft()->elements->getCriteria('Shortlist_list');
+        $criteria = craft()->elements->getCriteria('Shortlist_List');
         $criteria->ownerId = craft()->shortlist->user->id;
         $criteria->default = true;
         $list = $criteria->first();

@@ -152,7 +152,7 @@ class Shortlist_ItemController extends ShortlistController
         );
 
         // Grab the item elements
-        $criteria = craft()->elements->getCriteria('Shortlist_item');
+        $criteria = craft()->elements->getCriteria('Shortlist_Item');
         $criteria->listId = $listId;
         $variables['listItems'] = $criteria->find();
 

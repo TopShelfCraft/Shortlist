@@ -10,7 +10,7 @@ class ShortlistPlugin extends BasePlugin
 
     function getVersion()
     {
-        return '0.5';
+        return '0.7';
     }
 
     function getDeveloper()
