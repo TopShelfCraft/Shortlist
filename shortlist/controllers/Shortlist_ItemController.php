@@ -1,7 +1,7 @@
 <?php
 namespace Craft;
 
-class Shortlist_ItemController extends BaseController
+class Shortlist_ItemController extends ShortlistController
 {
     protected $allowAnonymous = true;
 
@@ -76,22 +76,10 @@ class Shortlist_ItemController extends BaseController
             } else {
                 craft()->shortlist->redirect($response['object']);
             }
-
         }
 
-        $errorMsg = '<ul>';
-        foreach(craft()->shortlist->errors as $error) {
-            $errorMsg .= '<li>'.$error.'</li>';
-        }
-        $errorMsg .= '</ul>';
 
-        craft()->userSession->setError('There was a problem with that action - '.$errorMsg);
-
-
-        $url = craft()->request->getUrlReferrer();
-        craft()->request->redirect($url);
-
-
+        $this->returnError();
     }
 
 

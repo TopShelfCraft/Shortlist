@@ -187,7 +187,13 @@ class Shortlist_ItemService extends ShortlistService
 
                 //die('handle error action on item - ' . $actionType . ' - ' . $elementId . ' - ' . $listId); // @todo
 
-                craft()->shortlist->addError('Couldnt get list for item action');
+                if($actionType == 'add') {
+                    craft()->shortlist->addError('Couldn\'t find the list to add to');
+                } elseif($actionType == 'remove') {
+                    craft()->shortlist->addError('Couldn\'t find the list to remove from');
+                } else {
+                    craft()->shortlist->addError('Couldn\'t find the list for this item');
+                }
                 return false;
 
             }
