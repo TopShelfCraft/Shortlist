@@ -91,8 +91,10 @@ class Shortlist_ListService extends ShortlistService
 
             }
             default : {
-                die('Unknown - ' . $actionType);
-                // @todo
+
+                craft()->shortlist->addError('Sorry, unknown list action type');
+                return false;
+
                 break;
             }
 
@@ -104,7 +106,7 @@ class Shortlist_ListService extends ShortlistService
 
     public function update($listId, $data)
     {
-        die('<prE>'.print_R($data,1));
+        // @todo
     }
     /*
      * Remove All
@@ -206,6 +208,9 @@ class Shortlist_ListService extends ShortlistService
         $this->makeUndefault($listIds);
 
         // Now make our new default list
+       // $list->default = true;
+       // craft()->elements->saveElement($list);
+
         $listRecord = Shortlist_ListRecord::model()->findByAttributes(array('id' => $list->id));
         $listRecord->default = true;
         $listRecord->update();
@@ -375,11 +380,11 @@ class Shortlist_ListService extends ShortlistService
         if ($listId === false) {
             // Try to get the user's default list
             $defaultList = $this->getDefaultList();
-            if (is_null($defaultList)) {
-                // create a new list
-                return $this->create();
+            if($defaultList != null) {
+                return $defaultList;
             }
-
+            // create a new list
+            return $this->create();
         }
 
         return $this->getListById($listId);
@@ -459,10 +464,7 @@ class Shortlist_ListService extends ShortlistService
 
         } else {
             $listModel->addError('general', 'There was a problem with creating the list');
-
-            die('<prE>'.print_R($listModel->errors,1));
-            echo('problem creating');
-            die('invalid');
+            return false;
         }
 
         return null;

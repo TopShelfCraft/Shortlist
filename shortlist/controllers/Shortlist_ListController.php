@@ -135,7 +135,7 @@ class Shortlist_ListController extends BaseController
         $response = craft()->shortlist_list->action($actionType, $listId, $extraData);
         if ($response == false) {
             // Deal with an error state
-            die('failed to act'); // @todo
+            $this->errorResponse('Couldn\'t complete the list action');
         }
 
         // We let users create a list and immediately add an item
@@ -144,8 +144,6 @@ class Shortlist_ListController extends BaseController
             if($elementId != '') {
                 // Try to add the item to the new list
                 $item = craft()->shortlist_item->add($elementId, $response['object']->id);
-
-                // @todo - add a message and check actual return
             }
         }
 

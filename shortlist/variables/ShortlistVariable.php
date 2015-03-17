@@ -5,7 +5,7 @@ namespace Craft;
 class ShortlistVariable
 {
 
-    public function newList($options = array())
+    public function newListActionUrl($options = array())
     {
         return ShortlistHelper::newListAction($options);
     }

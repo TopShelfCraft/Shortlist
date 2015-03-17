@@ -1,5 +1,4 @@
 {% extends "_layout" %}
-
 {% set lists = craft.shortlist.lists %}
 
 {% block content %}
@@ -7,6 +6,13 @@
 <div class="jumbotron">
     <h1>Shortlist for Craft</h1>
 </div>
+
+
+{% if craft.shortlist.error is not null %}
+<div class="alert alert-danger">
+    {{ craft.shortlist.error }}
+</div>
+{% endif %}
 
 <div class="row">
     <div class="col-md-6">
@@ -17,7 +23,7 @@
             </footer>
 
             <div class="news-main">
-                <h1><a href="/{{ news.uri }}">{{ news.title }}</a></h1>
+                <h1>{{ news.title }}</h1>
             </div>
 
             <div class="shortlist">
@@ -25,9 +31,9 @@
                 {% set item = craft.shortlist.item(news.id) %}
 
                 {% if item.inList %}
-                <a class="btn btn-danger" href="{{ item.remove }}">Remove from : {{ item.parentList.title }}</a>
+                <a class="btn btn-danger" href="{{ item.removeActionUrl }}">Remove from : {{ item.parentList.title }}</a>
                 {% else %}
-                <a class="btn btn-primary" href="{{ item.add }}">Add to : {{ item.parentList.title }}</a>
+                <a class="btn btn-primary" href="{{ item.addActionUrl }}">Add to : {{ item.parentList.title }}</a>
                 {% endif %}
 
                 {% if item.otherLists is not empty %}
@@ -35,10 +41,11 @@
                 {% for other in item.otherLists %}
                 <ul class="list-unstyled">
                     {% if other.inList %}
-                    <li><a href="{{ other.remove }}" class="btn btn-sm btn-danger">Remove from : {{
+                    <li><a href="{{ other.removeActionUrl }}" class="btn btn-sm btn-danger">Remove from : {{
                         other.parentList.title }}</a></li>
                     {% else %}
-                    <li><a href="{{ other.add }}" class="btn btn-sm btn-default">Add to : {{ other.parentList.title }}</a></li>
+                    <li><a href="{{ other.addActionUrl }}" class="btn btn-sm btn-default">Add to : {{ other.parentList.title
+                        }}</a></li>
                     {% endif %}
                 </ul>
                 {% endfor %}
@@ -74,7 +81,7 @@
         <h2>List Options</h2>
 
         <h4>Create By Link</h4>
-        <a href="{{ actionUrl('shortlist/list/new') }}" class="btn btn-info">+ Create New List</a>
+        <a href="{{ craft.shortlist.newListActionUrl }}" class="btn btn-info">+ Create New List</a>
 
         <h4>Create By Form</h4>
 
@@ -117,15 +124,15 @@
         {% else %}
 
         {% for list in lists %}
-        <h4>({{ list.id }})  {{ list.title }}</h4>
+        <h4>({{ list.id }}) {{ list.title }}</h4>
 
         <p><span class="label label-info">{{list.status}}</span> {% if list.default %}<span class="label label-success">default</span>{%
             endif %} Owned by <em>{{ list.owner }}</em> {{ list.owner.email }}</p>
 
         <div class="well">
-            <a href="{{ list.delete }}" class="btn btn-danger">Delete List</a>
-            {% if list.default == false %}<a href="{{ list.makeDefault }}" class="btn">Make Default</a>{% endif %}
-            {% if list.items is not empty %}<a href="{{ list.clear }}" class="btn">Clear List</a>{% endif %}
+            <a href="{{ list.deleteActionUrl }}" class="btn btn-danger">Delete List</a>
+            {% if list.default == false %}<a href="{{ list.makeDefaultActionUrl }}" class="btn">Make Default</a>{% endif %}
+            {% if list.items is not empty %}<a href="{{ list.clearActionUrl }}" class="btn">Clear List</a>{% endif %}
         </div>
 
 
@@ -134,7 +141,7 @@
         {% else %}
         <ul>
             {% for item in list.items %}
-            <li><a href="{{ item.remove }}" class="btn btn-primary btn-xs">remove</a>
+            <li><a href="{{ item.removeActionUrl }}" class="btn btn-primary btn-xs">remove</a>
                 {{ item.id }} <strong>{{ item.title }}</strong>
             </li>
             {% endfor %}

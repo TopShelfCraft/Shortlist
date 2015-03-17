@@ -12,9 +12,9 @@ class Shortlist_ListModel extends BaseElementModel
 
         $settings = craft()->plugins->getPlugin('shortlist')->getSettings();
 
-        $this->ownerId = craft()->shortlist->user->id;
-        $this->ownerType = craft()->shortlist->user->type;
-        $this->default = false;
+      //  $this->ownerId = craft()->shortlist->user->id;
+      //  $this->ownerType = craft()->shortlist->user->type;
+      //  $this->default = false;
         $this->setContent(array('title' => $settings->defaultListTitle));
 
     }
@@ -107,17 +107,17 @@ class Shortlist_ListModel extends BaseElementModel
 
 
 
-    public function delete($options = array())
+    public function deleteActionUrl($options = array())
     {
         return ShortlistHelper::removeListAction($this->id, $options);
     }
 
-    public function clear($options = array())
+    public function clearActionUrl($options = array())
     {
         return ShortlistHelper::clearListAction($this->id, $options);
     }
 
-    public function makeDefault($options = array())
+    public function makeDefaultActionUrl($options = array())
     {
         return ShortlistHelper::makeListDefaultAction($this->id, $options);
     }

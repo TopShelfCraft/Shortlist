@@ -184,9 +184,6 @@ class Shortlist_ItemService extends ShortlistService
             $list = craft()->shortlist_list->getListOrCreate($listId);
             if ($list === false || is_null($list)) {
                 // There was a problem getting or creating the list
-
-                //die('handle error action on item - ' . $actionType . ' - ' . $elementId . ' - ' . $listId); // @todo
-
                 if($actionType == 'add') {
                     craft()->shortlist->addError('Couldn\'t find the list to add to');
                 } elseif($actionType == 'remove') {
@@ -235,7 +232,8 @@ class Shortlist_ItemService extends ShortlistService
                 $item = $this->add($elementId, $list->id);
                 if ($item == false) {
                     // failed to create or add
-                    die('failed to create or add'); // @todo
+                    craft()->shortlist->addError('Failed to add the item');
+                    return false;
                 }
 
 
@@ -247,12 +245,14 @@ class Shortlist_ItemService extends ShortlistService
                 break;
             case 'remove':
                 if (is_null($item)) {
-                    die('cant remove a null item - ' . $elementId);
+                    craft()->shortlist->addError('Failed to find the item to remove the item');
+                    return false;
                 }
                 $updatedItem = $this->remove($item);
                 if ($updatedItem == false) {
-                    // FAiled to remove from list
-                    die('failed to remove'); // @todo
+                    // Failed to remove from list
+                    craft()->shortlist->addError('Failed to remove the item from the list');
+                    return false;
                 }
 
                 $response['object'] = $updatedItem;
@@ -265,7 +265,8 @@ class Shortlist_ItemService extends ShortlistService
                 $updatedItem = $this->promote($elementId, $list->id);
                 if ($updatedItem == false) {
                     // Failed to promote in list
-                    die('failed to promote');
+                    craft()->shortlist->addError('Failed to promote the item in the list');
+                    return false;
                 }
 
                 $response['object'] = $updatedItem;
@@ -274,9 +275,13 @@ class Shortlist_ItemService extends ShortlistService
                 $response['revert'] = array('verb' => 'demote', 'params' => array('itemId' => $updatedItem->id, 'order' => $item->sortOrder));
 
                 break;
-            default:
-                die('bad value - ' . $actionType); // @todo
+            default: {
+
+                craft()->shortlist->addError('Sorry, this action was unknown');
+                return false;
+
                 break;
+            }
         }
 
         // Validate our response
@@ -401,9 +406,8 @@ class Shortlist_ItemService extends ShortlistService
                 $record->insert();
 
             } else {
-                //$item->addError('general', 'There was a problem creating the list');
-                // @todo - add proper error handling
-                die('failed');
+                craft()->shortlist->addError('Failed to add the item');
+                return false;
             }
 
             craft()->search->indexElementAttributes($itemModel);
@@ -411,7 +415,8 @@ class Shortlist_ItemService extends ShortlistService
             return $itemModel;
 
         } else {
-            die('failed to validate');
+            craft()->shortlist->addError('Item didn\'t validate');
+
         }
 
 

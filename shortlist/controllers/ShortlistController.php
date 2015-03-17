@@ -15,6 +15,18 @@ class ShortlistController extends BaseController
         }
     }
 
+
+    private function errorResponse($msg = '')
+    {
+        if(craft()->request->isAjaxRequest()) {
+            $this->returnJson(array('success' => false, 'error' => true, 'error_message' => Craft::t($msg)));
+        } else {
+            craft()->shortlist->addError($msg);
+            $this->returnError();
+        }
+    }
+
+
     public function returnError()
     {
         // Do we have errors?

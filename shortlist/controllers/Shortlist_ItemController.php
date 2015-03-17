@@ -45,14 +45,13 @@ class Shortlist_ItemController extends ShortlistController
         $itemId = craft()->shortlist->getIdForRequest('itemId,id');
         if ($itemId == false) {
             // Return an error message
-            die('no id'); // @todo
+            return $this->errorResponse('Couldn\'t find the id for the request');
         }
 
         // Validate this id is a real element id
         $element = craft()->elements->getElementById($itemId);
         if (is_null($element)) {
-            die('not a real element');
-            // @todo
+            return $this->errorResponse('Couldn\'t find a matching element for the id');
         }
 
         // Get the list for the request
@@ -78,10 +77,8 @@ class Shortlist_ItemController extends ShortlistController
             }
         }
 
-
-        $this->returnError();
+        return $this->errorResponse('Couldn\'t complete the request');
     }
-
 
     private function getIdForRequest($name = 'itemId,id', $offset = 0)
     {
@@ -120,43 +117,31 @@ class Shortlist_ItemController extends ShortlistController
 
     public function actionIndex()
     {
+        $this->redirect('shortlist');
+        /*
         $this->requireAdmin();
         $this->renderTemplate('shortlist/item/index');
+        */
     }
 
     public function actionView(array $variables = array())
     {
-        $this->renderTemplate('shortlist/item/index');
+        // Redirect to the parent item
+        if(!isset($variables['itemId'])) {
+            $this->redirect('shortlist');
+        }
 
-        /*
-        $this->requireAdmin();
-
-        $listId = $variables['itemId'];
-        $list = craft()->shortlist_list->getListById($listId);
-
-        if ($list == null) $this->redirect('shortlist');
-
-        $variables['list'] = $list;
-
-        $variables['tabs']['List'] = array(
-            'label' => Craft::t('List Details'),
-            'url'   => '#list',
-        );
-        $variables['tabs']['Items'] = array(
-            'label' => Craft::t('Items'),
-            'url'   => '#items',
-        );
-        $variables['tabs']['Related'] = array(
-            'label' => Craft::t('Related'),
-            'url'   => '#related',
-        );
-
-        // Grab the item elements
         $criteria = craft()->elements->getCriteria('Shortlist_Item');
-        $criteria->listId = $listId;
-        $variables['listItems'] = $criteria->find();
+        $criteria->id = $variables['itemId'];
+        $item = $criteria->first();
 
-        $this->renderTemplate('shortlist/item/_view', $variables);*/
+        if($item == null) {
+            $this->redirect('shortlist');
+        }
+
+        $url = $item->element()->getCpEditUrl();
+        $this->redirect($url);
+
     }
 
 

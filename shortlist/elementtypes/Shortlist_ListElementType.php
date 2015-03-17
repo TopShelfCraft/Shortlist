@@ -41,6 +41,20 @@ class Shortlist_ListElementType extends BaseElementType
         return true;
     }
 
+
+
+    /**
+     * Returns whether this element type has content.
+     *
+     * @return bool
+     */
+    public function hasTitles()
+    {
+        return true;
+    }
+
+
+
     /**
      * Returns this element type's sources.
      *
@@ -154,12 +168,10 @@ class Shortlist_ListElementType extends BaseElementType
                 } else {
                     $user = craft()->users->getUserById($element->ownerId);
 
-
                     if ($user == null) {
                         return Craft::t('[Deleted User]');
                     } else {
                         $url = UrlHelper::getCpUrl('users/'.$user->id);
-
                         return "<a href='".$url."'>" . $user->getFriendlyName() . "</a>";
                     }
                 }
@@ -176,7 +188,7 @@ class Shortlist_ListElementType extends BaseElementType
                 foreach ($items as $item) {
                     if ($i < $this->listInlineViewLimit) {
                         $parent = craft()->entries->getEntryById($item->elementId);
-                        $url = UrlHelper::getCpUrl('shortlist/list/' . $item->elementId);
+                        $url = UrlHelper::getCpUrl('shortlist/list/'.$element->id.'#' . $item->elementId);
                         $str[] = '<a href="' . $url . '">' . $parent->title . '</a>';
                     }
                     $i++;

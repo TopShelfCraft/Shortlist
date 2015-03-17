@@ -86,17 +86,17 @@ class Shortlist_ItemModel extends BaseElementModel
         return $lists;
     }
 
-    public function add($options = array())
+    public function addActionUrl($options = array())
     {
         return ShortlistHelper::addAction($this->elementId, $this->listId, $options);
     }
 
-    public function remove($options = array())
+    public function removeActionUrl($options = array())
     {
         return ShortlistHelper::removeAction($this->elementId, $this->listId, $options);
     }
 
-    public function toggle($options = array())
+    public function toggleActionUrl($options = array())
     {
         return ShortlistHelper::toggleAction($this->elementId, $this->listId, $options);
     }
