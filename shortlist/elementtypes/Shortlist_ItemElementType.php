@@ -76,7 +76,8 @@ class Shortlist_ItemElementType extends BaseElementType
             'elementId'   => AttributeType::Mixed,
             'elementType' => AttributeType::String,
             'title'       => AttributeType::String,
-            'listId'      => AttributeType::Mixed
+            'listId'      => AttributeType::Mixed,
+            'ownerId'     => AttributeType::Number
         );
     }
 
@@ -90,7 +91,7 @@ class Shortlist_ItemElementType extends BaseElementType
     public function defineTableAttributes($source = null)
     {
         return array(
-            'item'          => Craft::t('Item'),
+            'item'        => Craft::t('Item'),
             'elementType' => Craft::t('Parent Element Type'),
             'dateCreated' => Craft::t('Added On')
         );
@@ -115,10 +116,14 @@ class Shortlist_ItemElementType extends BaseElementType
             $query->andWhere(DbHelper::parseParam('shortlist_item.listId', $criteria->listId, $query->params));
         }
 
-
         if ($criteria->elementId) {
             $query->andWhere(DbHelper::parseParam('shortlist_item.elementId', $criteria->elementId, $query->params));
         }
+
+        if ($criteria->ownerId) {
+            $query->andWhere(DbHelper::parseParam('shortlist_list.ownerId', $criteria->ownerId, $query->params));
+        }
+
 
     }
 

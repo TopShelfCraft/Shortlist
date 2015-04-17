@@ -106,5 +106,9 @@ class Shortlist_ItemModel extends BaseElementModel
         return craft()->shortlist_list->getListByIdOrBare($this->listId);
     }
 
+    public function hasTitles()
+    {
+        return true;
+    }
 
 }

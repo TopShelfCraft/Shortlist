@@ -13,10 +13,35 @@ class ShortlistVariable
     public function item($elementId = null)
     {
         $itemElement = craft()->shortlist_item->getItem($elementId);
-
         return $itemElement;
     }
 
+    public function itemCount($criteria = null)
+    {
+        if (is_null($criteria)) {
+            $criteria = craft()->elements->getCriteria('Shortlist_Item');
+        }
+
+        $criteria->ownerId = craft()->shortlist->user->id;
+        return $criteria->count();
+    }
+
+    public function itemsForElements($elements = array())
+    {
+        $criteria = craft()->elements->getCriteria('Shortlist_Item');
+
+        $elementIds = array();
+        foreach($elements as $element) {
+            $elementIds[] = $element->id;
+        }
+
+        $criteria->elementId = $elementIds;
+
+        $criteria->ownerId = craft()->shortlist->user->id;
+        $items = $criteria->find();
+
+        return $criteria->find();
+    }
 
     public function lists($criteria = null)
     {
@@ -25,7 +50,6 @@ class ShortlistVariable
         }
 
         $criteria->ownerId = craft()->shortlist->user->id;
-
         return $criteria->find();
     }
 

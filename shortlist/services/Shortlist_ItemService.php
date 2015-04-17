@@ -201,13 +201,11 @@ class Shortlist_ItemService extends ShortlistService
         // based on the existing list content
         $item = $this->findExisting($elementId, $list->id);
 
-
-        $action = $actionType;
         if ($actionType == 'toggle') {
             if (is_null($item)) {
-                $action = 'add';
+                $actionType = 'add';
             } else {
-                $action = 'remove';
+                $actionType = 'remove';
             }
         } elseif ($actionType == 'add') {
             if (!is_null($item)) {
@@ -276,7 +274,7 @@ class Shortlist_ItemService extends ShortlistService
 
                 break;
             default: {
-
+                die('unkow');
                 craft()->shortlist->addError('Sorry, this action was unknown');
                 return false;
 
@@ -323,7 +321,12 @@ class Shortlist_ItemService extends ShortlistService
     public function remove(Shortlist_ItemModel $itemModel)
     {
         $itemModel->enabled = false;
-        craft()->elements->saveElement($itemModel);
+        try {
+            craft()->elements->saveElement($itemModel);
+        } catch(Exception $e) {
+            // Hmm. Failed to save.
+            // This likely indicates that the element has been removed since added.
+        }
 
         return $itemModel;
     }

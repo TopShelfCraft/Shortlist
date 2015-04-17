@@ -16,7 +16,7 @@ class ShortlistHelper
     }
 
 
-    public function clearListAction($listId, $options = array())
+    public static function clearListAction($listId, $options = array())
     {
         $params['listId'] = $listId;
         $params['return'] = craft()->request->getUrl();

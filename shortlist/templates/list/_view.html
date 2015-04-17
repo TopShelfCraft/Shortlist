@@ -81,7 +81,7 @@
             {% if list.ownerType == 'guest' %}
             <p>Guest</p>
             {% else %}
-            {% set user = craft.users.id(list.ownerId).first() %}
+            {% set user = craft.users.getUserById(list.ownerId).first() %}
             {% if user is null %}
             <p>User Deleted</p>
             {% else %}
