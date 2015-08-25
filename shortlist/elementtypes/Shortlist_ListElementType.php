@@ -187,7 +187,7 @@ class Shortlist_ListElementType extends BaseElementType
                 $i = 0;
                 foreach ($items as $item) {
                     if ($i < $this->listInlineViewLimit) {
-                        $parent = craft()->entries->getEntryById($item->elementId);
+                        $parent = craft()->elements->getElementById($item->elementId);
                         $url = UrlHelper::getCpUrl('shortlist/list/'.$element->id.'#' . $item->elementId);
                         $str[] = '<a href="' . $url . '">' . $parent->title . '</a>';
                     }

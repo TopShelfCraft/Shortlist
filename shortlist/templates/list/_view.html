@@ -81,11 +81,11 @@
             {% if list.ownerType == 'guest' %}
             <p>Guest</p>
             {% else %}
-            {% set user = craft.users.getUserById(list.ownerId).first() %}
+            {% set user = craft.users.id(list.ownerId).first() %}
             {% if user is null %}
             <p>User Deleted</p>
             {% else %}
-            <p><a href="{{ url('users/'~user.id ) }}">{{ user }}</a></p>
+            <p><a href="{{ url('users/'~user.id ) }}">{{ user.friendlyName }}</a></p>
             {% endif %}
             {% endif %}
 
