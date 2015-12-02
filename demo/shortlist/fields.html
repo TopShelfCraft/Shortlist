@@ -1,0 +1,25 @@
+{% extends "shortlist/_layout" %}
+{% set lists = craft.shortlist.lists %}
+
+{% block content %}
+
+
+{% if craft.shortlist.error is not null %}
+    <div class="alert alert-danger">
+        {{ craft.shortlist.error }}
+    </div>
+{% endif %}
+
+<div class="row">
+
+    <div class="col-md-12">
+
+        <h2>Item Fields</h2>
+        <p>List items can have fields assigned just like any other Craft element. This can be useful if you're building things like wishlists and want to capture a quantity value, customization options or more.</p>
+
+
+        <hr/>
+
+
+    </div>
+    {% endblock %}

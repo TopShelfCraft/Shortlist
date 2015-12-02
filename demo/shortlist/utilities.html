@@ -1,0 +1,71 @@
+{% extends "shortlist/_layout" %}
+{% set lists = craft.shortlist.lists %}
+
+{% block content %}
+
+
+{% if craft.shortlist.error is not null %}
+    <div class="alert alert-danger">
+        {{ craft.shortlist.error }}
+    </div>
+{% endif %}
+
+<div class="row">
+
+    <div class="col-md-12">
+
+        <h2>List Utilities</h2>
+        <p>There are a few actions you can perform for your lists.</p>
+        <hr/>
+
+        <h3>List Creation</h3>
+
+        <h4>Create by Link</h4>
+        <p>This will immedidately create a new list with the default properties, and set it as the default list.</p>
+        <a href="{{ craft.shortlist.newListActionUrl }}" class="btn btn-info">+ Create New List</a>
+
+        <h4>Create By Form</h4>
+        <p>Creation by form can be more flexible and lets the user customise their list before creation.</p>
+
+        <form class="form-horizontal" id="charge-form" method="post" action="" accept-charset="UTF-8">
+            <input type="hidden" name="action" value="shortlist/list/new"/>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="listTitle" id="listTitle"
+                               placeholder="New List Title...">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit">+ Create</button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <hr/>
+        <h3>List Deletion</h3>
+        <p>You can delete all the current lists for a user in a single action.</p>
+        <form class="form-inline" method="post" action="" accept-charset="UTF-8">
+            <input type="hidden" name="action" value="shortlist/list/deleteAll"/>
+            <button class="btn btn-danger" type="submit">Delete All Lists</button>
+        </form>
+
+        <p><em>Individual lists can also be deleted.</em></p>
+
+        <hr/>
+        <h3>List Clearing</h3>
+        <p>You can clear all the list <em>content</em> for a user in a single action. This removes all the content, but leaves the lists othwerise entact.</p>
+
+
+            <form class="form-inline" method="post" action="" accept-charset="UTF-8">
+                <input type="hidden" name="action" value="shortlist/list/clearAll"/>
+                <button class="btn btn-default" type="submit">Clear All Lists</button>
+            </form>
+
+
+        <hr/>
+
+
+    </div>
+    {% endblock %}

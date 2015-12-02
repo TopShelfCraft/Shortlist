@@ -6,7 +6,7 @@ class ShortlistHelper
 
 
 
-    public function removeListAction($listId, $options = array())
+    public static function removeListAction($listId, $options = array())
     {
         $params['listId'] = $listId;
         $params['return'] = craft()->request->getUrl();
@@ -25,7 +25,7 @@ class ShortlistHelper
         return UrlHelper::getActionUrl('shortlist/list/clear', $params);
     }
 
-    public function makeListDefaultAction($listId, $options = array())
+    public static function makeListDefaultAction($listId, $options = array())
     {
         $params['listId'] = $listId;
         $params['return'] = craft()->request->getUrl();

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+    <meta charset="utf-8" />
+    <title>{% if title is defined %}{{ title }} - {% endif %}{{ siteName }}</title>
+    <link rel="home" href="{{ siteUrl }}" />
+
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Static navbar -->
+    <div class="navbar navbar-default">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ siteUrl }}">{{ siteName }}</a>
+
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="/shortlist">Shortlist</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+
+    <ul class="nav nav-tabs">
+        <li {% if craft.request.getSegment(2) == ''%}class="active"{% endif %}><a href="{{ url('shortlist') }}">Overview</a></li>
+        <li {% if craft.request.getSegment(2) == 'basic'%}class="active"{% endif %}><a href="{{ url('shortlist/basic') }}">Basic Setup</a></li>
+        <li {% if craft.request.getSegment(2) == 'utilities'%}class="active"{% endif %}><a href="{{ url('shortlist/utilities') }}">List Utilities</a></li>
+        <li {% if craft.request.getSegment(2) == 'fields'%}class="active"{% endif %}><a href="{{ url('shortlist/fields') }}">Item Fields</a></li>
+    </ul>
+
+    {% block content %}
+
+    {% endblock %}
+
+</div> <!-- /container -->
+
+</body>
+</html>

@@ -1,157 +1,28 @@
-{% extends "_layout" %}
-{% set lists = craft.shortlist.lists %}
+{% extends 'shortlist/_layout' %}
 
 {% block content %}
 
-<div class="jumbotron">
-    <h1>Shortlist for Craft</h1>
-</div>
+
+    <h3>Shortlist</h3>
+    <h4>User lists for Craft</h4>
 
 
-{% if craft.shortlist.error is not null %}
-<div class="alert alert-danger">
-    {{ craft.shortlist.error }}
-</div>
-{% endif %}
+    <p>These are the Shortlist example templates.</p>
+    <p>Just getting started? <a href="{{ url('shortlist/basic') }}">Check out the basic usage setup to get started!</a></p>
 
-<div class="row">
-    <div class="col-md-6">
-        {% for news in craft.entries.section('news') %}
-        <article class="blog-article {% if loop.first %}latest{% endif %}">
-            <footer class="article-footer">
-                <p>{{ news.postDate | date('jS F, Y') }}</p>
-            </footer>
+    <p>Also, be sure to check out the <a href="http://squarebit.co.uk/software/craft/shortlist/docs/quickstart">Quickstart Guide</a>.</p>
 
-            <div class="news-main">
-                <h1>{{ news.title }}</h1>
-            </div>
+    <p><a href="{{ url('shortlist/basic') }}" class="btn btn-primary">Basic Lists Setup &rarr;</a></p>
 
-            <div class="shortlist">
+    <hr/>
+    <p>Additional Resources:
+    <ul>
+        <li><a href="http://squarebit.co.uk/software/craft/shortlist">Shortlist Documentation</a>.</li>
+        <li><a href="https://buildwithcraft.com/docs/introduction">Craft CMS Documentation</a>.</li>
+        <li><a href="http://craftcms.stackexchange.com">Craft CMS Stack Exchange</a>. Use the <code>shortlist-plugin</code>
+            tag.
+        </li>
+        <li><a href="mailto:support@squarebit.co.uk">Email SquareBit Support</a> if you run into issues</li>
+    </ul>
 
-                {% set item = craft.shortlist.item(news.id) %}
-
-                {% if item.inList %}
-                <a class="btn btn-danger" href="{{ item.removeActionUrl }}">Remove from : {{ item.parentList.title }}</a>
-                {% else %}
-                <a class="btn btn-primary" href="{{ item.addActionUrl }}">Add to : {{ item.parentList.title }}</a>
-                {% endif %}
-
-                {% if item.otherLists is not empty %}
-                <h4>Other Lists</h4>
-                {% for other in item.otherLists %}
-                <ul class="list-unstyled">
-                    {% if other.inList %}
-                    <li><a href="{{ other.removeActionUrl }}" class="btn btn-sm btn-danger">Remove from : {{
-                        other.parentList.title }}</a></li>
-                    {% else %}
-                    <li><a href="{{ other.addActionUrl }}" class="btn btn-sm btn-default">Add to : {{ other.parentList.title
-                        }}</a></li>
-                    {% endif %}
-                </ul>
-                {% endfor %}
-                {% endif %}
-
-                <h4>Add to New List</h4>
-
-                <form class="form-horizontal" method="post" action="" accept-charset="UTF-8">
-                    <input type="hidden" name="action" value="shortlist/list/new"/>
-                    <input type="hidden" name="elementId" value="{{ news.id }}"/>
-
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="input-group">
-                                <input type="text" class="form-control" name="listTitle" id="listTitle"
-                                       placeholder="New List Title...">
-
-                                <span class="input-group-btn">
-                                    <button class="btn btn-default" type="submit">Create + Add</button>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-        </article>
-        <hr/>
-        {% endfor %}
-    </div>
-    <div class="col-md-6">
-
-        <h2>List Options</h2>
-
-        <h4>Create By Link</h4>
-        <a href="{{ craft.shortlist.newListActionUrl }}" class="btn btn-info">+ Create New List</a>
-
-        <h4>Create By Form</h4>
-
-        <form class="form-horizontal" id="charge-form" method="post" action="" accept-charset="UTF-8">
-            <input type="hidden" name="action" value="shortlist/list/new"/>
-
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="input-group">
-                        <input type="text" class="form-control" name="listTitle" id="listTitle"
-                               placeholder="New List Title...">
-                        <span class="input-group-btn">
-                            <button class="btn btn-default" type="submit">+ Create</button>
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </form>
-
-        <hr/>
-        <h4>List Utilities</h4>
-
-        <div class="well">
-            <form class="form-inline" method="post" action="" accept-charset="UTF-8">
-                <input type="hidden" name="action" value="shortlist/list/deleteAll"/>
-                <button class="btn btn-danger" type="submit">Delete All Lists</button>
-            </form>
-            <form class="form-inline" method="post" action="" accept-charset="UTF-8">
-                <input type="hidden" name="action" value="shortlist/list/clearAll"/>
-                <button class="btn btn-default" type="submit">Clear All Lists</button>
-            </form>
-        </div>
-
-
-        <hr/>
-        <h2>Your Lists</h2>
-
-        {% if lists is empty %}
-        <p><em>You have no lists at the moment.</em></p>
-        {% else %}
-
-        {% for list in lists %}
-        <h4>({{ list.id }}) {{ list.title }}</h4>
-
-        <p><span class="label label-info">{{list.status}}</span> {% if list.default %}<span class="label label-success">default</span>{%
-            endif %} Owned by <em>{{ list.owner }}</em> {{ list.owner.email }}</p>
-
-        <div class="well">
-            <a href="{{ list.deleteActionUrl }}" class="btn btn-danger">Delete List</a>
-            {% if list.default == false %}<a href="{{ list.makeDefaultActionUrl }}" class="btn">Make Default</a>{% endif %}
-            {% if list.items is not empty %}<a href="{{ list.clearActionUrl }}" class="btn">Clear List</a>{% endif %}
-        </div>
-
-
-        {% if list.items is empty %}
-        <p><em>This list is empty</em></p>
-        {% else %}
-        <ul>
-            {% for item in list.items %}
-            <li><a href="{{ item.removeActionUrl }}" class="btn btn-primary btn-xs">remove</a>
-                {{ item.id }} <strong>{{ item.title }}</strong>
-            </li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-
-        <hr/>
-
-        {% endfor %}
-        {% endif %}
-
-    </div>
-    {% endblock %}
+{% endblock %}
