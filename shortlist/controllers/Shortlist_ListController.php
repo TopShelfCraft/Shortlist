@@ -83,7 +83,7 @@ class Shortlist_ListController extends BaseController
 
         $variables['list'] = new Shortlist_ListModel();
 
-        $this->renderTemplate('shortlist/list/_fields', $variables);
+        $this->renderTemplate('shortlist/settings/fields/_lists', $variables);
     }
 
 

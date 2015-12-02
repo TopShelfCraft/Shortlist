@@ -1,0 +1,58 @@
+
+    <div class="pagination">
+        <p>Showing page 1 of 10</p>
+        <ul>
+            <li class="current"><span>1</span></li>
+
+            <li><a href="?p2" class="pagination">2</a></li>
+            <li><a href="?p3" class="pagination">3</a></li>
+
+            <li><a href="http://craft.dev/admin/zenbu/p2?" class="pag-next-link pagination">»</a></li>
+        </ul>
+        <div class="clear"></div>
+    </div>
+
+{#
+<p>
+    {% paginate items as itemsOnPage %}
+
+    {% set resultFrom = paginate.currentPage == 1 ? 1 : (paginate.currentPage * craft.request.getParam('limit', 10)) - (craft.request.getParam('limit', 10) - 1) %}
+    {% set resultTo = paginate.currentPage == 1 ? craft.request.getParam('limit', 10) : paginate.currentPage * craft.request.getParam('limit', 10) %}
+    {% set resultTo = resultTo > paginate.total ? paginate.total : resultTo %}
+
+    {% set totalResults %}
+    {% if paginate.total == 1 %}{{paginate.total}} {{'result'|t}}{% else %}{{paginate.total}} {{'results'|t}}{% endif %}
+    {% endset %}
+
+    {% if paginate.total == 0 %}
+    {{'No entries found'|t}}
+    {% else %}
+    {{ "Showing results {from} to {to} out of {total}" | t({from: resultFrom, to: resultTo, total: totalResults})}}
+    {% endif %}
+
+    {% if paginate.totalPages > 1 %}
+<div class="pagination">
+    <ul>
+        {% if paginate.prevUrl %}
+        <li><a href="{{ paginate.prevUrl }}?{{ craft.request.getQueryStringWithoutPath() }}" class="pag-prev-link pagination">&laquo;</a></li>
+        {% endif %}
+
+        {% for page, url in paginate.getPrevUrls(5) %}
+        <li><a href="{{ url }}?{{ craft.request.getQueryStringWithoutPath() }}" class="pagination">{{ page }}</a></li>
+        {% endfor %}
+
+        <li class="current"><span>{{ paginate.currentPage }}</span></li>
+
+        {% for page, url in paginate.getNextUrls(5) %}
+        <li><a href="{{ url }}?{{ craft.request.getQueryStringWithoutPath() }}" class="pagination">{{ page }}</a></li>
+        {% endfor %}
+
+        {% if paginate.nextUrl %}
+        <li><a href="{{ paginate.nextUrl }}?{{ craft.request.getQueryStringWithoutPath() }}" class="pag-next-link pagination">&raquo;</a></li>
+        {% endif %}
+    </ul>
+    <div class="clear"></div>
+</div>
+{% endif %}
+{% endpaginate %}
+</p>#}

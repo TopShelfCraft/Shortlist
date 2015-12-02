@@ -1,0 +1,32 @@
+{% extends "_layouts/cp" %}
+{% hook 'shortlist.prepCpTemplate' %}
+{% hook 'shortlist.prepCpSettingsTemplate' %}
+{% requireAdmin %}
+{% import '_includes/forms' as forms %}
+{% set title = "Shortlist Setup"|t %}
+{% set selectedSubnavItem = 'settings' %}
+
+
+{% includejs %}
+var $upgradePromo =  $('#shortlistupgradepromo');
+$upgradePromo.on('click', function() {
+$upgradePromo = new Craft.ShortlistUpgradeModal();
+});
+{% endincludejs %}
+
+
+{% block sidebar %}
+    <nav>
+        <ul>
+            {% for id, item in navItems %}
+                {% if item.heading is defined %}
+                    <li class="heading"><span>{{ item.heading }}</span></li>
+                {% else %}
+                    <li>
+                        <a href="{{ url('shortlist/settings/'~id) }}" class="{% if item.class is defined %}{{ item.class }}{% endif %}{% if id == selectedItem %} sel{% endif %}">{{ item.title }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </nav>
+{% endblock %}

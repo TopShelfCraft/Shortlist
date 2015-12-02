@@ -1,0 +1,16 @@
+{% extends "_layouts/elementindex" %}
+{% hook 'shortlist.prepCpTemplate' %}
+{% set title = "Shortlist"|t %}
+{% set elementType = "Shortlist_List" %}
+{% set showStatusMenu = true %}
+
+
+{% block sidebar %}
+    {{ parent() }}
+
+    {#--
+    <div class="buttons">
+          <a href="{{ url('shortlist/list/editFields') }}" class="btn icon settings">Edit List Fields</a>
+    </div>
+    --#}
+{% endblock %}

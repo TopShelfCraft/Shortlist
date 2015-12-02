@@ -1,19 +1,2 @@
-{% extends "_layouts/elementindex" %}
-{% set title = "Shortlist"|t %}
-{% set elementType = "Shortlist_List" %}
-{% set showStatusMenu = true %}
-
-
-{% set tabs = {
-lists: { label: "Lists"|t, url: url('shortlist') },
-} %}
-
-{% block sidebar %}
-{{ parent() }}
-
-{#--
-<div class="buttons">
-      <a href="{{ url('shortlist/list/editFields') }}" class="btn icon settings">Edit List Fields</a>
-</div>
---#}
-{% endblock %}
+{% extends "shortlist/_layouts/shortlists" %}
+{% set selectedSubnavItem = 'shortlist' %}
