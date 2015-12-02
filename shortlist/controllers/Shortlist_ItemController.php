@@ -144,6 +144,49 @@ class Shortlist_ItemController extends ShortlistController
 
     }
 
+    /**
+     * Template layout edit
+     */
+    public function actionEditFields()
+    {
+        $variables['title'] = 'Edit Item Fields';
+        $variables['item'] = new Shortlist_ItemModel();
+
+        $this->renderTemplate('shortlist/settings/fields/_items', $variables);
+    }
+
+
+    /**
+     * Template layout edit
+     */
+    public function actionSaveLayout()
+    {
+        $template = new Shortlist_ItemModel();
+
+        // Set the field layout
+        $fieldLayout = craft()->fields->assembleLayoutFromPost();
+        $fieldLayout->type = 'Shortlist_Item';
+        craft()->fields->deleteLayoutsByType('Shortlist_Item');
+
+        if (craft()->fields->saveLayout($fieldLayout))
+        {
+            craft()->userSession->setNotice(Craft::t('Item fields saved.'));
+            $this->redirectToPostedUrl();
+        }
+        else
+        {
+            craft()->userSession->setError(Craft::t('Couldn’t save item fields.'));
+        }
+
+
+        // Send the feature type back to the template
+        craft()->urlManager->setRouteVariables(array(
+            'template' => $template
+        ));
+    }
+
+
+
 
 
 }

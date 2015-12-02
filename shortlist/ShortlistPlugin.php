@@ -78,6 +78,7 @@ class ShortlistPlugin extends BasePlugin
             'shortlist/settings'             => ['action' => 'shortlist/settings/index'],
             'shortlist/settings/license'     => ['action' => 'shortlist/settings/license'],
             'shortlist/settings/listelement' => ['action' => 'shortlist/list/editFields'],
+            'shortlist/settings/itemelement' => ['action' => 'shortlist/item/editFields'],
         ];
 
     }

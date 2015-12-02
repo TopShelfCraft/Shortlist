@@ -1,0 +1,26 @@
+{% extends "shortlist/_layouts/settings" %}
+
+{% set crumbs = [
+{ label: "Settings"|t, url: url('shortlist/settings') },
+{ label: "License"|t, url: url('shortlist/settings/license') },
+] %}
+
+{% block content %}
+    <h1>License</h1>
+
+    <p>Shortlist has two license tiers : <strong>Free</strong> and <strong>Pro</strong></p>
+
+    <p>You are running : <strong>{{ editionName }}</strong></p>
+
+    {% if edition < 1 %}
+        <hr/>
+        <h2>Upgrade</h2>
+        <p><a id="shortlistupgradepromo" href="#" class="btn">Upgrade to Shortlist Pro</a></p>
+    {% else %}
+        <hr/>
+        <h2>Swtich Editions</h2>
+        <p><a id="shortlistupgradepromo" href="#" class="btn">Change the Shortlist Edition</a></p>
+    {% endif %}
+
+{% endblock %}
+

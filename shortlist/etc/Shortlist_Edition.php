@@ -1,8 +1,8 @@
 <?php
-namespace Craft\Shortlist;
+namespace Craft;
 
 
-class Edition
+class Shortlist_Edition
 {
     private $licenseName = 'shortlist.key';
     private $etConnectFailureKey = 'shortlistConnectFailure';

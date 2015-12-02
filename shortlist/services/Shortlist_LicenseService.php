@@ -20,7 +20,7 @@ class Shortlist_LicenseService extends BaseApplicationComponent
     public function init()
     {
         $this->plugin = craft()->plugins->getPlugin('shortlist');
-        require craft()->path->getPluginsPath() . 'shortlist/etc/Edition.php';
+        require craft()->path->getPluginsPath() . 'shortlist/etc/Shortlist_Edition.php';
     }
     // Public Methods
     // =========================================================================
@@ -30,7 +30,7 @@ class Shortlist_LicenseService extends BaseApplicationComponent
      */
     public function ping()
     {
-        $et = new Edition(static::Ping);
+        $et = new Shortlist_Edition(static::Ping);
         $etResponse = $et->phoneHome();
 
         return $etResponse;
@@ -67,7 +67,7 @@ class Shortlist_LicenseService extends BaseApplicationComponent
      */
     public function fetchUpgradeInfo()
     {
-        $et = new Edition(static::GetUpgradeInfo);
+        $et = new Shortlist_Edition(static::GetUpgradeInfo);
         $etResponse = $et->phoneHome();
 
         if ($etResponse != null) {
