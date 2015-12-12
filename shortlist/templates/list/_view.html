@@ -1,6 +1,4 @@
-{% extends "_layouts/cp" %}
-
-{% import "_includes/forms" as forms %}
+{% extends "shortlist/_layouts/cp" %}
 
 {% set title = list.title %}
 
@@ -12,108 +10,115 @@
 
 
 {% set itemElementType = craft.elements.getElementType('Shortlist_Item') %}
-{% set itemElementAttr = { elementType : itemElementType,
+{% set itemElementAttr = {
+    elementType : itemElementType,
     disabledElementIds : null,
-    attributes : { id : 'Item', elementType: 'Element Type', dateCreated : 'Date Added'},
+    attributes : {
+        'id' : { 0 :  'status', 1 : { label: 'Status'}},
+        'antoehr' : { 0 :  'id', 1 : { label: 'Id'}},
+        'elementtype' : { 0 :  'elementType', 1 : { label: 'Type'}},
+        'title' : { 0 :  'title', 1 : { label: 'Title'}},
+        'dateCreated' : { 0 :  'dateCreated', 1 : { label: 'Date Created'}},
+},
     elements : listItems,
     showCheckboxes : false} %}
 
 
 {% block main %}
 
-<div class="grid">
-    <div class="item" data-position="left">
-        <form id="userform" class="pane" method="post" accept-charset="UTF-8" data-saveshortcut>
-            <input type="hidden" name="action" value="users/saveUser">
+    <div class="grid">
+        <div class="item" data-position="left">
+            <form id="userform" class="pane" method="post" accept-charset="UTF-8" data-saveshortcut>
+                <input type="hidden" name="action" value="users/saveUser">
 
 
+                <div id="list">
 
-            <div id="list">
+                    {{ forms.textField({
+                        first: true,
+                        label: "List title"|t,
+                        id: 'title',
+                        name: 'title',
+                        value: (list is defined ? list.title : null),
+                        autofocus: true,
+                        disabled: false,
+                        errors: (list is defined ? list.getErrors('title') : null),
+                        readonly: true
+                    }) }}
 
-                {{ forms.textField({
-                first: true,
-                label: "List title"|t,
-                id: 'title',
-                name: 'title',
-                value: (list is defined ? list.title : null),
-                autofocus: true,
-                disabled: false,
-                errors: (list is defined ? list.getErrors('title') : null),
-                readonly: true
-                }) }}
+                    {{ forms.textField({
+                        first: true,
+                        label: "List Slug"|t,
+                        id: 'slug',
+                        name: 'slug',
+                        value: (list is defined ? list.slug : null),
+                        autofocus: true,
+                        disabled: false,
+                        errors: (list is defined ? list.getErrors('slug') : null),
+                        readonly: true
+                    }) }}
 
-                {{ forms.textField({
-                first: true,
-                label: "List Slug"|t,
-                id: 'slug',
-                name: 'slug',
-                value: (list is defined ? list.slug : null),
-                autofocus: true,
-                disabled: false,
-                errors: (list is defined ? list.getErrors('slug') : null),
-                readonly: true
-                }) }}
-
-            </div>
-            <hr/>
-            <div id="items" class="">
-
-                <h2>List Items</h2>
-                {% if listItems is empty %}
-                <p><em>This list is empty</em></p>
-                {% else %}
-                <div class="elementindex">
-                    {% include "_elements/tableview/container" with itemElementAttr %}
                 </div>
+                <hr/>
+                <div id="items" class="">
+
+                    <h2>List Items</h2>
+                    {% if listItems is empty %}
+                        <p><em>This list is empty</em></p>
+                    {% else %}
+                        <div class="elementindex">
+
+                            {% include "_elements/tableview/container" with itemElementAttr %}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+        </div>
+        </form>
+
+
+        <div class="item" data-position="right" data-colspan="1">
+            <form class="pane" method="post" accept-charset="UTF-8">
+
+                <h5 class="first">Owner</h5>
+
+                {% if list.ownerType == 'guest' %}
+                    <p>Guest</p>
+                {% else %}
+                    {% set user = craft.users.id(list.ownerId).first() %}
+                    {% if user is null %}
+                        <p>User Deleted</p>
+                    {% else %}
+                        <p><a href="{{ url('users/'~user.id ) }}">{{ user.friendlyName }}</a></p>
+                    {% endif %}
                 {% endif %}
 
-            </div>
+                <h5>Status</h5>
 
-    </div>
-    </form>
+                <p><span class="status live"></span> active</p>
 
+                <h5>{{ "Created Date"|t }}</h5>
 
-    <div class="item" data-position="right" data-colspan="1">
-        <form class="pane" method="post" accept-charset="UTF-8">
+                <p>{{ list.dateCreated.localeDate() }} {{ list.dateCreated.localeTime() }}</p>
 
-            <h5 class="first">Owner</h5>
+                <h5>{{ "Updated Date"|t }}</h5>
 
-            {% if list.ownerType == 'guest' %}
-            <p>Guest</p>
-            {% else %}
-            {% set user = craft.users.id(list.ownerId).first() %}
-            {% if user is null %}
-            <p>User Deleted</p>
-            {% else %}
-            <p><a href="{{ url('users/'~user.id ) }}">{{ user.friendlyName }}</a></p>
-            {% endif %}
-            {% endif %}
+                <p>{{ list.dateUpdated.localeDate() }} {{ list.dateUpdated.localeTime() }}</p>
 
-            <h5>Status</h5>
+                {#--
+                <h5>{{ "Type"|t }}</h5>
 
-            <p><span class="status live"></span> active</p>
+                <p>{{ list.type | ucwords }}
+                    {% if list.type == 'manual' %}
+                    <br/><span class="light">(Created by direct user interaction)</span>
+                    {% elseif list.type == 'auto' %}<br/><span class="light">(Created automtically by settings)</span>
+                    {% endif %}</p>
+                --#}
+            </form>
+        </div>
 
-            <h5>{{ "Created Date"|t }}</h5>
-
-            <p>{{ list.dateCreated.localeDate() }} {{ list.dateCreated.localeTime() }}</p>
-
-            <h5>{{ "Updated Date"|t }}</h5>
-
-            <p>{{ list.dateUpdated.localeDate() }} {{ list.dateUpdated.localeTime() }}</p>
-
-            {#--
-            <h5>{{ "Type"|t }}</h5>
-
-            <p>{{ list.type | ucwords }}
-                {% if list.type == 'manual' %}
-                <br/><span class="light">(Created by direct user interaction)</span>
-                {% elseif list.type == 'auto' %}<br/><span class="light">(Created automtically by settings)</span>
-                {% endif %}</p>
-            --#}
-        </form>
-    </div>
-
-</div><!--/item-->
+    </div><!--/item-->
 {% endblock %}
 
 

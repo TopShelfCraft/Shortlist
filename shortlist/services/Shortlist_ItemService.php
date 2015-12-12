@@ -218,7 +218,6 @@ class Shortlist_ItemService extends ShortlistService
             }
         }
 
-
         // Branch now
         // Possible 'remove', 'add', 'promote'.
 
@@ -227,7 +226,7 @@ class Shortlist_ItemService extends ShortlistService
 
         switch ($actionType) {
             case 'add':
-                $item = $this->add($elementId, $list->id);
+                $item = $this->add($elementId, $list->id, $extraData);
                 if ($item == false) {
                     // failed to create or add
                     craft()->shortlist->addError('Failed to add the item');
@@ -387,7 +386,7 @@ class Shortlist_ItemService extends ShortlistService
      * @param $listId int the list id to add to
      * @returns Shortlist_ItemModel
      */
-    public function add($elementId, $listId)
+    public function add($elementId, $listId, $extra = [])
     {
         $element = craft()->elements->getElementById($elementId);
         if($element === null) return false;
@@ -397,7 +396,7 @@ class Shortlist_ItemService extends ShortlistService
         $itemModel->elementType = craft()->elements->getElementTypeById($elementId);
         $itemModel->listId = $listId;
 
-        $extra = array('title' => $element->title);
+        $extra['title'] = $element->title;
         $itemModel->setContent($extra);
 
         if ($itemModel->validate()) {

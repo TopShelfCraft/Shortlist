@@ -20,6 +20,45 @@
 
         <hr/>
 
+        {% for news in craft.entries.section('news') %}
+            <article class="blog-article {% if loop.first %}latest{% endif %}">
+                <div class="news-main">
+                    <h3>{{ news.title }}</h3>
+                </div>
+
+                <div class="shortlist">
+                    {% set item = craft.shortlist.item(news.id) %}
+
+                    {% if item.inList %}
+                        <p><a class="btn btn-danger" href="{{ item.removeActionUrl }}">Remove from : {{ item.parentList.title }}</a></p>
+                        <p>Text Field : {{ item.textareaField }}</p>
+                    {% else %}
+                    <h4>Add to List with Extra Data</h4>
+
+                    <form class="form-horizontal" method="post" action="" accept-charset="UTF-8">
+                        <input type="hidden" name="action" value="shortlist/item/add"/>
+                        <input type="hidden" name="elementId" value="{{ news.id }}"/>
+
+                           {# <div class="input-group">
+                                <input type="text" class="form-control" name="listTitle" id="listTitle"
+                                       placeholder="New List Title...">
+#}
+                        <div class="input-group">
+                            <label>Test Field..</label>
+                            <input type="text" class="form-control" name="fields[textareaField]"
+                                   placeholder="Some field...">
+                        </div>
+
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit">Add</button>
+                        </span>
+                    </form>
+                    {% endif %}
+                </div>
+            </article>
+            <hr/>
+        {% endfor %}
+
 
     </div>
     {% endblock %}

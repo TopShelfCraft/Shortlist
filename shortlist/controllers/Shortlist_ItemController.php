@@ -42,7 +42,7 @@ class Shortlist_ItemController extends ShortlistController
     {
         // Collect the info
         // at the very least we need an item id
-        $itemId = craft()->shortlist->getIdForRequest('itemId,id');
+        $itemId = craft()->shortlist->getIdForRequest('itemId,id,elementId');
         if ($itemId == false) {
             // Return an error message
             return $this->errorResponse('Couldn\'t find the id for the request');
@@ -61,8 +61,7 @@ class Shortlist_ItemController extends ShortlistController
         // case we'll create a new list on the action if we need to
         $listId = craft()->shortlist->getIdForRequest('listId', 1);
 
-        // Get any extra values
-        $extra = array(); // @todo
+        $extra = craft()->request->getPost('fields');
 
         // Pass to the service to do the leg work
         $response = craft()->shortlist_item->action($actionType, $itemId, $listId, $extra);

@@ -28,7 +28,6 @@ class ShortlistPlugin extends BasePlugin
         return '1.1.0';
     }
 
-
     function getDeveloper()
     {
         return 'Square Bit';
@@ -37,6 +36,11 @@ class ShortlistPlugin extends BasePlugin
     function getDeveloperUrl()
     {
         return 'http://squarebit.co.uk';
+    }
+
+    public function getDescription()
+    {
+        return 'User lists for Craft.';
     }
 
     public function hasCpSection()
@@ -51,7 +55,7 @@ class ShortlistPlugin extends BasePlugin
 
     function getReleaseFeedUrl()
     {
-        return 'https://squarebit.co.uk/software/craft/shortlist/updates.json';
+        //return 'https://squarebit.co.uk/software/craft/shortlist/updates.json';
     }
 
     function getSettingsUrl()
@@ -134,7 +138,7 @@ class ShortlistPlugin extends BasePlugin
     private function includeCpResources()
     {
         $templatesService = craft()->templates;
-        $templatesService->includeJsResource('charge/cp/js/shortlist.js');
+        $templatesService->includeJsResource('shortlist/cp/js/shortlist.js');
     }
 
 
