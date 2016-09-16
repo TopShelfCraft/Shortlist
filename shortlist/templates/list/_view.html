@@ -18,6 +18,20 @@
     elements : listItems,
     showCheckboxes : false} %}
 
+{% set itemElementAttr = {
+    elementType : itemElementType,
+    disabledElementIds : null,
+    attributes : {
+        'id' : { 0 :  'status', 1 : { label: 'Status'}},
+        'antoehr' : { 0 :  'id', 1 : { label: 'Id'}},
+        'elementtype' : { 0 :  'elementType', 1 : { label: 'Type'}},
+        'title' : { 0 :  'title', 1 : { label: 'Title'}},
+        'dateCreated' : { 0 :  'dateCreated', 1 : { label: 'Date Created'}},
+      },
+    elements: listItems,
+    showCheckboxes: false } %}
+
+
 
 {% block main %}
 
@@ -115,5 +129,3 @@
 
 </div><!--/item-->
 {% endblock %}
-
-

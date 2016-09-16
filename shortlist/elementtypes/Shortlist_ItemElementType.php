@@ -139,6 +139,9 @@ class Shortlist_ItemElementType extends BaseElementType
     {
 
         switch ($attribute) {
+            case 'title' : {
+              return $element->title();
+            }
             default : {
                 return $element->$attribute;
             }
