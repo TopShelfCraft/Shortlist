@@ -14,6 +14,11 @@ class ShortlistPlugin extends BasePlugin
         return '1.0.3';
     }
 
+    function getSchemaVersion()
+    {
+        return '1.0.3';
+    }
+    
     function getDeveloper()
     {
         return 'Square Bit';
