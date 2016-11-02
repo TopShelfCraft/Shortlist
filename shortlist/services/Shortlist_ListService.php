@@ -424,7 +424,7 @@ class Shortlist_ListService extends ShortlistService
         $settings = craft()->plugins->getPlugin('shortlist')->getSettings();
 
         $listModel = new Shortlist_ListModel();
-        $listModel->shareSlug = strtolower(StringHelper::randomString(18));
+        $listModel->hash = md5(uniqid(mt_rand(), true));
         $listModel->ownerId = $this->user->id;
         $listModel->ownerType = $this->user->type;
 
@@ -472,4 +472,3 @@ class Shortlist_ListService extends ShortlistService
     }
 
 }
-

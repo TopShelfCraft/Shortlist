@@ -93,7 +93,7 @@ class Shortlist_ListElementType extends BaseElementType
     public function modifyElementsQuery(DbCommand $query, ElementCriteriaModel $criteria)
     {
         $query
-            ->addSelect('shortlist_list.default, shortlist_list.userSlug, shortlist_list.public, shortlist_list.type, shortlist_list.ownerId, shortlist_list.ownerType')
+            ->addSelect('shortlist_list.default, shortlist_list.userSlug, shortlist_list.hash, shortlist_list.public, shortlist_list.type, shortlist_list.ownerId, shortlist_list.ownerType')
             ->join('shortlist_list shortlist_list', 'shortlist_list.id = elements.id');
 
         if ($criteria->default) {
@@ -111,6 +111,9 @@ class Shortlist_ListElementType extends BaseElementType
         if ($criteria->ownerType) {
             $query->andWhere(DbHelper::parseParam('shortlist_list.ownerType', $criteria->ownerType, $query->params));
         }
+        if ($criteria->hash) {
+            $query->andWhere(DbHelper::parseParam('shortlist_list.hash', $criteria->hash, $query->params));
+        }
     }
 
     /**
@@ -126,7 +129,7 @@ class Shortlist_ListElementType extends BaseElementType
             'public'    => AttributeType::Bool,
             'default'   => AttributeType::Bool,
             'userSlug'  => AttributeType::String,
-            'shareSlug' => AttributeType::String,
+            'hash' => AttributeType::String,
             'key'       => AttributeType::String,
         );
     }

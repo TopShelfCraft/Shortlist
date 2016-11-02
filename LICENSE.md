@@ -1,6 +1,6 @@
 This software is released under a commercial license. The full license text is as follows:
 
-Copyright (c) 2015, Square Bit Ltd. All rights reserved.
+Copyright (c) 2016, Square Bit Ltd. All rights reserved.
 
 All Copyright and proprietary notices in the User Interface and the software files must remain intact.
 

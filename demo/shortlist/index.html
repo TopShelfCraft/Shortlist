@@ -124,7 +124,9 @@
         {% else %}
 
         {% for list in lists %}
-        <h4>({{ list.id }}) {{ list.title }}</h4>
+        <h4><a href="/shortlist/list?hash={{ list.hash }}">({{ list.id }}) {{ list.title }}</a></h4>
+        <p>{{ list.hash }}</p>
+
 
         <p><span class="label label-info">{{list.status}}</span> {% if list.default %}<span class="label label-success">default</span>{%
             endif %} Owned by <em>{{ list.owner }}</em> {{ list.owner.email }}</p>

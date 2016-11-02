@@ -53,6 +53,26 @@ class ShortlistVariable
         return $criteria->find();
     }
 
+
+    public function getListByHash($hash = '')
+    {
+        if($hash == '') {
+            $hash = craft()->request->getQuery('hash');
+        }
+
+        if($hash == '') {
+            return null;
+        }
+
+        $criteria = craft()->elements->getCriteria('Shortlist_List');
+        $criteria->hash = $hash;
+        // Not locked to the current user!
+
+
+        return $criteria->first();
+    }
+
+
     public function error()
     {
         $error = craft()->userSession->getFlash('error', null, false);
