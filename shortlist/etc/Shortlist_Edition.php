@@ -51,7 +51,7 @@ class Shortlist_Edition
             'licenseKey'     => $licenseKey
         ));
 
-        $this->_userAgent = 'Craft/' . craft()->getVersion() . '.' . craft()->getBuild();
+        $this->_userAgent = 'Craft/' . craft()->getVersion();
     }
 
     /**

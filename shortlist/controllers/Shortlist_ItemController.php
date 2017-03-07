@@ -154,6 +154,7 @@ class Shortlist_ItemController extends ShortlistController
     {
         $variables['title'] = 'Edit Item Fields';
         $variables['item'] = new Shortlist_ItemModel();
+        $variables['isPro'] = craft()->shortlist_license->isProEdition();
 
         $this->renderTemplate('shortlist/settings/fields/_items', $variables);
     }

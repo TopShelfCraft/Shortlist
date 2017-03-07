@@ -6,6 +6,7 @@ class Shortlist_EmailController extends BaseController
     public function actionAll(array $variables = [])
     {
         $variables['emails'] = craft()->shortlist_email->getAll();
+        $variables['isPro'] = craft()->shortlist_license->isProEdition();
 
         $this->renderTemplate('shortlist/settings/email/index', $variables);
     }

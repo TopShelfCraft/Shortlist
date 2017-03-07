@@ -10,6 +10,8 @@
 
 {% block content %}
 
+    {% if isPro %}
+
     <div id="noemails"{% if emails %} class="hidden"{% endif %}>
         <p>{{ "No emails exist yet."|t }}</p>
     </div>
@@ -53,6 +55,12 @@
     <div id="n" class="buttons">
         <a href="{{ url('shortlist/settings/emails/new') }}" class="btn submit add icon">{{ "New Email"|t }}</a>
     </div>
+
+    {% else %}
+        <h1>Emails</h1>
+        {% include 'shortlist/_includes/upgradePrompt' %}
+    {% endif %}
+
 {% endblock %}
 
 
@@ -64,4 +72,3 @@
     });
 {% endset %}
 {% includeJs js %}
-

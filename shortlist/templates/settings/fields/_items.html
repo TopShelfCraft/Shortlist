@@ -2,6 +2,8 @@
 
 
 {% block content %}
+
+    {% if isPro %}
     <form method="post" accept-charset="UTF-8" data-saveshortcut="1">
         <input type="hidden" name="action" value="shortlist/item/saveLayout">
         <input type="hidden" name="redirect" value="shortlist/settings">
@@ -19,6 +21,10 @@
             <input type="submit" class="btn submit" value="{{ 'Save'|t }}">
         </div>
     </form>
+
+    {% else %}
+        <h1>Item Fields</h1>
+        {% include 'shortlist/_includes/upgradePrompt' %}
+    {% endif %}
+
 {% endblock %}
-
-

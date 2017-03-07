@@ -82,6 +82,7 @@ class Shortlist_ListController extends BaseController
     public function actionEditFields()
     {
         $variables['title'] = 'Edit List Fields';
+        $variables['isPro'] = craft()->shortlist_license->isProEdition();
 
         $variables['crumbs'] = array(
             array('label' => Craft::t('Shortlist'), 'url' => UrlHelper::getUrl('shortlist')),
