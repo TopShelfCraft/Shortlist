@@ -123,7 +123,7 @@ class ShortlistPlugin extends BasePlugin
         $context['selectedItem'] = craft()->request->getSegment(3, 'setup');
 
         $context['navItems']['license'] = ['title' => Craft::t('License')];
-        
+
         $context['navItems']['general'] = ['heading' => Craft::t('General')];
         $context['navItems']['setup'] = ['title' => Craft::t('Settings')];
 
@@ -132,9 +132,9 @@ class ShortlistPlugin extends BasePlugin
         $context['navItems']['listelement'] = ['title' => Craft::t('List Fields')];
         $context['navItems']['emails'] = ['title' => Craft::t('Emails')];
 
-        $context['navItems']['developer'] = ['heading' => Craft::t('Developer')];
-        $context['navItems']['logs'] = ['title' => Craft::t('Logs')];
-        $context['navItems']['data'] = ['title' => Craft::t('Data')];
+        //$context['navItems']['developer'] = ['heading' => Craft::t('Developer')];
+        //$context['navItems']['logs'] = ['title' => Craft::t('Logs')];
+        //$context['navItems']['data'] = ['title' => Craft::t('Data')];
 
     }
 

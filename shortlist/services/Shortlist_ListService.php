@@ -556,6 +556,27 @@ class Shortlist_ListService extends ShortlistService
         return $this->getListById($listId);
     }
 
+    public function createAutomaticListIfNeeded($data)
+    {
+        if(empty($data) || !isset($data['listTitle'])) return; // We need at least the title to proceed
+
+        $existing = $this->getListByTitle($data['listTitle']);
+
+        if($existing == null) {
+            $this->create(false, $data);
+        }
+
+    }
+
+    public function getListByTitle($title)
+    {
+        $criteria = craft()->elements->getCriteria('Shortlist_List');
+        $criteria->ownerId = craft()->shortlist->user->id;
+        $criteria->title = $title;
+        $list = $criteria->first();
+
+        return $list;
+    }
 
     public function getDefaultList()
     {

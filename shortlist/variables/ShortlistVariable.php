@@ -100,10 +100,17 @@ class ShortlistVariable
     }
 
 
-
     public function assignSuperUserForList($listId)
     {
         return craft()->shortlist_list->assignSuperUserForList($listId);
+    }
+
+    public function autolist($title, $slug = '')
+    {
+        $data['listTitle'] = $title;
+        $data['listSlug'] = $slug;
+
+        craft()->shortlist_list->createAutomaticListIfNeeded($data);
     }
 
 

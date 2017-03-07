@@ -1,0 +1,73 @@
+
+
+{% extends "shortlist/_layout" %}
+{% set lists = craft.shortlist.lists %}
+
+{% block content %}
+
+
+{% if craft.shortlist.error is not null %}
+<div class="alert alert-danger">
+    {{ craft.shortlist.error }}
+</div>
+{% endif %}
+
+<div class="row">
+    <div class="col-md-6">
+
+
+        <h3>Automatic Lists</h3>
+        <p>By default lists are only created on demand from user interactions. If instead you want to force all users to have specific lists at all times, you add a hidden call in your templates that will create the lists if they don't exist.</p>
+        <p>You can see this in action by visiting this page. In normal usage you'd want to add this to somewhere shared between all your templates, possibly within a header template.</p>
+
+        <br/>
+        <p>Here we've created 2 lists for all users. A list called <strong>Wishlist</strong> and another <strong>Read Later</strong>. </p>
+        <p>These lists will be created if they don't exist already for the current user.</p>
+
+        {{ craft.shortlist.autolist('Wishlist') }}
+        {{ craft.shortlist.autolist('Read Later') }}
+
+    </div>
+    <div class="col-md-6">
+
+        <h2>Lists</h2>
+        <p>Here are your current lists, and their contents.</p>
+        <hr/>
+        {% if lists is empty %}
+            <p><em>You have no lists at the moment.</em> <a href="{{ craft.shortlist.newListActionUrl }}">Create an empty list?</a></p>
+        {% else %}
+
+            {% for list in lists %}
+                <h4>({{ list.id }}) {{ list.title }}</h4>
+
+                <p><span class="label label-info">{{list.status}}</span> {% if list.default %}<span class="label label-success">default</span>{%
+                    endif %} Owned by <em>{{ list.owner }}</em> {{ list.owner.email }}</p>
+
+                <div class="well">
+                    <a href="{{ list.deleteActionUrl }}" class="btn btn-danger">Delete List</a>
+                    {% if list.default == false %}<a href="{{ list.makeDefaultActionUrl }}" class="btn">Make Default</a>{% endif %}
+                    {% if list.items is not empty %}<a href="{{ list.clearActionUrl }}" class="btn">Clear List</a>{% endif %}
+                </div>
+
+
+                {% if list.items is empty %}
+                    <p><em>This list is empty</em></p>
+                {% else %}
+                    <ul class="list-group">
+                        {% for item in list.items %}
+                            <li class="list-group-item"><a href="{{ item.removeActionUrl }}" class="btn btn-danger btn-xs badge"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+                                {{ item.id }} <strong>{{ item.title }}</strong>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                <hr/>
+
+            {% endfor %}
+        {% endif %}
+
+
+
+    </div>
+    {% endblock %}
