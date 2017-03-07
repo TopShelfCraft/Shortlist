@@ -1,0 +1,22 @@
+<p>Hi</p>
+
+<p>This is an example of an email triggered and sent from Shortlist.</p>
+
+<p>In this template you have access to the list being sent, along with any extra data from the form that triggered this action.</p>
+
+<p>The list in question was <strong>{{ list.id }} {{ list.title }}</strong>, and contained the following:</p>
+
+{% if list.items is empty %}
+    <p><em>This list is empty</em></p>
+{% else %}
+    <ul class="list-group">
+        {% for item in list.items %}
+            <li class="list-group-item">
+                {{ item.id }} <strong>{{ item.title }}</strong>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<p>More examples are available within the Shortlist documentation at https://squarebit.co.uk/software/craft/shortlist</p>
+<p>-Shortlist</p>

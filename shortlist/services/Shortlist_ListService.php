@@ -148,7 +148,6 @@ class Shortlist_ListService extends ShortlistService
 
 
         // Valid list
-        // @todo - update field values..
         if(isset($data['fields'])) {
             $this->update($listId, $data['fields']);
         }
@@ -228,7 +227,7 @@ class Shortlist_ListService extends ShortlistService
                 $purchaseItems = $modified;
             }
         }
-        
+
         foreach($purchaseItems as $key => $item) {
 
             if (!craft()->commerce_cart->addToCart($cart, $item['purchasableId'], $item['qty'], $item['note'], $item['options'], $item['error'])) {
@@ -659,4 +658,3 @@ class Shortlist_ListService extends ShortlistService
     }
 
 }
-

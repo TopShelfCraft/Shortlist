@@ -108,9 +108,12 @@ class Shortlist_EmailModel extends BaseModel
                     ['errors' => implode(", ", $this->getAllErrors()), 'email' => $this->name]);
 
                 ShortlistPlugin::log($error, LogLevel::Error, true);
+            } else {
+                // Success. Log this
             }
         }
         catch(\Exception $e) {
+
             $error = Craft::t('Send email exception “{email}”. PHPMailerException error: “{message}”',
                 ['email' => $this->name, 'message' => $e->getMessage()]);
             ShortlistPlugin::log($error, LogLevel::Error, true);

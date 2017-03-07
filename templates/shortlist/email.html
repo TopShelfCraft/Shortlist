@@ -1,0 +1,67 @@
+{% extends "shortlist/_layout" %}
+{% set lists = craft.shortlist.lists %}
+
+{% block content %}
+
+{% if craft.shortlist.error is not null %}
+    <div class="alert alert-danger">
+        {{ craft.shortlist.error }}
+    </div>
+{% endif %}
+
+<div class="row">
+
+    <div class="col-md-12">
+
+        <h2>Email List</h2>
+        <p>Shortlist includes the built in ability to trigger an email with the contents of a list. The emails are configured within the Shortlist > Settings > Emails area in the Craft Control Panel.</p>
+        <p>Using the built in email function lets you quickly add the ability for your users to share a list, or list contents as part of your site. In addition you can set additional list field data after an email has been triggered and sent, to potentially mark it as emailed.</p>
+
+
+        <hr/>
+
+        {% if lists is empty %}
+            <p><em>You have no lists at the moment.</em> <a href="{{ craft.shortlist.newListActionUrl }}">Create an empty list?</a></p>
+        {% else %}
+
+            {% for list in lists %}
+                <h4>({{ list.id }}) {{ list.title }}</h4>
+
+                <p><span class="label label-info">{{list.status}}</span> {% if list.default %}<span class="label label-success">default</span>{%
+                    endif %} Owned by <em>{{ list.owner }}</em> {{ list.owner.email }}</p>
+
+                <div class="well">
+                    <form class="form-horizontal" method="post" action="" accept-charset="UTF-8">
+                        <input type="hidden" name="action" value="shortlist/list/sendEmail"/>
+                        <input type="hidden" name="listId" value="{{ list.id }}"/>
+                        <input type="hidden" name="email" value="example-admin-email"/>
+                        <input type="hidden" name="fields[sentToAdmin]" value="true"/>
+                		{{ getCsrfInput() }}
+
+                        <input type="submit" class="btn btn-primary" value="Email List"/>
+                        <p>This will send the list to the <code>example-admin-email</code> email as defined in the Shortlist settings. This is configured to send this email to the site admin.</p>
+                    </form>
+                </div>
+
+
+                {% if list.items is empty %}
+                    <p><em>This list is empty</em></p>
+                {% else %}
+                    <ul class="list-group">
+                        {% for item in list.items %}
+                            <li class="list-group-item">
+                                {{ item.id }} <strong>{{ item.title }}</strong>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                <hr/>
+
+            {% endfor %}
+        {% endif %}
+
+
+
+    </div>
+    {% endblock %}

@@ -37,6 +37,7 @@
         <li {% if craft.request.getSegment(2) == 'basic'%}class="active"{% endif %}><a href="{{ url('shortlist/basic') }}">Basic Setup</a></li>
         <li {% if craft.request.getSegment(2) == 'utilities'%}class="active"{% endif %}><a href="{{ url('shortlist/utilities') }}">List Utilities</a></li>
         <li {% if craft.request.getSegment(2) == 'fields'%}class="active"{% endif %}><a href="{{ url('shortlist/fields') }}">Item Fields</a></li>
+        <li {% if craft.request.getSegment(2) == 'email'%}class="active"{% endif %}><a href="{{ url('shortlist/email') }}">Email List</a></li>
     </ul>
 
     {% block content %}
