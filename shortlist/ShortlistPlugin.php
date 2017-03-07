@@ -20,7 +20,7 @@ class ShortlistPlugin extends BasePlugin
 
     function getVersion()
     {
-        return '1.2.0.dev2';
+        return '2.0.0.dev2';
     }
 
     function getSchemaVersion()
@@ -35,7 +35,7 @@ class ShortlistPlugin extends BasePlugin
 
     function getDeveloperUrl()
     {
-        return 'http://squarebit.co.uk';
+        return 'https://squarebit.co.uk';
     }
 
     public function getDescription()
