@@ -3,143 +3,83 @@ namespace Craft;
 
 class Shortlist_LicenseController extends BaseController
 {
-    public function __construct()
+
+    public function actionEdit()
     {
-        craft()->shortlist_license->ping();
+        $licenseKey = craft()->shortlist_license->getLicenseKey();
+
+        $this->renderTemplate('shortlist/settings/license', [
+            'hasLicenseKey' => ($licenseKey !== null)
+        ]);
     }
 
-    public function actionIndex(array $variables = [])
+    public function actionGetLicenseInfo()
     {
-        $variables['currentEdition'] = 'Dev';
-        $this->renderTemplate('shortlist/settings/_edition', $variables);
-    }
-
-
-    public function actionGetUpgradeModal()
-    {
+        $this->requirePostRequest();
         $this->requireAjaxRequest();
 
-        // Make it so Craft Client accounts can perform the upgrade.
-        if (craft()->getEdition() == Craft::Pro) {
-            craft()->userSession->requireAdmin();
-        }
+        return $this->sendResponse(craft()->shortlist_license->getLicenseInfo());
+    }
 
-        $etResponse = craft()->shortlist_license->fetchUpgradeInfo();
+    public function actionUpdateLicenseKey()
+    {
+        $this->requirePostRequest();
+        $this->requireAjaxRequest();
 
-        if (!$etResponse) {
-            $this->returnErrorJson(Craft::t('Shortlist is unable to fetch edition info at this time.'));
-        }
-        /*
+        $licenseKey = craft()->request->getRequiredPost('licenseKey');
 
-        // Make sure we've got a valid license key (mismatched domain is OK for these purposes)
-        if ($etResponse->licenseKeyStatus == LicenseKeyStatus::Invalid)
-        {
-            $this->returnErrorJson(Craft::t('Your license key is invalid.'));
-        }
-
-        // Make sure they've got a valid licensed edition, just to be safe
-        if (!AppHelper::isValidEdition($etResponse->licensedEdition))
-        {
-            $this->returnErrorJson(Craft::t('Your license has an invalid Shortlist edition associated with it.'));
-        }
-*/
-        $editions = array();
-
-        foreach ($etResponse->data->editions as $edition => $info) {
-            $editions[$edition]['price'] = $info['price'];
-            $editions[$edition]['formattedPrice'] = craft()->numberFormatter->formatCurrency($info['price'], 'USD', true);
-
-            if (isset($info['salePrice']) && $info['salePrice'] < $info['price']) {
-                $editions[$edition]['salePrice'] = $info['salePrice'];
-                $editions[$edition]['formattedSalePrice'] = craft()->numberFormatter->formatCurrency($info['salePrice'], 'USD', true);
-            } else {
-                $editions[$edition]['salePrice'] = null;
+        // Are we registering a new license key?
+        if ($licenseKey) {
+            // Record the license key locally
+            try {
+                craft()->shortlist_license->setLicenseKey($licenseKey);
+            } catch (InvalidLicenseKeyException $e) {
+                $this->returnErrorJson(Craft::t('That license key is invalid.'));
             }
+
+            return $this->sendResponse(craft()->shortlist_license->registerPlugin($licenseKey));
+        } else {
+            // Just clear our record of the license key
+            craft()->shortlist_license->setLicenseKey(null);
+            craft()->plugins->setPluginLicenseKeyStatus('Shortlist', LicenseKeyStatus::Unknown);
+            return $this->sendResponse();
+
         }
-
-
-        $canTestEditions = craft()->canTestEditions();
-
-        $modalHtml = craft()->templates->render('shortlist/settings/_upgrademodal', array(
-            'editions'        => $editions,
-            'licensedEdition' => craft()->shortlist_license->getEdition(),//$etResponse->licensedEdition,
-            'canTestEditions' => $canTestEditions
-        ));
-
-        $this->returnJson(array(
-            'success'         => true,
-            'editions'        => $editions,
-            'licensedEdition' => craft()->shortlist_license->getEdition(),//$etResponse->licensedEdition,
-            'canTestEditions' => $canTestEditions,
-            'modalHtml'       => $modalHtml,
-            'stripePublicKey' => $etResponse->data->stripePublicKey,
-        ));
     }
 
 
-    /**
-     * Passes along a given CC token to Elliott to purchase a Craft edition.
-     *
-     * @return null
-     */
-    public function actionPurchaseUpgrade()
+
+
+    public function actionUnregister()
     {
         $this->requirePostRequest();
         $this->requireAjaxRequest();
 
-        // Make it so Craft Client accounts can perform the upgrade.
-        if (craft()->getEdition() == Craft::Pro) {
-            craft()->userSession->requireAdmin();
-        }
-
-        $model = new Shortlist_UpgradePurchaseModel(array(
-            'ccTokenId'     => craft()->request->getRequiredPost('ccTokenId'),
-            'product'       => 'shortlist',
-            'edition'       => craft()->request->getRequiredPost('edition'),
-            'expectedPrice' => craft()->request->getRequiredPost('expectedPrice'),
-        ));
-
-
-        if (craft()->shortlist_license->purchaseUpgrade($model))
-        {
-            $this->returnJson(array(
-                'success' => true,
-                'edition' => $model->edition
-            ));
-        }
-        else
-        {
-            $this->returnJson(array(
-                'errors' => $model->getErrors()
-            ));
-        }
-
-
+        return $this->sendResponse(craft()->shortlist_license->unregisterLicenseKey());
     }
 
-    /**
-     * Tries a Craft edition on for size.
-     *
-     * @throws Exception
-     * @return null
-     */
-    public function actionTestUpgrade()
+
+
+    public function actionTransfer()
     {
         $this->requirePostRequest();
         $this->requireAjaxRequest();
-        craft()->userSession->requireAdmin();
 
-        if (!craft()->canTestEditions()) {
-            throw new Exception('Tried to test an edition, but Shortlist isn\'t allowed to do that.');
-        }
-
-        $edition = craft()->request->getRequiredPost('edition');
-        craft()->shortlist_license->setEdition($edition);
-
-        $this->returnJson(array(
-            'success' => true
-        ));
+        return $this->sendResponse(craft()->shortlist_license->transferLicenseKey());
     }
 
 
+
+    private function sendResponse($success = true)
+    {
+        if($success) {
+            $this->returnJson([
+                'success'          => true,
+                'licenseKey'       => craft()->shortlist_license->getLicenseKey(),
+                'licenseKeyStatus' => craft()->plugins->getPluginLicenseKeyStatus('Shortlist'),
+            ]);
+        } else {
+            $this->returnErrorJson(craft()->shortlist_license->error);
+        }
+    }
 }

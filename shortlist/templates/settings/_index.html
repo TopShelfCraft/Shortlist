@@ -13,6 +13,7 @@
         {{ forms.hidden({ name: 'action', value: 'shortlist/settings/saveSettings' }) }}
         {{ forms.hidden({ name: 'pluginClass', value: 'Shortlist' }) }}
         {{ forms.hidden({ name: 'redirect', value: 'shortlist/settings' }) }}
+        {{ getCsrfInput() }}
 
         <h1>List Settings</h1>
         {{ forms.textField({
@@ -61,7 +62,7 @@
     {% if edition < 1 %}
         <hr/>
         <h2>Upgrade</h2>
-        <p>Get more out of Shortlist, <a id="shupgradepromo" href="#">upgrade to Shortlist Pro.</a></p>
+        <p>Get more out of Shortlist, <a href="{{ url('shortlist/settings/license') }}">upgrade to Shortlist Pro.</a></p>
     {% endif %}
 
 {% endblock %}

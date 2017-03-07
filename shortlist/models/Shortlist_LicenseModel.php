@@ -36,10 +36,12 @@ class Shortlist_LicenseModel extends BaseModel
             'craftTrack'   => [AttributeType::String],
             'userEmail'    => [AttributeType::String],
 
-            'licenseKey'     => [AttributeType::String],
-            'requestProduct' => [AttributeType::String],
-            'requestVersion' => [AttributeType::String],
-            'data'           => [AttributeType::Mixed]
+            'licenseKey'      => [AttributeType::String],
+            'licensedEdition' => [AttributeType::String],
+            'requestProduct'  => [AttributeType::String],
+            'requestVersion'  => [AttributeType::String],
+            'data'            => [AttributeType::Mixed],
+            'errors'          => [AttributeType::Mixed]
         ];
 
     }

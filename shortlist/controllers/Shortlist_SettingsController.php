@@ -14,7 +14,6 @@ class Shortlist_SettingsController extends BaseController
     {
         $variables = [
             'edition'     => craft()->shortlist_license->getEdition(),
-            'editionName' => craft()->shortlist_license->getEditionName(),
             'settings' => $this->plugin->getSettings()];
 
         $this->renderTemplate('shortlist/settings/_index', $variables);
@@ -23,12 +22,10 @@ class Shortlist_SettingsController extends BaseController
 
     public function actionLicense(array $variables = [])
     {
-
         craft()->shortlist_license->ping(true);
 
         $variables = [
-            'edition'     => craft()->shortlist_license->getEdition(),
-            'editionName' => craft()->shortlist_license->getEditionName()];
+            'edition'     => craft()->shortlist_license->getEdition()];
 
 
         $this->renderTemplate('shortlist/settings/_license', $variables);

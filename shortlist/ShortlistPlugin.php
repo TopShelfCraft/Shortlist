@@ -78,9 +78,9 @@ class ShortlistPlugin extends BasePlugin
                 'shortlist/users'                  => ['action' => 'shortlist/users'],
                 'shortlist/users/(?P<itemId>\d+)'  => ['action' => 'shortlist/users/view'],*/
 
-
             'shortlist/settings'                         => ['action' => 'shortlist/settings/index'],
-            'shortlist/settings/license'                 => ['action' => 'shortlist/settings/license'],
+            'shortlist/settings/setup'                         => ['action' => 'shortlist/settings/index'],
+            'shortlist/settings/license'                 => ['action' => 'shortlist/license/edit'],
             'shortlist/settings/listelement'             => ['action' => 'shortlist/list/editFields'],
             'shortlist/settings/itemelement'             => ['action' => 'shortlist/item/editFields'],
             'shortlist/settings/emails'                  => ['action' => 'shortlist/email/all'],
@@ -97,7 +97,8 @@ class ShortlistPlugin extends BasePlugin
             'defaultListName'  => [AttributeType::String, 'required' => true, 'default' => 'wishlist'],
             'defaultListSlug'  => [AttributeType::String, 'required' => true, 'default' => 'wishlist'],
             'allowDuplicates'  => [AttributeType::Bool, 'required' => true, 'default' => false],
-        ];
+
+            'edition'     => [AttributeType::Mixed]];
     }
 
     public function getSettingsHtml()
@@ -120,18 +121,20 @@ class ShortlistPlugin extends BasePlugin
     public function prepCpSettingsTemplate(&$context)
     {
         $context['selectedItem'] = craft()->request->getSegment(3, 'setup');
-        $context['navItems']['setup'] = ['title' => Craft::t('Setup')];
 
-        $context['navItems']['fields'] = ['heading' => Craft::t('Fields')];
+        $context['navItems']['license'] = ['title' => Craft::t('License')];
+        
+        $context['navItems']['general'] = ['heading' => Craft::t('General')];
+        $context['navItems']['setup'] = ['title' => Craft::t('Settings')];
+
+        $context['navItems']['features'] = ['heading' => Craft::t('Features')];
         $context['navItems']['itemelement'] = ['title' => Craft::t('Item Fields')];
         $context['navItems']['listelement'] = ['title' => Craft::t('List Fields')];
-
-
-        $context['navItems']['extras'] = ['heading' => Craft::t('Extras')];
         $context['navItems']['emails'] = ['title' => Craft::t('Emails')];
 
         $context['navItems']['developer'] = ['heading' => Craft::t('Developer')];
-        $context['navItems']['license'] = ['title' => Craft::t('License')];
+        $context['navItems']['logs'] = ['title' => Craft::t('Logs')];
+        $context['navItems']['data'] = ['title' => Craft::t('Data')];
 
     }
 

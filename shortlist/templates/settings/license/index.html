@@ -1,0 +1,109 @@
+{% extends "shortlist/_layouts/settings" %}
+{% set selectedTab = 'license' %}
+{% includeTranslations
+"Unable to load registration status at this time. Please try again later."
+%}
+
+{% import "_includes/forms" as forms %}
+
+
+{% block content %}
+    {# Loading header #}
+    <div id="loading-license-info">
+        <div id="loading-graphic" class="spinner"></div>
+        <div id="loading-status" class="light">{{ "Loading registration status…"|t }}</div>
+    </div>
+
+    {# Valid license header #}
+    <div id="valid-license-header" class="reg-header hidden">
+        <img src="{{ resourceUrl('shortlist/cp/img/valid-icon.svg') }}" width="100" height="100">
+        <h2>{{ "Shortlist Pro is registered"|t }}</h2>
+        <p class="light">{{ "Thanks for your support!"|t }}</p>
+    </div>
+
+    {# Invalid license header #}
+    <div id="invalid-license-header" class="reg-header hidden">
+        <img class="license-alert-img" src="{{ resourceUrl('shortlist/cp/img/invalid-icon.svg') }}" width="100" height="100">
+        <h2>{{ "Your license key is invalid."|t }}</h2>
+        <p class="light">{{ "Please enter a valid license key below."|t }}</p>
+    </div>
+
+    {# Mismatched license header #}
+    <div id="mismatched-license-header" class="reg-header hidden">
+        <img class="license-alert-img" src="{{ resourceUrl('shortlist/cp/img/invalid-icon.svg') }}" width="100" height="100">
+        <h2>{{ "Your license key is being used on another Craft site."|t }}</h2>
+        <p class="light">{{ "Please enter a new license key below, or transfer your license to this Craft install."|t }}</p>
+    </div>
+
+    {# Unknown license header #}
+
+    <div id="unknown-license-header" class="reg-header hidden">
+        <img src="{{ resourceUrl('shortlist/icon.svg') }}" width="100" height="100">
+        <h2>{{ "Thanks for using Shortlist"|t }}</h2>
+        <p class="light">{{ "You get more out of Shortlist by upgrading to Shortlist Pro. Buy a license on {url} and enter your license key below."|t({url: '<a href="https://squarebit.co.uk/software/craft/shortlist/purchase">squarebit.co.uk</a>'})|raw }}</p>
+    </div>
+    {#
+    <div id="unknown-license-header" class="reg-header hidden">
+        <img src="{{ resourceUrl('shortlist/cp/img/beta-icon.svg') }}" width="100" height="100">
+        <h2>{{ "Shortlist Beta 1"|t }}</h2>
+        <p class="light">{{ "Thank's for helping test Shortlist. In-progress documentation for 2.0 is available at {url}. We're looking for all the feedback you have, just email {support}, or ping {slack} on the Craft Slack"|t({support: '<a href="mailto:support@squarebit.co.uk">support@squarebit.co.uk</a>', slack: '<em>joelbradbury</em>', url: '<a href="http://squarebit.co.uk/software/craft/shortlist/docs-2-0">squarebit.co.uk</a>'})|raw }}</p>
+    </div>
+#}
+    <hr id="license-view-hr" class="hidden">
+
+    {# Valid license view #}
+    <div id="valid-license-view" class="reg-view hidden">
+        <div class="meta license-meta">
+            <div class="data">
+                <h5 class="heading">{{ "License Key"|t }}</h5>
+                <div id="license-key-label" class="value code"></div>
+            </div>
+        </div>
+
+        <form id="unregister-license-form" class="indented">
+            <div class="buttons">
+                <input type="submit" class="btn" value="{{ 'Unregister from this Craft install'|t }}">
+                <div id="unregister-license-spinner" class="spinner hidden"></div>
+            </div>
+        </form>
+    </div>
+
+    {# Invalid/Unknown/Mismatched license view #}
+    <div id="update-license-view" class="reg-view hidden">
+
+        <div class="meta license-meta">
+            <div class="data">
+                <label class="heading" for="license-key">{{ "License Key"|t }}</label>
+                <form id="update-license-form" class="value">
+                    <div id="license-key-wrapper" class="texticon clearable">
+                        {{ forms.text({
+                            id: 'license-key-input',
+                            name: 'licenseKey',
+                            placeholder: '     -     -     -     -     ',
+                            class: 'code',
+                            maxlength: 29,
+                            size: 29
+                        }) }}
+                        <div id="clear-license-btn" class="clear hidden" title="{{ 'Clear'|t }}"></div>
+                    </div>
+                    <input id="update-license-btn" type="submit" class="btn submit disabled" value="{{ 'Update'|t }}">
+                    <div id="update-license-spinner" class="spinner hidden"></div>
+                </form>
+            </div>
+            <p id="license-key-error" class="error indented hidden"></p>
+        </div>
+
+        <form id="transfer-license-form" class="indented hidden">
+            <div class="buttons">
+                <input type="submit" class="btn" value="{{ 'Transfer to this Craft install'|t }}">
+                <div id="transfer-license-spinner" class="spinner hidden"></div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+
+{% includejsresource 'shortlist/cp/js/ShortlistRegistrationForm.js' %}
+{% includejs %}
+window.regForm = new Craft.Shortlist.RegistrationForm({{ hasLicenseKey ? 'true' : 'false' }});
+{% endincludejs %}

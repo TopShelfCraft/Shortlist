@@ -3,37 +3,111 @@ namespace Craft;
 
 class Shortlist_LicenseService extends BaseApplicationComponent
 {
-    // Constants
-    // =========================================================================
-
-    const Ping = 'http://squarebit.craft.dev/actions/licensor/edition/ping';
-    const GetUpgradeInfo = 'http://squarebit.craft.dev/actions/licensor/edition/getUpgradeInfo';
-    const PurchaseUpgrade = 'http://squarebit.craft.dev/actions/licensor/edition/purchaseUpgrade';
-
-
-    const TransferLicense = 'http://squarebit.craft.dev/actions/licensor/edition/transferLicenseToCurrentDomain';
-    const GetEditionInfo = 'http://squarebit.craft.dev/actions/licensor/edition/getEditionInfo';
-
+    const Ping = 'https://squarebit.co.uk/actions/licensor/edition/ping';
+    const GetLicenseInfo = 'https://squarebit.co.uk/actions/licensor/edition/getLicenseInfo';
+    const RegisterPlugin = 'https://squarebit.co.uk/actions/licensor/edition/registerPlugin';
+    const UnregisterPlugin = 'https://squarebit.co.uk/actions/licensor/edition/unregisterPlugin';
+    const TransferPlugin = 'https://squarebit.co.uk/actions/licensor/edition/transferPlugin';
 
     private $plugin;
+    private $pingStateKey = 'shortlistPhonedHome';
+    private $pingCacheTime = 86400;
+    private $pluginHandle = 'Shortlist';
+    private $pluginVersion;
+    private $licenseKey;
+    private $edition;
+
 
     public function init()
     {
-        $this->plugin = craft()->plugins->getPlugin('shortlist');
         require craft()->path->getPluginsPath() . 'shortlist/etc/Shortlist_Edition.php';
-    }
-    // Public Methods
-    // =========================================================================
+        $this->plugin = craft()->plugins->getPlugin('shortlist');
+        $this->pluginVersion = $this->plugin->getVersion();
+        $this->licenseKey = $this->getLicenseKey();
 
-    /**
-     * @return EtModel|null
-     */
+        $this->edition = $this->plugin->getSettings()->edition;
+    }
+
     public function ping()
     {
-        $et = new Shortlist_Edition(static::Ping);
-        $etResponse = $et->phoneHome();
+        if(craft()->request->isCpRequest()) {
+            if (!craft()->cache->get($this->pingStateKey)) {
+                $et = new Shortlist_Edition(static::Ping, $this->pluginHandle, $this->pluginVersion, $this->licenseKey);
+                $etResponse = $et->phoneHome();
+                craft()->cache->set($this->pingStateKey, true, $this->pingCacheTime);
 
-        return $etResponse;
+                return $this->handleEtResponse($etResponse);
+            }
+        }
+        return null;
+    }
+
+    public function isProEdition()
+    {
+        if ($this->getEdition() == 1) return true;
+
+        return false;
+    }
+
+
+
+    public function getEdition()
+    {
+        $edition = 0;
+        if($this->edition !== null) {
+            if($this->edition == 1) {
+                $edition = 1;
+            }
+        }
+
+        return $edition;
+        /*
+        if(craft()->plugins->getPluginLicenseKeyStatus('Shortlist') == LicenseKeyStatus::Valid) {
+            $edition = 1;
+        }
+        return $edition;*/
+    }
+
+    public function wipeLicenseKey()
+    {
+        craft()->shortlist_license->setLicenseKey(null);
+        craft()->plugins->setPluginLicenseKeyStatus('Shortlist', LicenseKeyStatus::Unknown);
+        $this->setEdition('0');
+    }
+
+    public function getLicenseKey()
+    {
+        $licenseKey = null;
+
+        $settings = $this->plugin->getSettings();
+        if (!isset($settings->licenseKey)) return $licenseKey;
+        $licenseKey = $settings->licenseKey;
+
+        return $licenseKey;
+    }
+
+
+    public function setLicenseKey($licenseKey)
+    {
+        $settings = ['licenseKey' => $licenseKey];
+        craft()->plugins->savePluginSettings($this->plugin, $settings);
+    }
+
+    private function setEdition($edition)
+    {
+        $settings = ['edition' => $edition];
+        craft()->plugins->savePluginSettings($this->plugin, $settings);
+
+        $this->edition = $edition;
+    }
+
+
+    public function getLicenseInfo()
+    {
+        $et = new Shortlist_Edition(static::GetLicenseInfo, $this->pluginHandle, $this->pluginVersion, $this->licenseKey);
+        $etResponse = $et->phoneHome(true);
+
+        return $this->handleEtResponse($etResponse);
     }
 
 
@@ -48,6 +122,7 @@ class Shortlist_LicenseService extends BaseApplicationComponent
     {
         if ($attributes) {
             $attributes = JsonHelper::decode($attributes);
+
             if (is_array($attributes)) {
                 $etModel = new Shortlist_LicenseModel($attributes);
 
@@ -58,140 +133,71 @@ class Shortlist_LicenseService extends BaseApplicationComponent
                 }
             }
         }
+        return null;
     }
 
-    /**
-     * Fetches info about the available Craft editions from Elliott.
-     *
-     * @return EtModel|null
-     */
-    public function fetchUpgradeInfo()
-    {
-        $et = new Shortlist_Edition(static::GetUpgradeInfo);
-        $etResponse = $et->phoneHome();
 
-        if ($etResponse != null) {
-            $etResponse->data = new Shortlist_UpgradeInfoModel($etResponse->data);
-        }
+    public function unregisterLicenseKey()
+    {
+        $et = new Shortlist_Edition(static::UnregisterPlugin, $this->pluginHandle, $this->pluginVersion, $this->licenseKey);
+        $etResponse = $et->phoneHome(true);
+
+        craft()->shortlist_license->setLicenseKey(null);
+        $this->setEdition('0');
+        craft()->plugins->setPluginLicenseKeyStatus('Shortlist', LicenseKeyStatus::Unknown);
+
+        return $this->handleEtResponse($etResponse);
+    }
+
+    public function transferLicenseKey()
+    {
+        $et = new Shortlist_Edition(static::TransferPlugin, $this->pluginHandle, $this->pluginVersion, $this->licenseKey);
+        $etResponse = $et->phoneHome(true);
 
         return $etResponse;
     }
 
-
-    public function setEdition($edition)
+    public function registerPlugin($licenseKey)
     {
-        $settings = ['edition' => $edition];
-        craft()->plugins->savePluginSettings($this->plugin, $settings);
-    }
+        $et = new Shortlist_Edition(static::RegisterPlugin, $this->pluginHandle, $this->pluginVersion, $licenseKey);
+        $etResponse = $et->phoneHome(true);
 
-    public function getEdition()
-    {
-        $settings = $this->plugin->getSettings();
-
-        if (!isset($settings->edition)) return 0;
-
-        return $settings->edition;
-    }
-
-
-    public function getEditionName()
-    {
-        $settings = $this->plugin->getSettings();
-
-        if (!isset($settings->edition)) return 'Free';
-
-        switch ($settings->edition) {
-            case '0':
-                return 'Free';
-            case '1':
-                return 'Pro';
-            default:
-                return 'Dev';
-        }
+        // Handle the response
+        return $this->handleEtResponse($etResponse);
     }
 
     /**
-     * Attempts to purchase an edition upgrade.
+     * Returns a response based on the EtService response.
      *
-     * @param Shortlist_UpgradePurchaseModel $model
-     *
-     * @return bool
+     * @return bool|string The resonse from EtService
      */
-    public function purchaseUpgrade(Shortlist_UpgradePurchaseModel $model)
+
+    private function handleEtResponse($etResponse)
     {
-        if ($model->validate()) {
-            $et = new Edition(static::PurchaseUpgrade);
-            $et->setData($model);
-            $etResponse = $et->phoneHome();
-
-            if (!empty($etResponse->data['success'])) {
-                // Success! Let's get this sucker installed.
-                $this->setEdition($model->edition);
-
-                return true;
-            } else {
-                // Did they at least say why?
-                if (!empty($etResponse->errors)) {
-                    switch ($etResponse->errors[0]) {
-                        // Validation errors
-                        case 'edition_doesnt_exist':
-                            $error = Craft::t('The selected edition doesn’t exist anymore.');
-                            break;
-                        case 'invalid_license_key':
-                            $error = Craft::t('Your license key is invalid.');
-                            break;
-                        case 'license_has_edition':
-                            $error = Craft::t('Your Shortlist license already has this edition.');
-                            break;
-                        case 'price_mismatch':
-                            $error = Craft::t('The cost of this edition just changed.');
-                            break;
-                        case 'unknown_error':
-                            $error = Craft::t('An unknown error occurred.');
-                            break;
-
-                        // Stripe errors
-                        case 'incorrect_number':
-                            $error = Craft::t('The card number is incorrect.');
-                            break;
-                        case 'invalid_number':
-                            $error = Craft::t('The card number is invalid.');
-                            break;
-                        case 'invalid_expiry_month':
-                            $error = Craft::t('The expiration month is invalid.');
-                            break;
-                        case 'invalid_expiry_year':
-                            $error = Craft::t('The expiration year is invalid.');
-                            break;
-                        case 'invalid_cvc':
-                            $error = Craft::t('The security code is invalid.');
-                            break;
-                        case 'incorrect_cvc':
-                            $error = Craft::t('The security code is incorrect.');
-                            break;
-                        case 'expired_card':
-                            $error = Craft::t('Your card has expired.');
-                            break;
-                        case 'card_declined':
-                            $error = Craft::t('Your card was declined.');
-                            break;
-                        case 'processing_error':
-                            $error = Craft::t('An error occurred while processing your card.');
-                            break;
-
-                        default:
-                            $error = $etResponse->errors[0];
-                    }
-                } else {
-                    // Something terrible must have happened!
-                    $error = Craft::t('Shortlist is unable to purchase an edition upgrade at this time.');
+        if (!empty($etResponse->data['success'])) {
+            // Set the local details
+            $this->setEdition('1');
+            craft()->plugins->setPluginLicenseKeyStatus('Shortlist',LicenseKeyStatus::Valid);
+            return true;
+        } else {
+            $this->setEdition('0');
+            if (!empty($etResponse->errors)) {
+                switch ($etResponse->errors[0]) {
+                    case 'nonexistent_plugin_license':
+                        craft()->plugins->setPluginLicenseKeyStatus('Shortlist',LicenseKeyStatus::Invalid);
+                        break;
+                    case 'plugin_license_in_use':
+                        craft()->plugins->setPluginLicenseKeyStatus('Shortlist',LicenseKeyStatus::Mismatched);
+                        break;
+                    default:
+                        craft()->plugins->setPluginLicenseKeyStatus('Shortlist',LicenseKeyStatus::Unknown);
                 }
-
-                $model->addError('response', $error);
+            } else {
+                //$error = Craft::t('An unknown error occurred.');
+                return false;
             }
+
+            return true;
         }
-
-        return false;
     }
-
 }
