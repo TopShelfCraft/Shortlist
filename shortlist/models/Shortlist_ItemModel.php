@@ -4,6 +4,7 @@ namespace Craft;
 class Shortlist_ItemModel extends BaseElementModel
 {
     protected $elementType = 'Shortlist_Item';
+    public $_parentElement;
 
     public function __construct($attributes = null)
     {
@@ -93,7 +94,7 @@ class Shortlist_ItemModel extends BaseElementModel
 
     public function removeActionUrl($options = array())
     {
-        return ShortlistHelper::removeAction($this->elementId, $this->listId, $options);
+        return ShortlistHelper::removeAction($this->id, $this->listId, $options);
     }
 
     public function toggleActionUrl($options = array())
@@ -110,5 +111,25 @@ class Shortlist_ItemModel extends BaseElementModel
     {
         return true;
     }
+
+    public function getParent()
+    {
+        if (!isset($this->_parentElement) && $this->elementId)
+        {
+            $this->_parentElement = craft()->elements->getElementById($this->elementId);
+
+            if (!$this->_parentElement)
+            {
+                $this->_parentElement = false;
+            }
+        }
+
+        if ($this->_parentElement)
+        {
+            return $this->_parentElement;
+        }
+
+    }
+
 
 }

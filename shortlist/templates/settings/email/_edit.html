@@ -1,0 +1,100 @@
+{% extends "shortlist/_layouts/settings" %}
+
+{% set fullPageForm = true %}
+{% set crumbs = [
+{ label: "Shortlist"|t, url: url('shortlist') },
+{ label: "Emails"|t, url: url('shortlist/emails') },
+{ label: "New"|t, url: url('shortlist/emails/new') }
+] %}
+
+{% set isNewEmail = (email is not defined or not email.id) %}
+
+{% block content %}
+    <input type="hidden" name="action" value="shortlist/email/save">
+    <input type="hidden" name="redirect" value="shortlist/settings/emails">
+
+
+    {% if not isNewEmail %}
+        <h1>Edit Email</h1>
+        <input type="hidden" name="emailId" value="{{ email.id }}">
+    {% else %}
+        <h1>New Email</h1>
+    {% endif %}
+
+
+    {{ forms.textField({
+        label: "Email Name"|t,
+        instructions: 'What this email will be called in the CP',
+        id: 'name',
+        name: 'name',
+        autofocus: true,
+        required: true,
+        value: (email is defined ? email.name ),
+        errors: (email is defined ? email.getErrors('name'))
+    }) }}
+
+    {{ forms.textField({
+        label: "Email Handle"|t,
+        instructions: 'How you\'ll refer to this email in the templates',
+        id: 'handle',
+        name: 'handle',
+        class: 'code',
+        required: true,
+        value: (email is defined ? email.handle ),
+        errors: (email is defined ? email.getErrors('handle'))
+    }) }}
+
+    <hr/>
+
+
+    {{ forms.textField({
+        label: "Email Subject"|t,
+        id: 'subject',
+        name: 'subject',
+        value: email.subject,
+        errors: email.getErrors('subject'),
+        required: true,
+    }) }}
+
+    {{ forms.textField({
+        label: 'Recipient'|t,
+        instructions: 'Receiver of this email.'|t,
+        id: 'to',
+        name: 'to',
+        value: email.to,
+        errors: email.getErrors('to'),
+        required: true,
+    }) }}
+
+    {{ forms.textField({
+        label: 'BCC’d Recipient'|t,
+        id: 'bcc',
+        name: 'bcc',
+        value: email.bcc,
+        errors: email.getErrors('bcc'),
+    }) }}
+
+    {{ forms.textField({
+        label: 'HTML Email Template Path'|t,
+        instructions: 'The template to be used for HTML emails.'|t,
+        id: 'templatePath',
+        name: 'templatePath',
+        value: email.templatePath,
+        errors: email.getErrors('templatePath'),
+        required: true,
+    }) }}
+
+    {{ forms.lightswitchField({
+        label: "Enabled?"|t,
+        id: 'enabled',
+        name: 'enabled',
+        value: 1,
+        on: email.enabled,
+        errors: email.getErrors('enabled')
+    }) }}
+
+{% endblock %}
+
+{% includejs "window.slugGenerator = new Craft.SlugGenerator('#name', '#handle');" %}
+
+

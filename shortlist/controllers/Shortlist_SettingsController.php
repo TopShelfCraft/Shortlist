@@ -35,13 +35,12 @@ class Shortlist_SettingsController extends BaseController
     }
 
 
-    private function saveSettings($group, $data = [])
+    public function actionSaveSettings()
     {
         $this->requireAdmin();
         $this->requirePostRequest();
-        $settings = craft()->request->getPost($group);
+        $settings = craft()->request->getPost();
 
-        $settings = [$group => $settings];
         if (craft()->plugins->savePluginSettings($this->plugin, $settings)) {
             craft()->userSession->setNotice(Craft::t('Settings saved.'));
             $this->redirectToPostedUrl();

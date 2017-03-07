@@ -20,12 +20,12 @@ class ShortlistPlugin extends BasePlugin
 
     function getVersion()
     {
-        return '2.0.0.dev1';
+        return '1.2.0.dev2';
     }
 
     function getSchemaVersion()
     {
-        return '1.1.0';
+        return '1.2.3';
     }
 
     function getDeveloper()
@@ -35,7 +35,7 @@ class ShortlistPlugin extends BasePlugin
 
     function getDeveloperUrl()
     {
-        return 'https://squarebit.co.uk';
+        return 'http://squarebit.co.uk';
     }
 
     public function getDescription()
@@ -79,10 +79,13 @@ class ShortlistPlugin extends BasePlugin
                 'shortlist/users/(?P<itemId>\d+)'  => ['action' => 'shortlist/users/view'],*/
 
 
-            'shortlist/settings'             => ['action' => 'shortlist/settings/index'],
-            'shortlist/settings/license'     => ['action' => 'shortlist/settings/license'],
-            'shortlist/settings/listelement' => ['action' => 'shortlist/list/editFields'],
-            'shortlist/settings/itemelement' => ['action' => 'shortlist/item/editFields'],
+            'shortlist/settings'                         => ['action' => 'shortlist/settings/index'],
+            'shortlist/settings/license'                 => ['action' => 'shortlist/settings/license'],
+            'shortlist/settings/listelement'             => ['action' => 'shortlist/list/editFields'],
+            'shortlist/settings/itemelement'             => ['action' => 'shortlist/item/editFields'],
+            'shortlist/settings/emails'                  => ['action' => 'shortlist/email/all'],
+            'shortlist/settings/emails/new'              => ['action' => 'shortlist/email/edit'],
+            'shortlist/settings/emails/(?P<emailId>\d+)' => ['action' => 'shortlist/email/edit'],
         ];
 
     }
@@ -93,6 +96,7 @@ class ShortlistPlugin extends BasePlugin
             'defaultListTitle' => [AttributeType::String, 'required' => true, 'default' => 'Wishlist'],
             'defaultListName'  => [AttributeType::String, 'required' => true, 'default' => 'wishlist'],
             'defaultListSlug'  => [AttributeType::String, 'required' => true, 'default' => 'wishlist'],
+            'allowDuplicates'  => [AttributeType::Bool, 'required' => true, 'default' => false],
         ];
     }
 
@@ -122,10 +126,10 @@ class ShortlistPlugin extends BasePlugin
         $context['navItems']['itemelement'] = ['title' => Craft::t('Item Fields')];
         $context['navItems']['listelement'] = ['title' => Craft::t('List Fields')];
 
-        if (craft()->shortlist_license->getEdition() > 0) {
-            $context['navItems']['emails'] = ['title' => Craft::t('Emails')];
-            $context['navItems']['subscriptions'] = ['title' => Craft::t('Subscriptions')];
-        }
+
+        $context['navItems']['extras'] = ['heading' => Craft::t('Extras')];
+        $context['navItems']['emails'] = ['title' => Craft::t('Emails')];
+
         $context['navItems']['developer'] = ['heading' => Craft::t('Developer')];
         $context['navItems']['license'] = ['title' => Craft::t('License')];
 

@@ -4,7 +4,8 @@ namespace Craft;
 class Shortlist_ListController extends BaseController
 {
     protected $allowAnonymous = true;
-    private $baseFields = array('listTitle', 'listSlug', 'listName');
+    private $baseFields = ['listTitle', 'listSlug', 'listName'];
+    private $emailFields = ['email', 'fields', 'data'];
 
     public function init()
     {
@@ -67,6 +68,13 @@ class Shortlist_ListController extends BaseController
         return $this->handleAction('clearAll');
     }
 
+
+    public function actionCreateCommerceOrder()
+    {
+        $this->requirePostRequest();
+
+        return $this->handleAction('createCommerceOrder');
+    }
 
     /**
      * Template layout edit
@@ -153,7 +161,6 @@ class Shortlist_ListController extends BaseController
         } else {
             craft()->shortlist->redirect($response['object']);
         }
-
     }
 
 
@@ -194,5 +201,67 @@ class Shortlist_ListController extends BaseController
         $this->renderTemplate('shortlist/list/_view', $variables);
     }
 
+
+
+    public function errorResponse($msg = '')
+    {
+        if(craft()->request->isAjaxRequest()) {
+            $this->returnJson(false);
+            //$this->returnJson(array('success' => false, 'error' => true, 'error_message' => Craft::t($msg)));
+        } else {
+            craft()->shortlist->addError($msg);
+            $this->returnError();
+        }
+    }
+
+
+    public function returnError()
+    {
+        // Do we have errors?
+        if(!empty(craft()->shortlist->errors)) {
+            // We have slightly different formats depending on if it's a single or multiple set of errors
+            $msg = '';
+
+            if(count(craft()->shortlist->errors) > 1) {
+                $msg = '<ul>';
+                foreach(craft()->shortlist->errors as $error) {
+                    $msg .= '<li>'.$error.'</li>';
+                }
+                $msg .= '</ul>';
+            } else {
+                $msg = current(craft()->shortlist->errors);
+            }
+        }
+
+        craft()->userSession->setError('There was a problem with that action - '.$msg);
+
+
+        $url = craft()->request->getUrlReferrer();
+        craft()->request->redirect($url);
+    }
+
+
+    public function actionSendEmail()
+    {
+        $this->requirePostRequest();
+
+        $listId = craft()->shortlist->getIdForRequest('listId,id');
+        $extraData = craft()->shortlist->getExtraForRequest($this->emailFields);
+
+
+        // Pass to the service to do the leg work
+        $response = craft()->shortlist_list->emailList($listId, $extraData);
+        if ($response == false) {
+            // Deal with an error state
+            $this->errorResponse('Couldn\'t email the list');
+        }
+
+        // Return as appropriate
+        if (craft()->request->isAjaxRequest()) {
+            $this->returnJson($response);
+        } else {
+            craft()->shortlist->redirect($response['object']);
+        }
+    }
 
 }

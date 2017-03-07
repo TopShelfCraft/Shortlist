@@ -36,10 +36,7 @@ class ShortlistVariable
         }
 
         $criteria->elementId = $elementIds;
-
         $criteria->ownerId = craft()->shortlist->user->id;
-        $items = $criteria->find();
-
         return $criteria->find();
     }
 
@@ -64,4 +61,50 @@ class ShortlistVariable
 
         return null;
     }
+
+    public function searchListsByFields($searchArray, $limitToOwner = true)
+    {
+        $criteria = craft()->elements->getCriteria('Shortlist_List');
+
+        if($limitToOwner !== false) {
+            $criteria->ownerId = craft()->shortlist->user->id;
+        }
+
+        foreach($searchArray as $key => $val) {
+            $criteria->$key = $val;
+        }
+
+        return $criteria->find();
+    }
+
+    public function getListById($listId, $limitToOwner = true)
+    {
+        $criteria = craft()->elements->getCriteria('Shortlist_List');
+
+        if($limitToOwner !== false) {
+            $criteria->ownerId = craft()->shortlist->user->id;
+        }
+
+        $criteria->id = $listId;
+
+        return $criteria->first();
+    }
+
+    public function getSharedList($listShareSlug)
+    {
+        $criteria = craft()->elements->getCriteria('Shortlist_List');
+
+        $criteria->shareSlug = $listShareSlug;
+
+        return $criteria->first();
+    }
+
+
+
+    public function assignSuperUserForList($listId)
+    {
+        return craft()->shortlist_list->assignSuperUserForList($listId);
+    }
+
+
 }

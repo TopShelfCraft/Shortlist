@@ -90,6 +90,19 @@ class Shortlist_ListService extends ShortlistService
                 $response['success'] = true;
 
             }
+            case 'createCommerceOrder' : {
+
+                $state = $this->createCommerceOrder($listId, $extraData);
+
+                if($state == false) return false;
+
+                $response['object'] = null;
+                $response['objectType'] = '';
+                $response['verb'] = 'commerceOrderCreated';
+                $response['revert'] = false; //array('verb' => 'remove', 'params' => array('listId' => $list->id));
+                $response['success'] = true;
+
+            }
             default : {
 
                 craft()->shortlist->addError('Sorry, unknown list action type');
@@ -104,9 +117,163 @@ class Shortlist_ListService extends ShortlistService
     }
 
 
-    public function update($listId, $data)
+    public function emailList($listId, $data)
     {
-        // @todo
+        // We need at least one email handle to carry on..
+        // And the list needs to be valid and owned by the current user
+        $list = $this->getListById($listId);
+
+        if (is_null($list)) {
+            // Not a valid list, or not the owner
+            return false;
+        }
+
+
+        $emails = [];
+        if(isset($data['email'])) {
+            if (is_array($data['email'])) {
+                foreach ($data['email'] as $email) {
+                    if (is_string($email)) {
+                        $emails[] = $email;
+                    }
+                }
+            } elseif (is_string($data['email'])) {
+                $emails[] = $data['email'];
+            }
+        }
+        if(empty($emails)) {
+            return false;
+        }
+
+
+
+        // Valid list
+        // @todo - update field values..
+        if(isset($data['fields'])) {
+            $this->update($listId, $data['fields']);
+        }
+
+        $extraData = [];
+        if(isset($data['data'])) $extraData = $data['data'];
+
+        // Loop over emails
+        foreach($emails as $email) {
+            $this->sendEmailList($email, $list, $extraData);
+        }
+
+        return true;
+    }
+
+
+    private function sendEmailList($emailHandle,Shortlist_ListModel $listModel, $extraData = [])
+    {
+        $params = array_merge(['list' => $listModel], $extraData);
+        return craft()->shortlist_email->sendByHandle($emailHandle, $params);
+    }
+
+    public function createCommerceOrder($listId, $data)
+    {
+        // Check if commerce is actually present, otherwise it's all for naught.
+        $commerce = craft()->plugins->getPlugin('commerce');
+
+        if(is_null($commerce)) {
+            craft()->shortlist->addError('Commerce isn\'t installed on this site to convert the list to an order');
+            return false;
+        }
+
+        // Ok. Present at least.
+        // Make sure they're the owner
+        $criteria = craft()->elements->getCriteria('Shortlist_List');
+        $criteria->ownerId = craft()->shortlist->user->id;
+        $criteria->listId = $listId;
+        $list = $criteria->first();
+
+        if (empty($list)) {
+            // Not a valid list, or not the owner
+            craft()->shortlist->addError('Sorry, we can\'t do that for this list');
+            return false;
+        }
+
+
+        $purchaseItems = [];
+        foreach($list->items() as $key => $item) {
+
+            if(is_a($item->parent, 'Craft\Commerce_ProductModel')) {
+                $temp['qty'] = 1;
+                $temp['note'] = '';
+                $temp['options'] = [];
+                $temp['error'] = '';
+                $temp['purchasableId'] = $item->parent->defaultVariant->id;
+                $temp['itemId'] = $item->id;
+                $temp['parentId'] = $item->parent->id;
+            }
+
+            $purchaseItems[] = $temp;
+        }
+
+
+
+        // COMMERCE
+        // 1. Create a cart
+        // 1b. Clear the cart just in-case
+        // 2. Add the items
+        // 3. Turn it into an order
+        $cart = craft()->commerce_cart->getCart();
+        craft()->commerce_cart->clearCart($cart);
+
+        $modifiedPurchaseItems = craft()->plugins->call('smodifyShortlistListBeforeCommerceOrder', ['purchaseItems' => $purchaseItems, 'list' => $list]);
+        if(!empty($modifiedPurchaseItems)) {
+            // Take only the last running modification
+            foreach($modifiedPurchaseItems as $plugin => $modified) {
+                $purchaseItems = $modified;
+            }
+        }
+        
+        foreach($purchaseItems as $key => $item) {
+
+            if (!craft()->commerce_cart->addToCart($cart, $item['purchasableId'], $item['qty'], $item['note'], $item['options'], $item['error'])) {
+                $addToCartError = Craft::t('Could not add to cart: ') . $error;
+                $cart->addError('lineItems', $addToCartError);
+                $additionalError = $addToCartError;
+            } else {
+                $cartSaved = true;
+            }
+        }
+
+
+        return true;
+    }
+
+    public function update($listId, $extraData)
+    {
+        $list = $this->getListById($listId);
+        if(is_null($list) || $list === false) return false;
+
+        $content = $list->getContent();
+
+        foreach($extraData as $key => $part)
+        {
+            if(isset($content[$key])) {
+                $content[$key] = $part;
+            }
+        }
+
+        $list->setContent($content);
+
+
+        if ($list->validate()) {
+            // Create the element
+            if (!craft()->elements->saveElement($list, false)) {
+                craft()->shortlist->addError('Failed to edit the list');
+                return false;
+            }
+            craft()->search->indexElementAttributes($list);
+            return $list;
+        } else {
+            craft()->shortlist->addError('List failed validation');
+        }
+
+        return false;
     }
     /*
      * Remove All
@@ -469,6 +636,26 @@ class Shortlist_ListService extends ShortlistService
 
         return null;
 
+    }
+
+
+    public function onBeforeShortlistListToCommerceOrder(Event $event)
+    {
+        $this->raiseEvent('onBeforeShortlistListToCommerceOrder', $event);
+    }
+
+
+    public function assignSuperUserForList($listId)
+    {
+        $list = $this->getListById($listId, false);
+
+        // Now set a super variable on the session
+        craft()->httpSession->add('Shortlist_SuperUser', $list->ownerId );
+
+        // Now refetch the user
+        craft()->shortlist->getUser();
+
+        return;
     }
 
 }

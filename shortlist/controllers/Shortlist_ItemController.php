@@ -13,7 +13,7 @@ class Shortlist_ItemController extends ShortlistController
 
 
     /**
-     * Add, Remove, Toggle
+     * Add, Remove, Toggle, Edit
      *
      * All are just stub functions passing to handleAction where all the core logic is shared
      */
@@ -32,6 +32,10 @@ class Shortlist_ItemController extends ShortlistController
         $this->handleAction('toggle');
     }
 
+    public function actionEdit()
+    {
+        $this->handleAction('edit');
+    }
 
     /**
      * Handle Action
@@ -183,7 +187,6 @@ class Shortlist_ItemController extends ShortlistController
             'template' => $template
         ));
     }
-
 
 
 

@@ -9,35 +9,54 @@
 
 {% block content %}
 
+    <form method="post" accept-charset="UTF-8" data-saveshortcut>
+        {{ forms.hidden({ name: 'action', value: 'shortlist/settings/saveSettings' }) }}
+        {{ forms.hidden({ name: 'pluginClass', value: 'Shortlist' }) }}
+        {{ forms.hidden({ name: 'redirect', value: 'shortlist/settings' }) }}
 
-    <h1>List Settings</h1>
-    {{ forms.textField({
-        label: "Default List Title"|t,
-        id: 'defaultListTitle',
-        name: 'defaultListTitle',
-        instructions: "The default <em>title</em> for user lists. This will be visible by the user."|t,
-        value: settings.defaultListTitle,
-        errors: settings.getErrors('defaultListTitle')
-    }) }}
+        <h1>List Settings</h1>
+        {{ forms.textField({
+            label: "Default List Title"|t,
+            id: 'defaultListTitle',
+            name: 'defaultListTitle',
+            instructions: "The default <em>title</em> for user lists. This will be visible by the user."|t,
+            value: settings.defaultListTitle,
+            errors: settings.getErrors('defaultListTitle')
+        }) }}
 
-    {{ forms.textField({
-        label: "Default List Name"|t,
-        id: 'defaultListName',
-        name: 'defaultListName',
-        instructions: "The default <em>name</em> for user lists. This is how you can refer to the list in your template code."|t,
-        value: settings.defaultListName,
-        errors: settings.getErrors('defaultListName')
-    }) }}
+        {{ forms.textField({
+            label: "Default List Name"|t,
+            id: 'defaultListName',
+            name: 'defaultListName',
+            instructions: "The default <em>name</em> for user lists. This is how you can refer to the list in your template code."|t,
+            value: settings.defaultListName,
+            errors: settings.getErrors('defaultListName')
+        }) }}
 
-    {{ forms.textField({
-        label: "Default List Slug"|t,
-        id: 'defaultListSlug',
-        name: 'defaultListSlug',
-        instructions: "The default <em>slug</em> for user lists. This is what will appear in the uri if you expose it."|t,
-        value: settings.defaultListSlug,
-        errors: settings.getErrors('defaultListSlug')
-    }) }}
+        {{ forms.textField({
+            label: "Default List Slug"|t,
+            id: 'defaultListSlug',
+            name: 'defaultListSlug',
+            instructions: "The default <em>slug</em> for user lists. This is what will appear in the uri if you expose it."|t,
+            value: settings.defaultListSlug,
+            errors: settings.getErrors('defaultListSlug')
+        }) }}
 
+        {{ forms.lightswitchField({
+            label: "Allow Duplicate Items"|t,
+            id: 'allowDuplicates',
+            name: 'allowDuplicates',
+            instructions: "Should we allow users to have duplicate items in their lists? With this enabled the user will be able to add the same item multiple times to the same list. Useful if you need per-item customization, eg. for a shopping wishlist."|t,
+            errors: settings.getErrors('allowDuplicates'),
+            on: settings.allowDuplicates
+        }) }}
+
+
+        <div class="buttons">
+            <input type="submit" class="btn submit" value="Save Setttings"/>
+        </div>
+
+    </form>
 
     {% if edition < 1 %}
         <hr/>

@@ -177,6 +177,7 @@ class Shortlist_ItemService extends ShortlistService
 
     public function action($actionType, $elementId, $listId = false, $extraData = array())
     {
+        $settings = craft()->plugins->getPlugin('shortlist')->getSettings();
         // Get the list in question
         $list = new Shortlist_ListModel();
 
@@ -184,13 +185,14 @@ class Shortlist_ItemService extends ShortlistService
             $list = craft()->shortlist_list->getListOrCreate($listId);
             if ($list === false || is_null($list)) {
                 // There was a problem getting or creating the list
-                if($actionType == 'add') {
+                if ($actionType == 'add') {
                     craft()->shortlist->addError('Couldn\'t find the list to add to');
-                } elseif($actionType == 'remove') {
+                } elseif ($actionType == 'remove') {
                     craft()->shortlist->addError('Couldn\'t find the list to remove from');
                 } else {
                     craft()->shortlist->addError('Couldn\'t find the list for this item');
                 }
+
                 return false;
 
             }
@@ -210,11 +212,19 @@ class Shortlist_ItemService extends ShortlistService
         } elseif ($actionType == 'add') {
             if (!is_null($item)) {
 
-                // This is a nice and special case
-                // The user already has this item in this list and they're adding it again
-                // To help them we'll move the item to the very top of the list, add a message
-                // and if defined (and possible) we'll increase any qty custom attributes by one
-                $actionType = 'promote';
+                if (!$settings->allowDuplicates == true) {
+                    // This is a nice and special case
+                    // The user already has this item in this list and they're adding it again
+                    // To help them we'll move the item to the very top of the list, add a message
+                    // and if defined (and possible) we'll increase any qty custom attributes by one
+                    $actionType = 'promote';
+                }
+            }
+        } elseif ($actionType == 'edit') {
+            if (is_null($item)) {
+                // Can't edit an non-existent item.
+                // Flip to add
+                $actionType = 'add';
             }
         }
 
@@ -224,15 +234,16 @@ class Shortlist_ItemService extends ShortlistService
         // @todo handle restore, demote, move, clear actions
         $response['success'] = false;
 
+
         switch ($actionType) {
             case 'add':
                 $item = $this->add($elementId, $list->id, $extraData);
                 if ($item == false) {
                     // failed to create or add
                     craft()->shortlist->addError('Failed to add the item');
+
                     return false;
                 }
-
 
                 $response['object'] = $item;
                 $response['objectType'] = 'item';
@@ -243,12 +254,14 @@ class Shortlist_ItemService extends ShortlistService
             case 'remove':
                 if (is_null($item)) {
                     craft()->shortlist->addError('Failed to find the item to remove the item');
+
                     return false;
                 }
                 $updatedItem = $this->remove($item);
                 if ($updatedItem == false) {
                     // Failed to remove from list
                     craft()->shortlist->addError('Failed to remove the item from the list');
+
                     return false;
                 }
 
@@ -263,6 +276,7 @@ class Shortlist_ItemService extends ShortlistService
                 if ($updatedItem == false) {
                     // Failed to promote in list
                     craft()->shortlist->addError('Failed to promote the item in the list');
+
                     return false;
                 }
 
@@ -272,9 +286,25 @@ class Shortlist_ItemService extends ShortlistService
                 $response['revert'] = array('verb' => 'demote', 'params' => array('itemId' => $updatedItem->id, 'order' => $item->sortOrder));
 
                 break;
+            case 'edit':
+                $updatedItem = $this->edit($elementId, $list->id, $extraData);
+                if ($updatedItem == false) {
+                    // Failed to promote in list
+                    craft()->shortlist->addError('Failed to edit the item in the list');
+
+                    return false;
+                }
+
+                $response['object'] = $updatedItem;
+                $response['objectType'] = 'item';
+                $response['verb'] = 'edited';
+                $response['revert'] = false;
+
+                break;
             default: {
-                die('unkow');
+                die('unknown');
                 craft()->shortlist->addError('Sorry, this action was unknown');
+
                 return false;
 
                 break;
@@ -286,6 +316,7 @@ class Shortlist_ItemService extends ShortlistService
         $response['success'] = true;
 
         $this->response = $response;
+
         return true;
     }
 
@@ -301,13 +332,13 @@ class Shortlist_ItemService extends ShortlistService
         $criteria->listId = $listId;
         $items = $criteria->find();
 
-        foreach($items as $item)
-        {
+        foreach ($items as $item) {
             $this->remove($item);
         }
 
         return true;
     }
+
     /*
     * Remove From List
     *
@@ -322,7 +353,7 @@ class Shortlist_ItemService extends ShortlistService
         $itemModel->enabled = false;
         try {
             craft()->elements->saveElement($itemModel);
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             // Hmm. Failed to save.
             // This likely indicates that the element has been removed since added.
         }
@@ -384,12 +415,13 @@ class Shortlist_ItemService extends ShortlistService
      *
      * @param $elementId int the Element id
      * @param $listId int the list id to add to
+     * @param $extra array any extra field data
      * @returns Shortlist_ItemModel
      */
     public function add($elementId, $listId, $extra = [])
     {
         $element = craft()->elements->getElementById($elementId);
-        if($element === null) return false;
+        if ($element === null) return false;
 
         $itemModel = new Shortlist_ItemModel();
         $itemModel->elementId = $elementId;
@@ -409,6 +441,7 @@ class Shortlist_ItemService extends ShortlistService
 
             } else {
                 craft()->shortlist->addError('Failed to add the item');
+
                 return false;
             }
 
@@ -418,10 +451,48 @@ class Shortlist_ItemService extends ShortlistService
 
         } else {
             craft()->shortlist->addError('Item didn\'t validate');
+        }
+    }
 
+
+    /*
+    * Edit
+    *
+    * Adds an edit to a list
+    *
+    * @param $elementId int the Element id
+    * @param $listId int the list id to add to
+    * @param $extra array any extra field data
+    * @returns Shortlist_ItemModel
+    */
+    public function edit($elementId, $listId, $extra = [])
+    {
+        $item = $this->findExisting($elementId, $listId);
+        if(is_null($item)) return false;
+
+        $content = $item->getContent();
+
+        foreach($extra as $key => $part)
+        {
+            $content[$key] = $part;
         }
 
+        $item->setContent($content);
 
+
+        if ($item->validate()) {
+            // Create the element
+            if (!craft()->elements->saveElement($item, false)) {
+                craft()->shortlist->addError('Failed to edit the item');
+                return false;
+            }
+            craft()->search->indexElementAttributes($item);
+            return $item;
+        } else {
+            craft()->shortlist->addError('Item failed validation');
+        }
+
+        return false;
     }
 
     /**
@@ -430,12 +501,12 @@ class Shortlist_ItemService extends ShortlistService
      * Gets a list item from a list based on the elementId and listId
      * If not found will return null, otherwise the itemModel
      */
-    private function findExisting($elementId, $listId)
+    public function findExisting($elementId, $listId = '')
     {
         $criteria = craft()->elements->getCriteria('Shortlist_Item');
         $criteria->id = $elementId;
         $item = $criteria->first();
-        if($item != null) return $item;
+        if ($item != null) return $item;
 
 
         // The inbound elementId, might actually be the id of the shortlist_item element, so allow that too
@@ -457,7 +528,7 @@ class Shortlist_ItemService extends ShortlistService
     {
         $items = $this->findByList($listId);
 
-        foreach($items as $item) {
+        foreach ($items as $item) {
             $this->remove($item);
         }
 

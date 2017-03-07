@@ -42,7 +42,6 @@ class Shortlist_ListElementType extends BaseElementType
     }
 
 
-
     /**
      * Returns whether this element type has content.
      *
@@ -54,7 +53,6 @@ class Shortlist_ListElementType extends BaseElementType
     }
 
 
-
     /**
      * Returns this element type's sources.
      *
@@ -64,7 +62,7 @@ class Shortlist_ListElementType extends BaseElementType
     public function getSources($context = null)
     {
         $sources = array(
-            '*'       => array('label' => Craft::t('All Lists'))
+            '*' => array('label' => Craft::t('All Lists'))
         );
 
         //die('<prE>'.print_R($sources,1));
@@ -93,14 +91,14 @@ class Shortlist_ListElementType extends BaseElementType
     public function modifyElementsQuery(DbCommand $query, ElementCriteriaModel $criteria)
     {
         $query
-            ->addSelect('shortlist_list.default, shortlist_list.userSlug, shortlist_list.public, shortlist_list.type, shortlist_list.ownerId, shortlist_list.ownerType')
+            ->addSelect('shortlist_list.default, shortlist_list.shareSlug, shortlist_list.public, shortlist_list.type, shortlist_list.ownerId, shortlist_list.ownerType')
             ->join('shortlist_list shortlist_list', 'shortlist_list.id = elements.id');
 
         if ($criteria->default) {
             $query->andWhere(DbHelper::parseParam('shortlist_list.default', $criteria->default, $query->params));
         }
-        if ($criteria->userSlug) {
-            $query->andWhere(DbHelper::parseParam('shortlist_list.userSlug', $criteria->userSlug, $query->params));
+        if ($criteria->shareSlug) {
+            $query->andWhere(DbHelper::parseParam('shortlist_list.shareSlug', $criteria->shareSlug, $query->params));
         }
         if ($criteria->public) {
             $query->andWhere(DbHelper::parseParam('shortlist_list.public', $criteria->public, $query->params));
@@ -125,7 +123,6 @@ class Shortlist_ListElementType extends BaseElementType
             'ownerType' => AttributeType::String,
             'public'    => AttributeType::Bool,
             'default'   => AttributeType::Bool,
-            'userSlug'  => AttributeType::String,
             'shareSlug' => AttributeType::String,
             'key'       => AttributeType::String,
         );
@@ -171,8 +168,9 @@ class Shortlist_ListElementType extends BaseElementType
                     if ($user == null) {
                         return Craft::t('[Deleted User]');
                     } else {
-                        $url = UrlHelper::getCpUrl('users/'.$user->id);
-                        return "<a href='".$url."'>" . $user->getFriendlyName() . "</a>";
+                        $url = UrlHelper::getCpUrl('users/' . $user->id);
+
+                        return "<a href='" . $url . "'>" . $user->getFriendlyName() . "</a>";
                     }
                 }
             }
@@ -188,7 +186,7 @@ class Shortlist_ListElementType extends BaseElementType
                 foreach ($items as $item) {
                     if ($i < $this->listInlineViewLimit) {
                         $parent = craft()->elements->getElementById($item->elementId);
-                        $url = UrlHelper::getCpUrl('shortlist/list/'.$element->id.'#' . $item->elementId);
+                        $url = UrlHelper::getCpUrl('shortlist/list/' . $element->id . '#' . $item->elementId);
                         $str[] = '<a href="' . $url . '">' . $parent->title . '</a>';
                     }
                     $i++;

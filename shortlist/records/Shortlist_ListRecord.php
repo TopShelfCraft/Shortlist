@@ -12,7 +12,7 @@ class Shortlist_ListRecord extends BaseRecord
     {
         return array(
             'default'   => array(AttributeType::Bool, 'label' => 'Default List', 'default' => true),
-            'userSlug'  => array(AttributeType::String, 'label' => 'List User Slug (ie. {{listName}})', 'required' => true),
+            'shareSlug'  => array(AttributeType::String, 'label' => 'List Share Slug', 'required' => true),
             'public'    => array(AttributeType::Bool, 'label' => 'Public List', 'default' => true, 'required' => true),
             'type'      => array(AttributeType::String, 'label' => 'List Type', 'default' => 'manual'),
             'ownerId'   => array(AttributeType::String, 'label' => 'Owner Id', 'required' => true),
