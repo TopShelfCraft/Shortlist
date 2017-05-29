@@ -20,12 +20,12 @@ class ShortlistPlugin extends BasePlugin
 
     function getVersion()
     {
-        return '2.0.0.dev2';
+        return '2.0.0.b1';
     }
 
     function getSchemaVersion()
     {
-        return '1.2.3';
+        return '2.0.0.b1';
     }
 
     function getDeveloper()
