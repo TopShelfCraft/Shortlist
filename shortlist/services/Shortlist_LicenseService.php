@@ -53,7 +53,8 @@ class Shortlist_LicenseService extends BaseApplicationComponent
 
     public function getEdition()
     {
-        $edition = 0;
+
+        $edition = 1; // @todo - for testing only
         if($this->edition !== null) {
             if($this->edition == 1) {
                 $edition = 1;
