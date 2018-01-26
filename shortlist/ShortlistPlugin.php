@@ -20,27 +20,27 @@ class ShortlistPlugin extends BasePlugin
 
     function getVersion()
     {
-        return '2.0.0.b1';
+        return '2.0.0.b2';
     }
 
     function getSchemaVersion()
     {
-        return '2.0.0.b1';
+        return '2.0.0.b2';
     }
 
     function getDeveloper()
     {
-        return 'Square Bit';
+        return 'Top Shelf Craft';
     }
 
     function getDeveloperUrl()
     {
-        return 'https://squarebit.co.uk';
+        return 'https://topshelfcraft.com';
     }
 
     public function getDescription()
     {
-        return 'User lists for Craft.';
+        return 'Lightweight, flexible lists for Craft CMS.';
     }
 
     public function hasCpSection()
@@ -50,12 +50,12 @@ class ShortlistPlugin extends BasePlugin
 
     function getDocumentationUrl()
     {
-        return 'https://squarebit.co.uk/software/craft/shortlist';
+        return 'https://transition.topshelfcraft.com/software/craft/shortlist';
     }
 
     function getReleaseFeedUrl()
     {
-        //return 'https://squarebit.co.uk/software/craft/shortlist/updates.json';
+        //return 'https://transition.topshelfcraft.com/software/craft/shortlist/updates.json';
     }
 
     function getSettingsUrl()

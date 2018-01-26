@@ -1,6 +1,6 @@
-This software is released under a commercial license. The full license text is as follows:
+This software is released under a commercial license.
 
-Copyright (c) 2015, Square Bit Ltd. All rights reserved.
+Copyright 2018, Michael Rog d.b.a. Top Shelf Craft. All rights reserved.
 
 All Copyright and proprietary notices in the User Interface and the software files must remain intact.
 
@@ -18,6 +18,5 @@ Unless you have been granted prior, written consent from the Copyright holder, y
 * Sell, rent, lease, assign, or sublet the software, in whole or in part.
 * Grant rights to any other person.
 * Use the software in violation of any UK or international law or regulation.
-
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

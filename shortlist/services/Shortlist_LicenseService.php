@@ -3,11 +3,11 @@ namespace Craft;
 
 class Shortlist_LicenseService extends BaseApplicationComponent
 {
-    const Ping = 'https://squarebit.co.uk/actions/licensor/edition/ping';
-    const GetLicenseInfo = 'https://squarebit.co.uk/actions/licensor/edition/getLicenseInfo';
-    const RegisterPlugin = 'https://squarebit.co.uk/actions/licensor/edition/registerPlugin';
-    const UnregisterPlugin = 'https://squarebit.co.uk/actions/licensor/edition/unregisterPlugin';
-    const TransferPlugin = 'https://squarebit.co.uk/actions/licensor/edition/transferPlugin';
+    const Ping = 'https://transition.topshelfcraft.com/actions/licensor/edition/ping';
+    const GetLicenseInfo = 'https://transition.topshelfcraft.com/actions/licensor/edition/getLicenseInfo';
+    const RegisterPlugin = 'https://transition.topshelfcraft.com/actions/licensor/edition/registerPlugin';
+    const UnregisterPlugin = 'https://transition.topshelfcraft.com/actions/licensor/edition/unregisterPlugin';
+    const TransferPlugin = 'https://transition.topshelfcraft.com/actions/licensor/edition/transferPlugin';
 
     private $plugin;
     private $pingStateKey = 'shortlistPhonedHome';
@@ -54,14 +54,7 @@ class Shortlist_LicenseService extends BaseApplicationComponent
     public function getEdition()
     {
 
-        $edition = 1; // @todo - for testing only
-        if($this->edition !== null) {
-            if($this->edition == 1) {
-                $edition = 1;
-            }
-        }
-
-        return $edition;
+        return 1;
         /*
         if(craft()->plugins->getPluginLicenseKeyStatus('Shortlist') == LicenseKeyStatus::Valid) {
             $edition = 1;

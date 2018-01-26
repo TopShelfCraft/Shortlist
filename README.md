@@ -1,34 +1,44 @@
-# Installation
+# Shortlist
 
-Installation	
-Installation is a simply a standard ExpressionEngine addon. Charge consists of just a _module_.
+_Lightweight, flexible lists for Craft CMS._
 
+**A [Top Shelf Craft](https://topshelfcraft.com) plugin**
 
-## EE2.x Installation</h3>
-
-* Upload the *charge* folder to your *system/expressionengine/third_party/* folder
-* Upload the *themes/third_party/charge* folder to your *themes/third_party/charge/* folder
-* In your EE control panel go to Addons > Modules. Click _Install_ on the Charge row.
-* Installation is done. Nothing to it. Visit [Charge Usage](http://squarebit.co.uk/charge/docs/usage#content) to see what tags you need to drop into your templates.
-
-# Shortlist for Craft
-
-## Installation
-
-Shortlist is a standard Craft plugin. Installation is as simple as dropping the *shortlist* folder into your craft/plugins directory, and clicking *Install* in the CP > Settings > Plugin page.
-
-### Craft Plugin Installation
-
-* Upload the shortlist folder to your craft/plugin folder
-* In your Craft control panel, got to Settings > Plugins. Click Install on the Shortlist plugin
-* Optionally the Shortlist settings and update any values you might want to change.
-* All done. View the tag's you'll need to add to your front-end templates in the Quickstart section of the documenation found at http://squarebit.co.uk/software/craft/shortlist/docs/quickstart
+&mdash; Originally created by Joel Bradbury 
 
 
-If you have any issues contact support@squarebit.co.uk
+### TL;DR.
+
+Simply put - it's the best way to add user wishlists, favorites, or any user list features, to your Craft build.
+
+Shortlist lets your users add any element type to their lists. Want to just have a list of favourite entries? Done. A list of followed users? Done. A list of favourite assets? Easy as pie. A list of a completely custom element type? No trouble.
 
 
+## Documentation
+
+A comprehensive [Guide](https://transition.topshelfcraft.com/software/craft/shortlist/usage/quickstart), along with [Release Notes](https://transition.topshelfcraft.com/software/craft/shortlist/updates), can be found in the documentation:
+
+**https://transition.topshelfcraft.com/software/craft/shortlist/usage**
+ 
+
+## What are the system requirements?
+
+Craft 2.6+ and PHP 5.4+
 
 
+## I've found a bug.
+
+You sure?
 
 
+## Yes, I believe I have.
+
+Well, alright. Please open a [GitHub Issue](https://github.com/topshelfcraft/Shortlist/issues), and if you're feeling ambitious, submit a PR to the `1.x.dev` branch.
+
+
+* * *
+
+### Contributors:
+
+  - Plugin development: [Michael Rog](http://michaelrog.com) / @michaelrog
+  - Original plugin development: [Joel Bradbury](https://squarebit.co.uk) / @joelbradbury
