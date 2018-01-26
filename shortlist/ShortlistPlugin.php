@@ -31,7 +31,7 @@ class ShortlistPlugin extends BasePlugin
 
     function getReleaseFeedUrl()
 	{
-		return 'https://raw.githubusercontent.com/TopShelfCraft/Release-Feeds/master/Shortlist.json';
+		return 'https://raw.githubusercontent.com/TopShelfCraft/Shortlist/master/releases.json';
 	}
 
 	public function hasCpSection()

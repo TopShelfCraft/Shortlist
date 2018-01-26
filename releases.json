@@ -1,0 +1,43 @@
+[
+  {
+    "version": "1.1.1",
+    "date": "2018-01-25T00:00:00+00:00",
+    "downloadUrl": "https://github.com/TopShelfCraft/Shortlist/archive/1.1.1.zip",
+    "notes": [
+      "[Fixed] Fixed a list view issue in the CP",
+      "[Improved] Added plugin schema version and icon",
+      "[New] Added `hash` attribute to lists",
+      "[Improved] Updated for Top Shelf Craft transition"
+    ]
+  },
+  {
+    "version": "1.0.2",
+    "date": "2015-08-28T17:25:44+00:00",
+    "downloadUrl": "",
+    "notes": [
+      "[Fixed] A bug when adding items that weren&#039;t entries",
+      "[Fixed] Some minor display errors in the CP when using non-entry elements in lists",
+      "[Fixed] Some inconsistency in list orders when dealing with mixed type lists "
+    ]
+  },
+  {
+    "version": "1.0.1",
+    "date": "2015-04-17T15:04:21+00:00",
+    "downloadUrl": "",
+    "notes": [
+      "[Fixed] The toggle behaviour to detect state changes better",
+      "[Fixed] A missing method call for toggle actions triggered over ajax",
+      "[Fixed] The logic within the CP list view to fix an edge case",
+      "[Improved] The list items to store item titles and added helper shortcut variables to expose those on the front-end"
+    ]
+  },
+  {
+    "version": "1.0.0",
+    "date": "2015-03-17T15:17:19+00:00",
+    "downloadUrl": "",
+    "notes": [
+      "[New] First Public Release"
+    ]
+  }
+]
+
