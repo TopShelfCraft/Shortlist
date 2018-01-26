@@ -11,22 +11,22 @@ class ShortlistPlugin extends BasePlugin
 
     function getVersion()
     {
-        return '1.1.0';
+        return '1.1.1';
     }
 
     function getSchemaVersion()
     {
-        return '1.1.0';
+        return '1.1.0.0';
     }
 
     function getDeveloper()
     {
-        return 'Square Bit';
+        return 'Top Shelf Craft';
     }
 
     function getDeveloperUrl()
     {
-        return 'http://squarebit.co.uk';
+        return 'http://topshelfcraft.com';
     }
 
     public function hasCpSection()
