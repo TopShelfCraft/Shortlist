@@ -29,7 +29,12 @@ class ShortlistPlugin extends BasePlugin
         return 'http://topshelfcraft.com';
     }
 
-    public function hasCpSection()
+    function getReleaseFeedUrl()
+	{
+		return 'https://raw.githubusercontent.com/TopShelfCraft/Release-Feeds/master/Shortlist.json';
+	}
+
+	public function hasCpSection()
     {
         return true;
     }
