@@ -4,6 +4,15 @@ namespace Craft;
 
 class ShortlistPlugin extends BasePlugin
 {
+	
+    public function init()
+    {
+	    
+		require_once __DIR__ . '/vendor/autoload.php';
+		parent::init();
+	    
+    }
+    
     function getName()
     {
         return Craft::t('Shortlist');

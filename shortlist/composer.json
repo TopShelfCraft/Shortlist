@@ -1,0 +1,5 @@
+{
+    "require": {
+        "jaybizzle/crawler-detect": "1.*"
+    }
+}
