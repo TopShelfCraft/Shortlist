@@ -64,9 +64,14 @@ class Shortlist_ItemController extends ShortlistController
         // Get any extra values
         $extra = array(); // @todo
 
+		// Detect bots / spam
+	    $CrawlerDetect = new \Jaybizzle\CrawlerDetect\CrawlerDetect;
+		if($CrawlerDetect->isCrawler()) {
+			return $this->errorResponse('Couldn\'t complete the request');
+		}
+			
         // Pass to the service to do the leg work
         $response = craft()->shortlist_item->action($actionType, $itemId, $listId, $extra);
-
 
         if($response === true) {
             // Return as appropriate
