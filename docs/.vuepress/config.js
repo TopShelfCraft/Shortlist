@@ -1,5 +1,5 @@
 module.exports = {
-	base: '/1.x/',
+	base: '/shortlist/1.x/',
 	title: 'Shortlist Documentation',
 	description: 'Lightweight, flexible lists for Craft CMS.',
 	theme: 'craftdocs',
