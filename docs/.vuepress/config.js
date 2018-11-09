@@ -17,22 +17,18 @@ module.exports = {
 				text: 'Version',
 				items: [
 					// {
-					// 	text: '3.x Guide',
+					// 	text: 'Shortlist 3.x',
 					// 	link: 'https://docs.topshelfcraft.com/shortlist/3.x/'
 					// },
-					// {
-					// 	text: '3.x API',
-					// 	link: 'https://docs.topshelfcraft.com/shortlist/3.x/api'
-					// },
 					{
-						text: '1.x Guide',
+						text: 'Shortlist 1.x',
 						link: '/'
 					},
-					{
-						text: '1.x API',
-						link: 'https://docs.topshelfcraft.com/shortlist/1.x/api'
-					},
 				]
+			},
+			{
+				text: 'Shortlist Class Reference',
+				link: 'https://docs.topshelfcraft.com/shortlist/api'
 			}
 		],
 		sidebar: {

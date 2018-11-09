@@ -1,0 +1,6 @@
+name: topshelfcraft
+parent: default
+
+static:
+    'images/topshelfcraft.svg': 'images/topshelfcraft.svg'
+    'css/topshelfcraft.css': 'css/topshelfcraft.css'

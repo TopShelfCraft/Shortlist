@@ -1,0 +1,36 @@
+#site-nav.navbar-default,
+h2 {
+	background-color: #fff2dd;
+}
+
+#api-tree {
+	background: linear-gradient(to bottom, #FFF, #FFF 50%, #fff2dd 50%, #fff2dd);
+	background-size: 100% 56px;
+}
+
+#api-tree li.active > .hd {
+	background-color: #DD8800;
+}
+
+#api-tree li.active > .hd a {
+	color: #fff;
+}
+
+a {
+	color: #DD8800;
+}
+
+a:hover, a:focus {
+	color: #aa6900;
+}
+
+span.glyphicon.glyphicon-new-window {
+	padding-left: 10px;
+	opacity: 0.5;
+}
+
+img.logo {
+	padding: 20px;
+	width: 65%;
+	opacity: 0.65;
+}
