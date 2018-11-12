@@ -1,6 +1,6 @@
 # Shortlist
 
-_Lightweight, flexible lists for Craft CMS._
+<span class="subtitle">Lightweight, flexible lists for Craft CMS.</span>
 
 Simply put - it's the best way to add user wishlists, favorites, or any user list features to your Craft build.
 
